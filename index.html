@@ -17,7 +17,7 @@
 <link rel="preload" href="fonts/GoogleSans-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/GoogleSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="img/night_nofire-1280.webp" imagesrcset="img/night_nofire-1280.webp 1280w, img/night_nofire-1920.webp 1920w" imagesizes="100vw" fetchpriority="high">
-<link rel="stylesheet" href="css/site.css?v=202610281121">
+<link rel="stylesheet" href="css/site.css?v=202610281646">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -30,7 +30,9 @@
 }
 </script>
 </head>
-<body>
+<body class="t-night">
+<!-- the ground of the page: one fixed layer per colour, the section across the middle of the screen picks it (js/site.js) -->
+<div id="bg" aria-hidden="true"><i data-t="night" class="on"></i><i data-t="paper"></i><i data-t="cream"></i></div>
 <svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
   <symbol id="i-a11y" viewBox="0 0 300 300"><path transform="translate(0 300) scale(1 -1)" d="M125 225Q125 235 132.5 242.5Q140 250 150.0 250.0Q160 250 167.5 242.5Q175 235 175.0 225.0Q175 215 167.5 207.5Q160 200 150.0 200.0Q140 200 132.5 207.5Q125 215 125 225ZM300 150Q300 109 280.0 74.5Q260 40 225.5 20.0Q191 0 150.0 0.0Q109 0 74.5 20.0Q40 40 20.0 74.5Q0 109 0.0 150.0Q0 191 20.0 225.5Q40 260 74.5 280.0Q109 300 150.0 300.0Q191 300 225.5 280.0Q260 260 280.0 225.5Q300 191 300 150ZM275 150Q275 184 258.0 212.5Q241 241 212.5 258.0Q184 275 150.0 275.0Q116 275 87.5 258.0Q59 241 42.0 212.5Q25 184 25.0 150.0Q25 116 42.0 87.5Q59 59 87.5 42.0Q116 25 150.0 25.0Q184 25 212.5 42.0Q241 59 258.0 87.5Q275 116 275 150ZM207 211 160 188H140L93 211Q88 213 83.5 211.5Q79 210 76.5 205.5Q74 201 75.5 196.0Q77 191 82 189L125 167V123L102 81Q99 77 100.5 72.0Q102 67 105.5 65.0Q109 63 113 63Q120 63 124 69L148 113H152L177 69Q180 62 187 63Q191 63 194.5 65.0Q198 67 199.5 72.0Q201 77 198 81L175 123V167L218 189Q223 191 224.5 196.0Q226 201 224.0 205.5Q222 210 217.0 211.5Q212 213 207 211Z"/></symbol>
 </svg>
@@ -83,18 +85,16 @@
 <span id="top"></span>
 
 <!-- ===== הסיפור: מטבח אחד, מהשולחן ועד ההתקנה. במה אחת נעוצה, על כל המסך לאורך כל הדרך (MV:g18) ===== -->
-<div class="story" id="story">
+<div class="story" id="story" data-theme="night">
   <div class="pin-zone">
-    <section class="hero" aria-labelledby="hero-h" data-axis="start" data-theme="night">
+    <section class="hero" aria-labelledby="hero-h" data-axis="start" data-over-image>
       <div class="hero-in">
         <h1 id="hero-h"><span class="ln">הערבים הכי טובים</span> <span class="ln">קורים בחוץ.</span></h1>
-        <span class="hero-rule" aria-hidden="true"></span>
         <p class="hero-sub">מטבחי חוץ לבית פרטי, לפנטהאוז ולדירת גן. מתכננים איתך, מייצרים במפעל שלנו ומתקינים אצלך.</p>
         <div class="ctas">
           <a class="btn" href="#contact">לקבוע פגישת תכנון</a>
           <a class="btn ghost wa" href="https://wa.me/?text=%D7%94%D7%99%D7%99%2C%20%D7%94%D7%92%D7%A2%D7%AA%D7%99%20%D7%9E%D7%94%D7%90%D7%AA%D7%A8%20%D7%95%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A9%D7%9E%D7%95%D7%A2%20%D7%A2%D7%9C%20%D7%9E%D7%98%D7%91%D7%97%20%D7%97%D7%95%D7%A5" rel="noopener">לכתוב בוואטסאפ</a>
         </div>
-        <a class="skip-story" href="#projects">ישר לפרויקטים</a>
       </div>
       <span class="cue" aria-hidden="true"><i></i></span>
     </section>
@@ -117,13 +117,12 @@
         <div class="dim" aria-hidden="true"></div>
         <div class="scrim" aria-hidden="true"></div>
       </div>
+      <div class="st-fade" aria-hidden="true"></div>
       <div class="wipe-edge" aria-hidden="true"></div>
+      <div class="rail-veil" aria-hidden="true"></div>
       <ol class="rail" aria-hidden="true" data-line="info">
         <li data-ch="table">התכנון</li><li data-ch="factory">הייצור</li><li data-ch="install">ההתקנה</li>
       </ol>
-      <div class="stage-meta">
-        <button class="pause" type="button" aria-pressed="false">עצירת התנועה</button>
-      </div>
     </div>
     <div class="runway" aria-hidden="true"></div>
   </div>
@@ -156,43 +155,46 @@
   </div>
 </div>
 
-<!-- ===== החיים: התמונה שהסיפור נגמר עליה מתכווצת למקום שלה בגיליון, והערבים סביבה נכנסים אחד אחד ===== -->
-<section class="moments" id="moments" aria-labelledby="moments-h">
-  <div class="m-pin">
-    <div class="m-sheet">
-      <div class="m-head">
-        <h2 id="moments-h" class="rv-h">ואז מתחילים הערבים.</h2>
-      </div>
-      <div class="m-grid">
-        <span class="m-slot" aria-hidden="true"></span>
-        <svg class="m-lines" aria-hidden="true" focusable="false"></svg>
-        <figure class="m-k">
-          <div class="m-k-in">
-            <img src="img/night_nofire-1280.webp" srcset="img/night_nofire-1280.webp 1280w, img/night_nofire-1920.webp 1920w" sizes="100vw" alt="אותו מטבח של KFT בשעת ערב, עם התאורה דולקת והאש בטאבון" width="1920" height="1282" loading="lazy" decoding="async">
-            <div class="fire" aria-hidden="true"><i></i></div>
-          </div>
-        </figure>
-        <ol class="m-list">
-          <li class="m c0"><figure class="rv-img"><img src="img/m1-800.webp" srcset="img/m1-800.webp 800w, img/m1-1600.webp 1600w" sizes="(max-width: 1023px) 50vw, 25vw" alt="משפחה סביב שולחן ארוך בחוץ, באור של צהריים" width="1600" height="1067" loading="lazy" decoding="async"></figure><p><span class="when">שישי · 13:00</span>ארוחת שישי הראשונה בחוץ.</p></li>
-          <li class="m c1"><figure class="rv-img"><img src="img/m2-800.webp" srcset="img/m2-800.webp 800w, img/m2-1600.webp 1600w" sizes="(max-width: 1023px) 50vw, 25vw" alt="חברים צוחקים סביב שולחן בלילה, מתחת לשרשרת נורות" width="1600" height="1068" loading="lazy" decoding="async"></figure><p><span class="when">01:00</span>חברים שקפצו לשעה, ונשארו עד אחת בלילה.</p></li>
-          <li class="m c2"><figure class="rv-img"><img src="img/m3-800.webp" srcset="img/m3-800.webp 800w, img/m3-1600.webp 1600w" sizes="(max-width: 1023px) 50vw, 25vw" alt="ילדים אוכלים כריכים סביב שולחן" width="1600" height="1067" loading="lazy" decoding="async"></figure><p><span class="when">16:30</span>הילדים מביאים חברים מבית הספר, וכולם נשארים לאכול.</p></li>
-          <li class="m c3"><figure class="rv-img"><img src="img/m4-800.webp" srcset="img/m4-800.webp 800w, img/m4-1600.webp 1600w" sizes="(max-width: 1023px) 50vw, 25vw" alt="אמא מחבקת את הבן הבוגר שלה במטבח" width="1600" height="1067" loading="lazy" decoding="async"></figure><p><span class="when">חמישי · 18:45</span>הבן חוזר מהבסיס, והגריל כבר דולק.</p></li>
-          <li class="m c4"><figure class="rv-img"><img src="img/m5-800.webp" srcset="img/m5-800.webp 800w, img/m5-1600.webp 1600w" sizes="(max-width: 1023px) 50vw, 25vw" alt="שולחן חג ערוך, וידיים מרימות כוסות" width="1600" height="900" loading="lazy" decoding="async"></figure><p><span class="when">ערב חג</span>כל המשפחה סביב שולחן אחד.</p></li>
-          <li class="m c5"><figure class="rv-img"><img src="img/m6-800.webp" srcset="img/m6-800.webp 800w, img/m6-1600.webp 1600w" sizes="(max-width: 1023px) 50vw, 25vw" alt="שולחן ריק בחצר בלילה, מתחת לשרשרת נורות דולקות" width="1600" height="1068" loading="lazy" decoding="async"></figure><p><span class="when">23:30</span>וכשכולם הולכים, נשארת הפינה שלך.</p></li>
-        </ol>
-        <div class="m-close">
-          <p class="c-line"><span class="ln">מטבח אחד.</span> <span class="ln">שנים של ערבים.</span></p>
-          <p class="c-sub">בוא נשב לשרטט את שלך.</p>
-          <a class="btn" href="#contact">לקבוע פגישת תכנון</a>
-        </div>
-      </div>
+<!-- ===== הערבים: הסיפור נגמר על הצילום שנמס אל הלילה, וכאן הערבים עצמם, אחד אחרי השני, בלי מסגרות ===== -->
+<section class="moments" id="moments" aria-labelledby="moments-h" data-axis="start" data-theme="night">
+  <h2 id="moments-h" class="m-h rv-h">ואז מתחילים הערבים.</h2>
+  <ul class="m-list">
+    <li class="m m1">
+      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m1-800.webp" srcset="img/m1-800.webp 800w, img/m1-1600.webp 1600w" sizes="(max-width: 767px) 100vw, 56vw" alt="משפחה סביב שולחן ארוך בחוץ, באור של צהריים" width="1600" height="1067" loading="lazy" decoding="async"></div></div>
+        <figcaption class="m-cap rv"><span class="when">שישי · 13:00</span>ארוחת שישי הראשונה בחוץ.</figcaption></figure>
+    </li>
+    <li class="m m2">
+      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m2-800.webp" srcset="img/m2-800.webp 800w, img/m2-1600.webp 1600w" sizes="(max-width: 767px) 84vw, 32vw" alt="חברים צוחקים סביב שולחן בלילה, מתחת לשרשרת נורות" width="1600" height="1068" loading="lazy" decoding="async"></div></div>
+        <figcaption class="m-cap rv"><span class="when">01:00</span>חברים שקפצו לשעה, ונשארו עד אחת בלילה.</figcaption></figure>
+    </li>
+    <li class="m m3">
+      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m3-800.webp" srcset="img/m3-800.webp 800w, img/m3-1600.webp 1600w" sizes="(max-width: 767px) 84vw, 32vw" alt="ילדים אוכלים כריכים סביב שולחן" width="1600" height="1067" loading="lazy" decoding="async"></div></div>
+        <figcaption class="m-cap rv"><span class="when">16:30</span>הילדים מביאים חברים מבית הספר, וכולם נשארים לאכול.</figcaption></figure>
+    </li>
+    <li class="m m4">
+      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m4-800.webp" srcset="img/m4-800.webp 800w, img/m4-1600.webp 1600w" sizes="(max-width: 767px) 100vw, 48vw" alt="אמא מחבקת את הבן הבוגר שלה במטבח" width="1600" height="1067" loading="lazy" decoding="async"></div></div>
+        <figcaption class="m-cap rv"><span class="when">חמישי · 18:45</span>הבן חוזר מהבסיס, והגריל כבר דולק.</figcaption></figure>
+    </li>
+    <li class="m m5">
+      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m5-800.webp" srcset="img/m5-800.webp 800w, img/m5-1600.webp 1600w" sizes="(max-width: 767px) 100vw, 64vw" alt="שולחן חג ערוך, וידיים מרימות כוסות" width="1600" height="900" loading="lazy" decoding="async"></div></div>
+        <figcaption class="m-cap rv"><span class="when">ערב חג</span>כל המשפחה סביב שולחן אחד.</figcaption></figure>
+    </li>
+    <li class="m m6">
+      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m6-800.webp" srcset="img/m6-800.webp 800w, img/m6-1600.webp 1600w" sizes="(max-width: 767px) 84vw, 24vw" alt="שולחן ריק בחצר בלילה, מתחת לשרשרת נורות דולקות" width="1600" height="1068" loading="lazy" decoding="async"></div></div>
+        <figcaption class="m-cap rv"><span class="when">23:30</span>וכשכולם הולכים, נשארת הפינה שלך.</figcaption></figure>
+    </li>
+  </ul>
+  <div class="m-close">
+    <p class="c-line rv-h"><span class="ln">מטבח אחד.</span> <span class="ln">שנים של ערבים.</span></p>
+    <div class="c-act rv">
+      <p class="c-sub">בוא נשב לשרטט את שלך.</p>
+      <a class="btn" href="#contact">לקבוע פגישת תכנון</a>
     </div>
   </div>
-  <div class="m-run" aria-hidden="true"></div>
 </section>
 
-<!-- ===== פרויקטים נבחרים: פרויקט אחד עם טבלת השרטוט, ואחריו אינדקס ===== -->
-<section class="sec projects" id="projects" aria-labelledby="projects-h" data-axis="start">
+<!-- ===== פרויקטים נבחרים: פרויקט אחד עם טבלת השרטוט, ואחריו ארבעה נוספים ===== -->
+<section class="sec projects" id="projects" aria-labelledby="projects-h" data-axis="start" data-theme="paper">
   <div class="sec-head">
     <h2 id="projects-h" class="rv-h">מטבחים שבנינו, מבאר שבע ועד חיפה.</h2>
   </div>
@@ -209,88 +211,75 @@
     </dl>
   </article>
 
-  <ul class="index" data-line="info">
-    <li class="ix">
-      <a href="soon.html" class="ix-link">
-        <h3>מרפסת מול הים</h3>
+  <div class="more-head">
+    <h3 class="more-h">עוד פרויקטים</h3>
+    <a class="btn b2" href="soon.html">לכל הפרויקטים</a>
+  </div>
+  <ul class="more">
+    <li class="mc">
+      <a href="soon.html" class="mc-link">
         <div class="pic rv-img"><img src="img/old-img_9438-2.webp" alt="מטבח חוץ כהה על מרפסת מול הים" width="1000" height="667" loading="lazy" decoding="async"></div>
+        <h4>מרפסת מול הים</h4>
       </a>
     </li>
-    <li class="ix">
-      <a href="soon.html" class="ix-link">
-        <h3>אי בשיש לבן</h3>
+    <li class="mc">
+      <a href="soon.html" class="mc-link">
         <div class="pic rv-img"><img src="img/old-img_0661.webp" alt="אי משיש לבן עם כיסאות בר ומקרר יין" width="1000" height="666" loading="lazy" decoding="async"></div>
+        <h4>אי בשיש לבן</h4>
       </a>
     </li>
-    <li class="ix">
-      <a href="soon.html" class="ix-link">
-        <h3>בלב הגינה</h3>
+    <li class="mc">
+      <a href="soon.html" class="mc-link">
         <div class="pic rv-img"><img src="img/old-img_9207-4.webp" alt="מטבח חוץ בגינה עם דשא ועשבים גבוהים" width="1000" height="667" loading="lazy" decoding="async"></div>
+        <h4>בלב הגינה</h4>
       </a>
     </li>
-    <li class="ix">
-      <a href="soon.html" class="ix-link">
-        <h3>חצר מרוצפת, ליד הבריכה</h3>
+    <li class="mc">
+      <a href="soon.html" class="mc-link">
         <div class="pic rv-img"><img src="img/old-rsh09627.webp" alt="מטבח חוץ ליד בריכה בחצר מרוצפת" width="1000" height="666" loading="lazy" decoding="async"></div>
+        <h4>חצר מרוצפת, ליד הבריכה</h4>
       </a>
     </li>
   </ul>
-  <div class="sec-foot"><a class="btn b2" href="soon.html">לכל הפרויקטים</a></div>
 </section>
 
 <!-- ===== הגריל: השם חתוך מהדף הלבן, והמצלמה עוברת דרך ה-I אל הצילום (MV:g156) ===== -->
 <section class="grill" id="grill" aria-labelledby="grill-h">
   <div class="bf-scene">
+    <!-- the ground under the scene: white while the name is cut out of the page, night once the photo has filled the screen -->
+    <i class="bf-z bf-z1" data-theme="paper" aria-hidden="true"></i>
+    <i class="bf-z bf-z2" data-theme="night" aria-hidden="true"></i>
     <div class="bf-pin">
       <picture>
         <source media="(max-width: 1023px) and (orientation: portrait)" srcset="img/bf-p-900.webp" width="900" height="1600">
         <img src="img/bf-1280.webp" srcset="img/bf-1280.webp 1280w, img/bf-1920.webp 1920w" sizes="100vw" alt="מטבח של KFT באור יום: גריל נירוסטה משולב במשטח אבן, טאבון לבן, מדף עם צמחים ושלושה כיסאות בר" width="1920" height="1081" loading="lazy" decoding="async">
       </picture>
+      <div class="bf-fade" aria-hidden="true"></div>
       <svg class="bf-cut" aria-hidden="true" focusable="false"></svg>
     </div>
   </div>
-  <div class="grill-in">
-    <div class="grill-copy">
+  <div class="grill-in" data-theme="night">
+    <div class="g-top">
       <h2 id="grill-h" lang="en" class="rv-h">BLUE FIRE</h2>
-      <p class="lead rv">BLUE FIRE הוא מותג הגרילים שלנו. בעמוד שלו תמצא כל דגם מכל זווית, עם המידע הטכני ומידות החיתוך למשטח.</p>
+      <div class="g-lead rv">
+        <p class="lead">BLUE FIRE הוא מותג הגרילים שלנו. בעמוד שלו תמצא כל דגם מכל זווית, עם המידע הטכני ומידות החיתוך למשטח.</p>
+        <a class="btn" href="soon.html">לכל הגרילים</a>
+      </div>
     </div>
-    <div class="grill-side">
-      <p class="rv">ולצידו כל מה שמטבח בחוץ צריך, ממקום אחד:</p>
-      <ul class="g-list rv" aria-label="עוד מ-KFT" data-line="info">
-        <li>טאבונים</li><li>מכשירי חשמל לחוץ</li><li>חיפויי גרניט פורצלן</li><li>שולחנות אבן</li>
+    <div class="g-more">
+      <p class="g-intro rv">ולצידו כל מה שמטבח בחוץ צריך, ממקום אחד:</p>
+      <ul class="g-list" aria-label="עוד מ-KFT" data-line="info">
+        <li class="rv"><a class="g-row" href="soon.html"><span class="g-t">טאבונים</span></a></li>
+        <li class="rv"><a class="g-row" href="soon.html"><span class="g-t">מכשירי חשמל לחוץ</span></a></li>
+        <li class="rv"><a class="g-row" href="soon.html"><span class="g-t">חיפויי גרניט פורצלן</span></a></li>
+        <li class="rv"><a class="g-row" href="soon.html"><span class="g-t">שולחנות אבן</span></a></li>
       </ul>
-      <a class="btn" href="soon.html">לכל הגרילים</a>
     </div>
   </div>
-</section>
-
-<!-- ===== המלצות: הקלטה אחת לאורך הדף, וההודעות של הלקוחות תלויות ממנה ===== -->
-<section class="sec voices" id="voices" aria-labelledby="voices-h" data-axis="start">
-  <div class="sec-head">
-    <h2 id="voices-h" class="rv-h">מהוואטסאפ שלנו.</h2>
-  </div>
-  <div class="wave-band">
-    <div class="wave" aria-hidden="true"></div>
-    <span class="wave-axis" aria-hidden="true"></span>
-  </div>
-  <ul class="v-grid">
-    <li class="v rv">
-      <div class="v-bubble">
-        <button class="v-play" type="button" aria-pressed="false" aria-label="השמעת הודעה קולית מלקוח"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-play" d="M8 5.5v13l10.5-6.5z"/><path class="i-stop" d="M7 5.5h3.5v13H7zm6.5 0H17v13h-3.5z"/></svg></button>
-        <span class="v-time">0:42</span>
-      </div>
-    </li>
-    <li class="v rv">
-      <div class="v-bubble">
-        <button class="v-play" type="button" aria-pressed="false" aria-label="השמעת הודעה קולית מלקוח"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-play" d="M8 5.5v13l10.5-6.5z"/><path class="i-stop" d="M7 5.5h3.5v13H7zm6.5 0H17v13h-3.5z"/></svg></button>
-        <span class="v-time">1:08</span>
-      </div>
-    </li>
-  </ul>
 </section>
 
 <!-- ===== אדריכלים: התוכנית של אותו מטבח, משורטטת קו אחרי קו עם קווי המידה שלה ===== -->
-<section class="sec arch" id="architects" aria-labelledby="arch-h" data-axis="start">
+<section class="sec arch" id="architects" aria-labelledby="arch-h" data-axis="start" data-theme="paper">
   <div class="arch-in">
     <div class="arch-copy">
       <h2 id="arch-h" class="rv-h">אדריכלים ומעצבים</h2>
@@ -310,7 +299,7 @@
 </section>
 
 <!-- ===== פנייה ===== -->
-<section class="sec contact" id="contact" aria-labelledby="contact-h" data-axis="start">
+<section class="sec contact" id="contact" aria-labelledby="contact-h" data-axis="start" data-theme="cream">
   <div class="contact-in">
     <div class="contact-copy">
       <h2 id="contact-h" class="rv-h">ספר לנו על הבית.</h2>
@@ -363,14 +352,14 @@
 </section>
 </main>
 
-<footer class="ft">
+<footer class="ft" data-theme="night">
   <div class="ft-top">
     <p>בונה או משפץ? זה הזמן לתכנן את החוץ.</p>
     <a class="btn" href="#contact">לקבוע פגישת תכנון</a>
   </div>
   <div class="ft-cols">
     <div class="ft-brand">
-      <img src="assets/kft-lockup.svg" alt="KFT Outdoor kitchens" width="132" height="132" loading="lazy">
+      <span class="ft-mark"><img class="lk-color" src="assets/kft-lockup.svg" alt="KFT Outdoor kitchens" width="132" height="132" loading="lazy"><img class="lk-cream" src="assets/kft-lockup-cream.svg" alt="" width="132" height="132" loading="lazy"></span>
       <p>מטבחי חוץ בתכנון, ייצור והתקנה. עסק משפחתי מברכיה.</p>
       <p class="ft-reach"><a class="wa" href="https://wa.me/?text=%D7%94%D7%99%D7%99%2C%20%D7%94%D7%92%D7%A2%D7%AA%D7%99%20%D7%9E%D7%94%D7%90%D7%AA%D7%A8%20%D7%95%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A9%D7%9E%D7%95%D7%A2%20%D7%A2%D7%9C%20%D7%9E%D7%98%D7%91%D7%97%20%D7%97%D7%95%D7%A5" rel="noopener">וואטסאפ</a></p>
     </div>
@@ -398,8 +387,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
-<script src="js/site.js?v=202610281121" defer></script>
-<script src="js/story.js?v=202610281121" defer></script>
-<script src="js/a11y.js?v=202610281121" defer></script>
+<script src="js/site.js?v=202610281646" defer></script>
+<script src="js/story.js?v=202610281646" defer></script>
+<script src="js/a11y.js?v=202610281646" defer></script>
 </body>
 </html>

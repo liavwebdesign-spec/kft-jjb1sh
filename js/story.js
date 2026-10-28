@@ -1,31 +1,14 @@
-/* KFT · the story stage, the moments sheet, BLUE FIRE, the voices' wave and the architects' plan.
+/* KFT · the story stage, BLUE FIRE, the evenings' drift and the architects' plan.
    One pinned stage and one master timeline on scroll (MV:g18), full screen all the way: the chapters ride on the film.
-   The timeline runs 248 units over the .runway's 180vh of scroll (css/site.css); the page keeps pinned scroll under 30%.
-   Then the photo the story ended on shrinks into its place on the moments sheet (one pinned screen, 76vh), and the
-   BLUE FIRE name is cut out of the white page, the camera flying through its I into the grill photo (MV:g156, 60vh).
+   The timeline runs 248 units over the .runway's 340vh of scroll (css/site.css), slow enough to watch each part.
+   At its end the photo melts into the night ground at its foot, and the evenings start on the same night below it.
+   The BLUE FIRE name is cut out of the white page, the camera flying through its I into the grill photo (MV:g156, 40vh).
+   The story's own ground follows the film (white paper while the drawing shows, night over the photo and the dusk):
+   it writes data-theme on the story and tells js/site.js, which turns the page's ground.
    Without GSAP, with reduced motion or with "stop animations" on, the page stays the static version: real text and still images.
    The oven's flicker is CSS only, so nothing here writes to the page while it is still. */
 (() => {
   const root = document.documentElement;
-
-  /* ---- the voices' wave: one recording across the page, built here so the markup stays clean. Heights are a fixed
-     sum of sines (the same wave on every visit); --k is each bar's place from the start side ---- */
-  const wave = document.querySelector('.wave');
-  if (wave && !wave.children.length) {
-    const n = innerWidth < 768 ? 64 : 128;
-    const frag = document.createDocumentFragment();
-    for (let i = 0; i < n; i++) {
-      const t = i / (n - 1);
-      const env = Math.sin(Math.PI * t) * 0.55 + 0.45;
-      const h = Math.abs(Math.sin(i * 0.53) * 0.5 + Math.sin(i * 1.71 + 1) * 0.3 + Math.sin(i * 0.17 + 2) * 0.2) * env;
-      const b = document.createElement('i');
-      b.style.setProperty('--k', t.toFixed(4));
-      b.style.setProperty('--h', Math.max(0.06, h).toFixed(3));
-      frag.appendChild(b);
-    }
-    wave.appendChild(frag);
-  }
-
   const story = document.querySelector('.story');
   if (!story || !window.gsap || !window.ScrollTrigger) return;
   gsap.registerPlugin(ScrollTrigger);
@@ -42,16 +25,21 @@
   const edge = $('.wipe-edge');
   const rail = $('.rail');
   const railItems = [...rail.querySelectorAll('li')];
+  const veil = $('.rail-veil');
+  const stFade = $('.st-fade');
   const tags = $('.plan-tags');
   const chScrim = $('.ch-scrim');
   const chaptersEl = $('.chapters');
   const chapters = [...chaptersEl.querySelectorAll('.chapter')];
-  const meta = $('.stage-meta');
   const PAPER = '#FFFFFF';
   const N = 210;
   const YARD = 60; // the first frame of the film: the same plan, chalked on the paving of the yard
   // phones, and tablets held upright (the same query as the sheet layout in the CSS)
   const SHEET_MQ = '(max-width: 767px), (max-width: 1023px) and (orientation: portrait)';
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  // the plan's top edge in the last frames of the rise, as a share of the frame's height (measured on the frames)
+  const PLAN_TOP = 0.143;
+  const theme = (t) => { if (story.dataset.theme !== t) { story.dataset.theme = t; document.dispatchEvent(new Event('kft:theme')); } };
 
   /* ---- frames: index 0-59 rise from the photo's camera to the white paper plan (a line drawing).
      60-209 are the film, rendered in Blender (../blender/kft_film.py): the plan chalked on the yard, the kitchen built
@@ -94,13 +82,14 @@
 
   /* ---- drawing: always cover, identical to the photo's object-fit and object-position (--fx), so the film fills the
      screen from the first frame to the last ---- */
-  let W = 0, H = 0, dpr = 1, lastKey = '', live = false, fx = 0.5;
+  let W = 0, H = 0, dpr = 1, lastKey = '', live = false, fx = 0.5, veilFoot = 0;
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = Math.round(canvas.clientWidth * dpr);
     H = Math.round(canvas.clientHeight * dpr);
     if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; }
     fx = (parseFloat(getComputedStyle(root).getPropertyValue('--fx')) || 50) / 100;
+    veilFoot = veil.offsetTop + veil.offsetHeight;
     lastKey = '';
     draw(true);
   }
@@ -120,6 +109,10 @@
     const s = Math.max(W / iw, H / ih);
     const r = { w: iw * s, h: ih * s };
     r.x = (W - r.w) * fx; r.y = (H - r.h) * 0.5;
+    // as the camera rises the plan settles a little lower than it was drawn, so its top edge stays clear of the rail's
+    // band; from the photo's own frame (none) to the finished plan (all), and back to none as the paper becomes the yard
+    const settle = Math.max(0, (veilFoot - 12) * dpr - (r.y + PLAN_TOP * r.h));
+    r.y += settle * (i < YARD ? i / (YARD - 1) : 1) * (1 - Math.min(1, S.yard));
     ctx.drawImage(img, r.x, r.y, r.w, r.h);
     if (over) { ctx.globalAlpha = Math.min(1, S.yard); ctx.drawImage(over, r.x, r.y, r.w, r.h); ctx.globalAlpha = 1; }
     // the plan's labels ride on the same rectangle as the drawing
@@ -127,15 +120,14 @@
   }
 
   /* ---- state, written by the timeline and painted in one place, and only what changed ---- */
-  const S0 = { frame: 0, lines: 0, dim: 0, wipe: 0, edge: 0, tags: 0, yard: 0, photo: 1, scrim: 1, copy: 1, c0: 0, c1: 0, c2: 0, paper: 0, chs: 0 };
+  const S0 = { frame: 0, lines: 0, dim: 0, wipe: 0, edge: 0, tags: 0, yard: 0, photo: 1, scrim: 1, copy: 1, c0: 0, c1: 0, c2: 0, paper: 0, chs: 0, fade: 0 };
   const S = { ...S0 };
   const last = new Map();
   const put = (key, val, fn) => { if (last.get(key) !== val) { last.set(key, val); fn(val); } };
   let tl = null;
-  const RAIL_A = 74, RAIL_B = 240;
-  const NARROW = matchMedia('(max-width: 767px)');
+  // the rail comes in only once the drawing is whole paper under its veil, never while the photo is still being erased
+  const RAIL_A = 80, RAIL_B = 240;
   let past = false;
-  const META_END = 226;
 
   function paint() {
     const p = tl ? tl.time() : 0;
@@ -151,22 +143,23 @@
     put('tags', S.tags.toFixed(3), (v) => { tags.style.opacity = v; });
     put('chs', S.chs.toFixed(3), (v) => { chScrim.style.opacity = v; });
     put('paper', S.paper.toFixed(3), (v) => chaptersEl.style.setProperty('--paper', v));
+    put('fade', S.fade.toFixed(3), (v) => { stFade.style.opacity = v; });
+    put('pv', (1 - S.yard).toFixed(3), (v) => veil.style.setProperty('--pv', v));
     [S.c0, S.c1, S.c2].forEach((c, i) => put(`c${i}`, c.toFixed(3), (v) => {
       chapters[i].style.setProperty('--show', v);
       chapters[i].classList.toggle('is-shown', +v > 0.001);
     }));
     draw(false);
-    // the photo shows at the start, until it is half erased, and again at the very end
+    // the photo shows at the start, until it is half erased, and again at the very end; the yard is a photo too, so
+    // the rail takes its dark dress halfway through the paper becoming the yard, and keeps it to the end
     const photo = S.photo > 0.5 && S.wipe < 50;
-    put('tone', photo || S.chs > 0.5 || S.frame > 150 ? 'dark' : 'light', (v) => { stage.dataset.tone = v; });
+    put('tone', photo || S.yard > 0.5 || S.chs > 0.5 || S.frame > 150 ? 'dark' : 'light', (v) => { stage.dataset.tone = v; theme(v === 'dark' ? 'night' : 'paper'); });
     put('rail', Math.max(0, Math.min(1, (p - RAIL_A) / (RAIL_B - 8 - RAIL_A))).toFixed(3), (v) => rail.style.setProperty('--rail', v));
     put('ch', p < RAIL_A || p > RAIL_B ? '' : p < 129 ? 'table' : p < 182 ? 'factory' : 'install', (ch) => {
       railItems.forEach((li) => li.classList.toggle('on', li.dataset.ch === ch));
       rail.classList.toggle('show', !!ch);
+      veil.classList.toggle('show', !!ch);
     });
-    // on a phone the hero's words scroll up through the pause button's place, so it steps aside until they are gone
-    // and on every screen it steps aside before the moments' sheet rises over the story's last screen
-    put('meta', (NARROW.matches && p > 4 && S.copy > 0.05) || p > META_END ? '0' : '1', (v) => { meta.style.opacity = v; meta.style.visibility = +v ? '' : 'hidden'; });
   }
 
   function build() {
@@ -195,111 +188,23 @@
     tl.to(S, { frame: N - 1, duration: 51 }, 182);
     tl.to(S, { c2: 1, duration: 6, ease: 'power2.out' }, 184).to(S, { c2: 0, duration: 5, ease: 'power2.in' }, 223);
     tl.to(S, { chs: 0, duration: 10 }, 228);
-    // 6 · and the render gives way to the real photo it was matched to: the stools, the plants, the fire
+    // 6 · and the render gives way to the real photo it was matched to: the stools, the plants, the fire;
+    // its foot melts into the night, where the evenings begin
     tl.to(S, { photo: 1, duration: 11, ease: 'power1.inOut' }, 233);
+    tl.to(S, { fade: 1, duration: 10 }, 238);
     tl.set({}, {}, 248);
-    ScrollTrigger.create({ trigger: pinZone, start: 'top top', end: 'bottom bottom', scrub: 0.6, animation: tl });
+    ScrollTrigger.create({ trigger: pinZone, start: 'top top', end: 'bottom bottom', scrub: 0.8, animation: tl });
     ScrollTrigger.create({ trigger: pinZone, start: 'bottom top', onEnter: () => { past = true; paint(); }, onLeaveBack: () => { past = false; paint(); } });
   }
 
-  /* ---- the moments. Wide screens: the section rises over the story's last screen with the very same photo, so the
-     handoff is invisible; then the photo shrinks into its slot on the sheet (FLIP: the frame's own box
-     shrinks, the picture covers it), the grid's hairlines draw, and the evenings around the kitchen come in one by one, then the closing line.
-     Sheet layout: the same photo opens the section full screen, and the moments follow in two columns, no pin ---- */
-  const mSec = document.getElementById('moments');
-  const mPin = mSec && mSec.querySelector('.m-pin');
-  const mK = mSec && mSec.querySelector('.m-k');
-  const mSlot = mSec && mSec.querySelector('.m-slot');
-  const mGrid = mSec && mSec.querySelector('.m-grid');
-  const mLines = mSec && mSec.querySelector('.m-lines');
-  const mHead = mSec && mSec.querySelector('.m-head');
-  const mCells = mSec ? [...mSec.querySelectorAll('.m')] : [];
-  const mClose = mSec && mSec.querySelector('.m-close');
-  const SVGNS = 'http://www.w3.org/2000/svg';
-
-  function buildMoments(isSheet) {
-    if (!mSec) return () => {};
-    const kills = [];
-    mSec.classList.toggle('is-flow', isSheet);
-    // the section is on (the photo shows) once its top reaches the top of the screen
-    kills.push(ScrollTrigger.create({ trigger: mSec, start: 'top top', end: 'bottom top', onToggle: (st) => mSec.classList.toggle('is-on', st.isActive || st.progress >= 1) }));
-    if (isSheet) return () => kills.forEach((k) => k.kill());
-
-    const M = { u: 0 };
-    let G = null;
-    // measured in the pinned screen's own coordinates; the pin never moves inside its box, so once per refresh is enough
-    const measure = () => {
-      const pr = mPin.getBoundingClientRect();
-      const sr = mSlot.getBoundingClientRect();
-      const gr = mGrid.getBoundingClientRect();
-      G = { W: pr.width, H: pr.height, x: sr.left - pr.left, y: sr.top - pr.top, w: sr.width, h: sr.height };
-      // the sheet's hairlines: the edges and the gaps between the cells, drawn from the measured cells
-      const rects = mCells.map((c) => c.getBoundingClientRect());
-      const cols = [...new Set(rects.map((r) => Math.round(r.left)))].sort((a, b) => a - b);
-      const rows = [...new Set(rects.map((r) => Math.round(r.top)))].sort((a, b) => a - b);
-      const gx = gr.left, gy = gr.top, gw = gr.width, gh = gr.height;
-      const gap = parseFloat(getComputedStyle(mGrid).columnGap) || 0;
-      const xs = [0, gw];
-      const colW = rects[0].width;
-      cols.slice(0, -1).forEach((c) => xs.push(c - gx + colW + gap / 2));
-      // between the two middle columns there is the kitchen: its edges are the lines there
-      const ys = [0, gh];
-      rows.slice(1).forEach((r) => ys.push(r - gy - gap / 2));
-      const ext = Math.min(48, gx);
-      mLines.setAttribute('viewBox', `0 0 ${gw} ${gh}`);
-      mLines.setAttribute('width', gw);
-      mLines.setAttribute('height', gh);
-      mLines.textContent = '';
-      const line = (x1, y1, x2, y2) => {
-        const l = document.createElementNS(SVGNS, 'line');
-        Object.entries({ x1, y1, x2, y2, pathLength: 1 }).forEach(([k, v]) => l.setAttribute(k, typeof v === 'number' ? v.toFixed(1) : v));
-        mLines.appendChild(l);
-      };
-      [...new Set(ys.map((y) => Math.round(y)))].forEach((y) => line(gw + ext, y, -ext, y)); // from the start side (right)
-      [...new Set(xs.map((x) => Math.round(x)))].sort((a, b) => b - a).forEach((x) => line(x, -ext / 2, x, gh + ext / 2));
-      paintM();
-    };
-    const inOut = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
-    const lerp = (a, b, t) => a + (b - a) * t;
-    function paintM() {
-      if (!G) return;
-      const u = inOut(Math.max(0, Math.min(1, M.u)));
-      const x = lerp(0, G.x, u), y = lerp(0, G.y, u), w = lerp(G.W, G.w, u), h = lerp(G.H, G.h, u);
-      // the frame itself shrinks to the slot (not a clip over a full-screen box), so once it lands it is just the cell;
-      // the photo and its fire both cover the frame with the same crop, so they stay matched at every size
-      mK.style.inset = 'auto';
-      Object.assign(mK.style, { left: `${x.toFixed(1)}px`, top: `${y.toFixed(1)}px`, width: `${w.toFixed(1)}px`, height: `${h.toFixed(1)}px` });
-    }
-    const mt = gsap.timeline({ paused: true, defaults: { ease: 'none' } });
-    mt.to(M, { u: 1, duration: 0.38, onUpdate: paintM }, 0);
-    mt.fromTo(mHead, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.2, ease: 'power2.out' }, 0.18);
-    mt.fromTo(mLines, { '--draw': 0 }, { '--draw': 1, duration: 0.26, ease: 'power1.inOut' }, 0.22);
-    mCells.forEach((c, i) => {
-      const fig = c.querySelector('figure'), img = c.querySelector('img'), cap = c.querySelector('p');
-      const at = 0.38 + i * 0.065;
-      mt.fromTo(fig, { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.14, ease: 'power2.inOut' }, at);
-      mt.fromTo(img, { scale: 1.18 }, { scale: 1, duration: 0.2, ease: 'power2.out' }, at);
-      // autoAlpha: until its photo has landed, a caption is out of the page too, not only transparent
-      mt.fromTo(cap, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.1, ease: 'power2.out' }, at + 0.08);
-    });
-    mt.fromTo(mClose, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out' }, 0.82);
-    mt.set({}, {}, 1);
-    kills.push(ScrollTrigger.create({ trigger: mSec, start: 'top top', end: 'bottom bottom', scrub: 0.6, animation: mt, onRefresh: measure }));
-    measure();
-    return () => {
-      kills.forEach((k) => k.kill());
-      mt.revert();
-      mK.removeAttribute('style');
-      mLines.textContent = '';
-    };
-  }
-
   /* ---- BLUE FIRE: the name is cut out of the white page, the grill photo behind it. On the way in its outline
-     draws and the letters open; pinned, the camera flies through the I of FIRE until the photo fills the screen ---- */
+     draws and the letters open; pinned, the camera flies through the I of FIRE until the photo fills the screen,
+     and its foot melts into the night of the brand's page below ---- */
   const bfScene = document.querySelector('.bf-scene');
   const bfPin = bfScene && bfScene.querySelector('.bf-pin');
   const bfSvg = bfScene && bfScene.querySelector('.bf-cut');
   const bfImg = bfScene && bfScene.querySelector('img');
+  const bfFade = bfScene && bfScene.querySelector('.bf-fade');
 
   function buildGrill(isSheet) {
     if (!bfScene) return () => {};
@@ -378,6 +283,7 @@
       bfSvg.style.visibility = z > 0.995 ? 'hidden' : '';
       Z.go.setAttribute('opacity', Math.max(0, 1 - z / 0.3).toFixed(3));
       bfImg.style.transform = `scale(${(1.12 - 0.12 * z).toFixed(4)})`;
+      if (bfFade) bfFade.style.opacity = Math.max(0, (z - 0.7) / 0.3).toFixed(3);
     }
     const run = () => document.fonts.load('700 100px GS').then(layout, layout);
     // on the way in: the outline draws, then the letters open onto the photo
@@ -392,21 +298,18 @@
       kills.forEach((k) => k.kill());
       entry.kill(); zoom.kill();
       bfSvg.textContent = '';
-      [bfImg, bfSvg].forEach((el) => el && el.removeAttribute('style'));
+      [bfImg, bfSvg, bfFade].forEach((el) => el && el.removeAttribute('style'));
     };
   }
 
-  /* ---- the voices' wave plays from the start side as it crosses the screen; the plan plots line by line ---- */
+  /* ---- each evening drifts a little inside its own crop as it passes; the plan plots line by line ---- */
   function buildScrubs() {
     const kills = [];
-    const band = document.querySelector('.wave-band');
-    if (wave && band) {
-      const W = { p: 0 };
-      kills.push(ScrollTrigger.create({
-        trigger: band, start: 'top 85%', end: 'bottom 30%', scrub: 0.6,
-        animation: gsap.to(W, { p: 1, ease: 'none', paused: true, onUpdate: () => wave.style.setProperty('--p', W.p.toFixed(3)) }),
-      }));
-    }
+    const mImgs = [...document.querySelectorAll('.m-ph img')];
+    mImgs.forEach((img) => kills.push(ScrollTrigger.create({
+      trigger: img.closest('.m-ph'), start: 'top bottom', end: 'bottom top', scrub: 0.6,
+      animation: gsap.fromTo(img, { yPercent: -6 }, { yPercent: 6, ease: 'none', paused: true }),
+    })));
     const plot = document.querySelector('.plot');
     if (plot) {
       const P = { plot: 0, dims: 0 };
@@ -419,7 +322,7 @@
     }
     return () => {
       kills.forEach((k) => k.kill());
-      if (wave) wave.style.removeProperty('--p');
+      if (mImgs.length) gsap.set(mImgs, { clearProps: 'transform' });
       if (plot) { plot.style.removeProperty('--plot'); plot.style.removeProperty('--dims'); }
     };
   }
@@ -427,12 +330,11 @@
   function goLive(isSheet) {
     live = true;
     root.classList.add('is-live');
-    // the chapters ride on the film: moved into the stage, over the canvas and under the caption
-    stage.insertBefore(chaptersEl, meta);
+    // the chapters ride on the film: moved into the stage, over the canvas and under the rail's veil
+    stage.insertBefore(chaptersEl, veil);
     resize();
     build();
     paint();
-    const unM = buildMoments(isSheet);
     const unB = buildGrill(isSheet);
     const unS = buildScrubs();
     if (!loading) { loading = true; if (document.readyState === 'complete') loadFrames(); else addEventListener('load', loadFrames, { once: true }); }
@@ -441,18 +343,19 @@
     ScrollTrigger.refresh();
     return () => {
       live = false;
-      unM(); unB(); unS();
+      unB(); unS();
       ScrollTrigger.removeEventListener('refresh', onRefresh);
       root.classList.remove('is-live');
       story.appendChild(chaptersEl);
       Object.assign(S, S0);
       stage.style.removeProperty('--wipe');
       stage.removeAttribute('data-tone');
-      [heroCopy, hero, scrim, linesOver, dim, edge, tags, chScrim, chaptersEl, rail, meta, ...chapters].forEach((el) => el.removeAttribute('style'));
+      [heroCopy, hero, scrim, linesOver, dim, edge, tags, chScrim, chaptersEl, rail, stFade, veil, ...chapters].forEach((el) => el.removeAttribute('style'));
       chapters.forEach((c) => c.classList.remove('is-shown'));
       rail.classList.remove('show');
+      veil.classList.remove('show');
       railItems.forEach((li) => li.classList.remove('on'));
-      mSec && mSec.classList.remove('is-flow', 'is-on');
+      theme('night');
       last.clear();
       past = false;
       tl = null;

@@ -1,11 +1,86 @@
-/* KFT · header, menu, in-page links, mobile action bar, reveals, motion pause and the lead form (proof: nothing is sent).
+/* KFT · the page's ground, the buttons' letters, header, menu, in-page links, mobile action bar, reveals and the lead
+   form (proof: nothing is sent).
    The same file runs on the small pages (thanks, 404, accessibility), so every part checks that its elements exist. */
 (() => {
   const root = document.documentElement;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const quiet = () => reduce.matches || root.classList.contains('a11y-still');
 
-  /* ---- header: clear over the hero photo, paper pill elsewhere, hides on the way down ---- */
+  /* ---- buttons: each letter in its own span, its twin drawn under it (css/site.css), so on hover the word rolls
+     over letter by letter. The button keeps its words as its name, and the letters are hidden from screen readers ---- */
+  const roll = (el, text) => {
+    el.setAttribute('aria-label', text);
+    const rb = document.createElement('span');
+    rb.className = 'rb';
+    rb.setAttribute('aria-hidden', 'true');
+    [...text].forEach((ch, i) => {
+      const c = document.createElement('span');
+      c.className = 'rc';
+      c.style.setProperty('--i', String(i));
+      c.textContent = ch;
+      rb.appendChild(c);
+    });
+    el.replaceChildren(rb);
+  };
+  document.querySelectorAll('.btn').forEach((b) => roll(b, b.textContent.trim()));
+
+  /* ---- the ground (as on Liav's own site): one fixed layer per colour behind the page. The section that crosses the
+     middle of the screen picks it, and the newest layer fades in over the last one. A beat later (FLIP) the header,
+     the phone bar and the sections near the screen take the ground's colours (t-* on the body, th-* on the sections),
+     so their words always match what is behind them. The story changes its own ground with the film (kft:theme) ---- */
+  const bg = document.getElementById('bg');
+  if (bg) {
+    const layers = [...bg.children];
+    const THEMES = layers.map((l) => l.dataset.t);
+    const STAGE = {};
+    layers.forEach((l) => { STAGE[l.dataset.t] = getComputedStyle(l).backgroundColor; });
+    const FLIP = reduce.matches ? 0 : 200;
+    let secs = [], cur = 'night', shown = 'night', z = 1, timer = 0, queued = false;
+    const query = () => { secs = [...document.querySelectorAll('[data-theme]')]; };
+    root.style.setProperty('--stage', STAGE[cur]);
+    const paintSec = (s, t) => {
+      if (s._t === t) return;
+      s._t = t;
+      THEMES.forEach((x) => s.classList.toggle(`th-${x}`, x === t));
+    };
+    const near = (r) => r.bottom > -innerHeight && r.top < innerHeight * 2;
+    const sync = (rects) => secs.forEach((s, i) => { if (near(rects[i])) paintSec(s, shown); });
+    const pick = () => {
+      queued = false;
+      if (!secs.length) return;
+      const rects = secs.map((s) => s.getBoundingClientRect()), mid = innerHeight / 2;
+      let t = cur;
+      for (let i = 0; i < secs.length; i++) {
+        if (rects[i].top <= mid && rects[i].bottom > mid) { t = secs[i].dataset.theme; break; }
+      }
+      if (rects[secs.length - 1].bottom <= mid) t = secs[secs.length - 1].dataset.theme;
+      if (t !== cur) {
+        cur = t;
+        layers.forEach((l) => {
+          const on = l.dataset.t === t;
+          if (on) l.style.zIndex = String(++z);
+          l.classList.toggle('on', on);
+        });
+        root.style.setProperty('--stage', STAGE[t]);
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          shown = cur;
+          THEMES.forEach((x) => document.body.classList.toggle(`t-${x}`, x === shown));
+          sync(secs.map((s) => s.getBoundingClientRect()));
+        }, FLIP);
+      }
+      sync(rects);
+    };
+    const ask = () => { if (!queued) { queued = true; requestAnimationFrame(pick); } };
+    query();
+    addEventListener('scroll', ask, { passive: true });
+    addEventListener('resize', () => { query(); ask(); });
+    addEventListener('load', ask);
+    document.addEventListener('kft:theme', () => { query(); ask(); });
+    pick();
+  }
+
+  /* ---- header: clear over the hero photo, the ground's own colour elsewhere, hides on the way down ---- */
   const hd = document.querySelector('.hd');
   const bar = document.querySelector('.bar');
   const overHero = !!document.querySelector('.hero');
@@ -118,16 +193,6 @@
     }
   });
 
-  /* ---- pause motion (the oven's flicker, the scroll cue, the reveals) ---- */
-  const pauseBtn = document.querySelector('.pause');
-  if (pauseBtn) pauseBtn.addEventListener('click', () => {
-    const paused = pauseBtn.getAttribute('aria-pressed') !== 'true';
-    pauseBtn.setAttribute('aria-pressed', String(paused));
-    pauseBtn.textContent = paused ? 'הפעלת התנועה' : 'עצירת התנועה';
-    root.classList.toggle('is-paused', paused);
-    document.dispatchEvent(new CustomEvent('kft:pause', { detail: { paused } }));
-  });
-
   /* ---- reveals, line first and then matter: a heading out of its line, a picture's frame and
      then the picture; 80-90ms stagger among siblings of the same kind ---- */
   const kinds = ['rv', 'rv-h', 'rv-img'];
@@ -163,29 +228,12 @@
   }, { rootMargin: '1200px 0px' });
   document.querySelectorAll('.rv-img').forEach((el) => near.observe(el));
 
-  /* ---- the clients' voice messages: until the recordings arrive, a press runs the message's own clock, so the
-     place shows how it will behave; the real file goes into an <audio> behind the same button ---- */
-  const clock = (t) => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
-  document.querySelectorAll('.v-play').forEach((b) => {
-    const time = b.parentElement.querySelector('.v-time');
-    const [m, sec] = time.textContent.split(':').map(Number);
-    const total = m * 60 + sec;
-    let t = 0, timer = null;
-    const stop = () => { clearInterval(timer); timer = null; b.setAttribute('aria-pressed', 'false'); time.textContent = clock(total); };
-    b.addEventListener('click', () => {
-      if (timer) { stop(); return; }
-      b.setAttribute('aria-pressed', 'true');
-      t = 0; time.textContent = clock(t);
-      timer = setInterval(() => { t += 1; time.textContent = clock(t); if (t >= total) stop(); }, 1000);
-    });
-  });
-
   /* ---- lead form: on success the first name goes to the thank-you page ---- */
   const form = document.getElementById('lead');
   if (!form) return;
   const submit = form.querySelector('[type="submit"]');
   const nameIn = form.elements.namedItem('name');
-  const label = submit.textContent;
+  const label = submit.getAttribute('aria-label') || submit.textContent.trim();
   const msg = {
     name: 'איך לקרוא לך?',
     telEmpty: 'לאיזה מספר לחזור אליך?',
@@ -231,18 +279,19 @@
       return;
     }
     submit.disabled = true;
-    submit.textContent = 'שולח...';
+    roll(submit, 'שולח...');
     // proof only: "?fail" in the address shows the failure state, otherwise the thank-you page
     setTimeout(() => {
       submit.disabled = false;
-      submit.textContent = label;
+      roll(submit, label);
       if (location.search.includes('fail')) {
         if (!fail) {
           fail = document.createElement('div');
           fail.className = 'form-fail';
           fail.setAttribute('role', 'alert');
-          fail.innerHTML = '<p>השליחה לא עברה. הפרטים שלך נשמרו כאן, אז אפשר לנסות שוב או לכתוב לנו בוואטסאפ.</p><div class="ctas"><button class="btn b3" type="submit">לנסות שוב</button><a class="btn b2 wa" rel="noopener">לכתוב בוואטסאפ</a></div>';
+          fail.innerHTML = '<p>השליחה לא עברה. הפרטים שלך נשמרו כאן, אז אפשר לנסות שוב או לכתוב לנו בוואטסאפ.</p><div class="ctas"><button class="btn" type="submit">לנסות שוב</button><a class="btn b2 wa" rel="noopener">לכתוב בוואטסאפ</a></div>';
           fail.querySelector('a').href = WA_FAIL;
+          fail.querySelectorAll('.btn').forEach((b) => roll(b, b.textContent.trim()));
           form.querySelector('.form-foot').before(fail);
         }
         return;
