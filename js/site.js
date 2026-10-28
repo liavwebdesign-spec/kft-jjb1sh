@@ -83,6 +83,26 @@
 
   /* ---- in-page links glide under the header (instant with reduced motion); from the keyboard the focus follows ---- */
   const hdSpace = () => (innerWidth < 768 ? 60 : 72) + 32;
+  // our own glide, not scroll-behavior smooth: the native one stalled for a beat over the pinned scenes on the phone and
+  // stopped short of the form (28.10.2026). The target is re-read every frame, so a pin that settles mid-way can't throw it off
+  let glideId = 0;
+  const glide = (t, toTop) => {
+    const dest = () => Math.min(document.scrollingElement.scrollHeight - innerHeight,
+      toTop ? 0 : Math.max(0, t.getBoundingClientRect().top + scrollY - hdSpace()));
+    if (quiet()) { scrollTo(0, dest()); return; }
+    const from = scrollY, dur = Math.min(1400, Math.max(600, Math.abs(dest() - from) * 0.12)), t0 = performance.now(), me = ++glideId;
+    const stop = () => { glideId++; };
+    addEventListener('wheel', stop, { once: true, passive: true });
+    addEventListener('touchstart', stop, { once: true, passive: true });
+    const step = (now) => {
+      if (me !== glideId) return;
+      const p = Math.min(1, (now - t0) / dur), e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      scrollTo(0, from + (dest() - from) * e);
+      if (p < 1) requestAnimationFrame(step);
+      else { removeEventListener('wheel', stop); removeEventListener('touchstart', stop); }
+    };
+    requestAnimationFrame(step);
+  };
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a[href^="#"]');
     if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -91,8 +111,7 @@
     const t = document.getElementById(id);
     if (!t) return;
     if (id === 'main') { t.focus({ preventScroll: true }); return; }
-    const top = id === 'top' ? 0 : Math.max(0, t.getBoundingClientRect().top + scrollY - hdSpace());
-    scrollTo({ top, behavior: quiet() ? 'auto' : 'smooth' });
+    glide(t, id === 'top');
     if (e.detail === 0) {
       if (!t.matches('a, button, input, [tabindex]')) t.setAttribute('tabindex', '-1');
       t.focus({ preventScroll: true });
@@ -222,7 +241,7 @@
           fail = document.createElement('div');
           fail.className = 'form-fail';
           fail.setAttribute('role', 'alert');
-          fail.innerHTML = '<p>משהו השתבש בשליחה. הפרטים שלך עדיין כאן: נסה שוב, או כתוב לנו בוואטסאפ ונחזור אליך משם.</p><div class="ctas"><button class="btn b3" type="submit">לנסות שוב</button><a class="btn b2 wa" rel="noopener">לכתוב בוואטסאפ</a></div>';
+          fail.innerHTML = '<p>השליחה לא עברה. הפרטים שלך נשמרו כאן, אז אפשר לנסות שוב או לכתוב לנו בוואטסאפ.</p><div class="ctas"><button class="btn b3" type="submit">לנסות שוב</button><a class="btn b2 wa" rel="noopener">לכתוב בוואטסאפ</a></div>';
           fail.querySelector('a').href = WA_FAIL;
           form.querySelector('.form-foot').before(fail);
         }
