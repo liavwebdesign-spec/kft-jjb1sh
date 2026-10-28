@@ -89,8 +89,8 @@ ul, ol { padding: 0; list-style: none; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 h1, h2, h3, h4 { font-weight: 400; line-height: var(--lh-h); text-wrap: balance; letter-spacing: -.01em; }
-h1, h2, h3, h4, .m-h, .c-line, .ft-top p, .g-row { font-family: 'BR', 'GS', 'Google Sans', system-ui, sans-serif; }
-/* בגודל קטן הברוטליסט פחות קריא: שמות הסניפים, עמודות הפוטר וחלונית הנגישות נשארים ב-Google Sans */
+h1, h2, .m-h, .c-line, .ft-top p, .g-row { font-family: 'BR', 'GS', 'Google Sans', system-ui, sans-serif; }
+/* בגודל קטן הברוטליסט פחות קריא: h3 ו-h4 (כמו בתורה, בפונט הגוף), חלונית הנגישות והמסמכים נשארים ב-Google Sans */
 .ft-h, .branches h3, .a11y-head h2, .doc h2 { font-family: 'GS', 'Google Sans', system-ui, sans-serif; }
 .ft-top p { text-wrap: balance; }
 p { text-wrap: pretty; }
