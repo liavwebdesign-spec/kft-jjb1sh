@@ -83,22 +83,36 @@
 
   /* ---- in-page links glide under the header (instant with reduced motion); from the keyboard the focus follows.
      Our own glide, not scroll-behavior smooth: the native one stalls over pinned scenes (sketch A, 28.10.2026).
-     The target is re-read every frame, so a pin that settles on the way can't throw it off ---- */
+     The target is re-read every frame, so a pin that settles on the way can't throw it off. On a first visit GSAP can
+     arrive after the glide has landed, and the pins and the evenings then make the page taller above the target: for a
+     few seconds after landing the target is kept under the header, until the visitor scrolls on his own ---- */
   const hdSpace = () => (innerWidth < 768 ? 60 : 72) + 32;
-  let glideId = 0;
+  let glideId = 0, endGlide = () => {};
+  const STOPS = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
   const glideTo = (dest) => {
+    endGlide();
     const max = () => document.scrollingElement.scrollHeight - innerHeight;
-    if (quiet()) { scrollTo(0, Math.min(max(), dest())); return; }
+    const at = () => Math.min(max(), dest());
+    if (quiet()) { scrollTo(0, at()); return; }
     const from = scrollY, dur = Math.min(1400, Math.max(600, Math.abs(dest() - from) * 0.12)), t0 = performance.now(), me = ++glideId;
-    const stop = () => { glideId++; };
-    addEventListener('wheel', stop, { once: true, passive: true });
-    addEventListener('touchstart', stop, { once: true, passive: true });
+    let ro = null, timer = 0;
+    const done = () => {
+      STOPS.forEach((k) => removeEventListener(k, done));
+      if (ro) ro.disconnect();
+      clearTimeout(timer);
+      if (me === glideId) glideId++;
+      if (endGlide === done) endGlide = () => {};
+    };
+    endGlide = done;
+    STOPS.forEach((k) => addEventListener(k, done, { passive: true }));
     const step = (now) => {
       if (me !== glideId) return;
       const p = Math.min(1, (now - t0) / dur), e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
-      scrollTo(0, from + (Math.min(max(), dest()) - from) * e);
-      if (p < 1) requestAnimationFrame(step);
-      else { removeEventListener('wheel', stop); removeEventListener('touchstart', stop); }
+      scrollTo(0, from + (at() - from) * e);
+      if (p < 1) { requestAnimationFrame(step); return; }
+      ro = new ResizeObserver(() => { if (me === glideId && Math.abs(at() - scrollY) > 1) scrollTo(0, at()); });
+      ro.observe(document.body);
+      timer = setTimeout(done, 4000);
     };
     requestAnimationFrame(step);
   };
