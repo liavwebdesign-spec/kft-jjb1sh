@@ -12,7 +12,7 @@
      away on the way down and back on the way up (headroom) ---- */
   const hd = document.querySelector('.hd');
   const bar = document.querySelector('.bar');
-  const frame = document.querySelector('.hero-frame');
+  const frame = document.querySelector('.hero');
   let lastY = scrollY, ticking = false, menuOpen = false, blocked = false, fieldFocus = false, wasSolid = null;
   const onScroll = () => {
     ticking = false;
@@ -124,17 +124,19 @@
     const t = document.getElementById(id);
     if (!t) return;
     if (id === 'main') { t.focus({ preventScroll: true }); return; }
-    glideTo(() => (id === 'top' ? 0 : Math.max(0, t.getBoundingClientRect().top + scrollY - hdSpace())));
+    // a pinned section moves inside its pin's spacer, so its place on the page is the spacer's
+    const box = t.parentElement && t.parentElement.classList.contains('pin-spacer') ? t.parentElement : t;
+    glideTo(() => (id === 'top' ? 0 : Math.max(0, box.getBoundingClientRect().top + scrollY - hdSpace())));
     if (e.detail === 0) {
       if (!t.matches('a, button, input, [tabindex]')) t.setAttribute('tabindex', '-1');
       t.focus({ preventScroll: true });
     }
   });
 
-  /* ---- reveals, only with motion: words rise, a heading rises out of its line, a picture opens out of a line of light,
-     the closer's line draws; an 80ms stagger among siblings of the same kind ---- */
-  const kinds = ['rv', 'rv-h', 'lit', 'closer-rule'];
-  const rv = [...document.querySelectorAll('.rv, .rv-h, .lit, .closer-rule')];
+  /* ---- reveals, only with motion: words rise, a heading rises out of its line, a picture is uncovered by a red panel;
+     an 80ms stagger among siblings of the same kind ---- */
+  const kinds = ['rv', 'rv-h', 'wipe'];
+  const rv = [...document.querySelectorAll('.rv, .rv-h, .wipe')];
   // a picture still clipped shut may never reach the browser's own lazy loading, so its frame asks for it ahead
   const near = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
@@ -143,17 +145,19 @@
       near.unobserve(e.target);
     });
   }, { rootMargin: '1200px 0px' });
-  document.querySelectorAll('.lit, .st-img, .ev-media').forEach((el) => near.observe(el));
+  document.querySelectorAll('.wipe, .story, .ev-media').forEach((el) => near.observe(el));
   if (rv.length && !quiet()) {
     rv.forEach((el) => {
       const k = kinds.find((c) => el.classList.contains(c));
       const sibs = [...el.parentElement.children].filter((c) => c.classList.contains(k));
       el.style.setProperty('--i', String(Math.min(sibs.indexOf(el), 5)));
     });
-    // a clipped element may not count as intersecting, so every reveal is watched through its parent
+    // a clipped heading may not count as intersecting, so it is watched through its parent; a picture is watched itself,
+    // so one that slides in from the side (the story's track) is uncovered only when it is really there
     const watch = new Map();
+    const pic = (t) => t.classList.contains('wipe');
     rv.forEach((el) => {
-      const t = el.classList.contains('rv') ? el : el.parentElement;
+      const t = el.classList.contains('rv') || pic(el) ? el : el.parentElement;
       if (!watch.has(t)) watch.set(t, []);
       watch.get(t).push(el);
     });
@@ -164,13 +168,12 @@
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         if (!e.isIntersecting) return;
+        if (pic(e.target) && e.intersectionRatio < Math.min(0.3, innerHeight * 0.3 / Math.max(1, e.boundingClientRect.height))) return;
         watch.get(e.target).forEach((el) => el.classList.add('is-in'));
         io.unobserve(e.target);
       });
-    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.06 });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: [0.06, 0.3] });
     watch.forEach((_, t) => io.observe(t));
-    // a picture's line of light leaves once it has opened the picture
-    document.addEventListener('animationend', (e) => { if (e.animationName === 'lit-line') e.target.classList.add('lit-done'); });
     // "stop animations" from the panel: everything shows at once
     document.addEventListener('a11y:still', (e) => { if (e.detail) rv.forEach((el) => el.classList.add('is-in')); });
   }

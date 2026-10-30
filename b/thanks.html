@@ -7,10 +7,9 @@
 <meta name="description" content="הפרטים שלך הגיעו ל-KFT מטבחי חוץ. נחזור אליך כדי להכיר אותך ואת הבית.">
 <!-- סקיצה B, מקומית ובקישור תצוגה סגור: לא לאינדוקס -->
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#0E0D0B">
+<meta name="theme-color" content="#1D1E1C">
 <link rel="icon" href="assets/kft-mark.svg" type="image/svg+xml">
-<link rel="preload" href="fonts/Bellefair-Regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/site.css?v=202610301434">
+<link rel="stylesheet" href="css/site.css?v=202610301756">
 </head>
 <body>
 <svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
@@ -20,7 +19,7 @@
 
 <header class="hd">
   <div class="hd-bar">
-    <a class="hd-logo" href="index.html" aria-label="KFT מטבחי חוץ, לעמוד הבית"><img src="assets/kft-mark-cream.svg" alt="" width="60" height="36"></a>
+    <a class="hd-logo" href="index.html" aria-label="KFT מטבחי חוץ, לעמוד הבית"><img src="assets/kft-mark-white.svg" alt="" width="60" height="36"></a>
     <nav class="hd-nav" aria-label="ראשי">
       <a href="index.html#projects">פרויקטים</a>
       <a href="index.html#grill">הגריל</a>
@@ -40,7 +39,7 @@
 
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="תפריט" hidden>
   <div class="menu-top">
-    <img src="assets/kft-mark-cream.svg" alt="" width="60" height="36">
+    <img src="assets/kft-mark-white.svg" alt="" width="60" height="36">
     <button class="menu-close" type="button">סגירה</button>
   </div>
   <nav class="menu-nav" aria-label="ראשי">
@@ -80,11 +79,13 @@
   <a class="fab fab-a11y" href="accessibility.html" aria-label="התאמות תצוגה"><svg aria-hidden="true" focusable="false"><use href="#i-a11y"/></svg></a>
 </div>
 
-<script src="js/site.js?v=202610301434" defer></script>
-<script src="js/a11y.js?v=202610301434" defer></script>
+<script src="js/site.js?v=202610301756" defer></script>
+<script src="js/a11y.js?v=202610301756" defer></script>
 <script>
   // the first name from the form; without it the title stays "תודה, הפרטים אצלנו."
   try { const n = sessionStorage.getItem('kft-name'); if (n) document.getElementById('thanks-h').textContent = `תודה ${n}, הפרטים אצלנו.`; } catch (e) { /* private mode */ }
 </script>
+<!-- the client comments tool from the CRM: does nothing unless the link carries ?review=<portal token> -->
+<script src="https://crm.liavmatzri.co.il/review.js" defer></script>
 </body>
 </html>
