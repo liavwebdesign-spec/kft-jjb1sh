@@ -17,7 +17,7 @@
 <link rel="preload" href="fonts/GoogleSans-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/GoogleSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="img/night_nofire-1280.webp" imagesrcset="img/night_nofire-1280.webp 1280w, img/night_nofire-1920.webp 1920w" imagesizes="100vw" fetchpriority="high">
-<link rel="stylesheet" href="css/site.css?v=202610301756">
+<link rel="stylesheet" href="css/site.css?v=202611011238">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -89,10 +89,10 @@
   <div class="pin-zone">
     <section class="hero" aria-labelledby="hero-h" data-axis="start" data-over-image>
       <div class="hero-in">
-        <h1 id="hero-h"><span class="ln">הערבים הכי טובים</span> <span class="ln">קורים בחוץ.</span></h1>
-        <p class="hero-sub">מטבחי חוץ לבית פרטי, לפנטהאוז ולדירת גן. מתכננים איתך, מייצרים במפעל שלנו ומתקינים אצלך.</p>
+        <h1 id="hero-h"><span class="ln">מטבחי חוץ,</span> <span class="ln">מהשרטוט ועד האש.</span></h1>
+        <p class="hero-sub">עסק משפחתי עם מפעל משלנו. מתכננים לחצר שלך, מייצרים אצלנו ומתקינים בעצמנו.</p>
         <div class="ctas">
-          <a class="btn" href="#contact">לקבוע פגישת תכנון</a>
+          <a class="btn cr" href="#contact">לקבוע פגישת תכנון</a>
           <a class="btn ghost wa" href="https://wa.me/?text=%D7%94%D7%99%D7%99%2C%20%D7%94%D7%92%D7%A2%D7%AA%D7%99%20%D7%9E%D7%94%D7%90%D7%AA%D7%A8%20%D7%95%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A9%D7%9E%D7%95%D7%A2%20%D7%A2%D7%9C%20%D7%9E%D7%98%D7%91%D7%97%20%D7%97%D7%95%D7%A5" rel="noopener">לכתוב בוואטסאפ</a>
         </div>
       </div>
@@ -111,10 +111,12 @@
       </div>
       <div class="ch-scrim" aria-hidden="true"></div>
       <div class="ph-hero">
-        <img src="img/night_nofire-1280.webp" srcset="img/night_nofire-1280.webp 1280w, img/night_nofire-1920.webp 1920w" sizes="100vw" alt="מטבח חוץ של KFT בשעת ערב: משטח אבן לאורך קיר, מדף מואר עם צמחים, גריל, טאבון דולק ושורת כיסאות בר" width="1920" height="1282" fetchpriority="high" decoding="async">
+        <img src="img/hero-1280.webp" srcset="img/hero-1280.webp 1280w, img/hero-1920.webp 1920w, img/hero-2560.webp 2560w" sizes="100vw" alt="מטבח חוץ של KFT באור אחר הצהריים: משטח אבן לאורך קיר, מדף עם צמחים, כיור, גריל נירוסטה, טאבון ושורת כיסאות בר" width="2560" height="1709" fetchpriority="high" decoding="async">
+        <!-- the same kitchen at night, the photo the story ends on; js/story.js loads it after the page -->
+        <img class="ph-night" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-srcset="img/night_nofire-1280.webp 1280w, img/night_nofire-1920.webp 1920w" sizes="100vw" alt="" width="1920" height="1282" decoding="async">
         <div class="fire" aria-hidden="true"><i></i></div>
-        <div class="lines-over" aria-hidden="true"></div>
         <div class="dim" aria-hidden="true"></div>
+        <div class="lines-over" aria-hidden="true"></div>
         <div class="scrim" aria-hidden="true"></div>
       </div>
       <div class="st-fade" aria-hidden="true"></div>
@@ -128,11 +130,19 @@
   </div>
 
   <div class="chapters">
+    <article class="chapter" data-ch="who" aria-labelledby="ch-who">
+      <div class="card">
+        <h2 id="ch-who">מי אנחנו</h2>
+        <p>הכל התחיל בפרנה שבחצר של סבתא, ובחגים שכל המשפחה עשתה סביבה. היום יש לנו מפעל, גן תצוגה בברכיה וסניף בהרצליה, ועדיין כל מטבח אנחנו מתכננים, מייצרים ומתקינים בעצמנו.</p>
+        <p><a class="lnk" href="soon.html">לסיפור שלנו</a></p>
+      </div>
+    </article>
+
     <article class="chapter" data-ch="table" aria-labelledby="ch-table">
       <div class="card">
         <h2 id="ch-table">התכנון</h2>
         <p>הכל מתחיל ליד שולחן אחד. אתה מספר למעצב איך נראה אצלך יום שישי, כמה אנשים מגיעים בחג ולאיזה צד שוקעת השמש, והוא משרטט. איפה יעמוד הגריל, איפה הטאבון, ואיפה יישבו כולם. אתה יוצא מהפגישה עם תוכנית ביד, וכבר רואה את הערב הראשון.</p>
-        <p class="note">הכי נכון להתחיל כשהבית עוד בבנייה. החצר פתוחה, וכל אפשרות עוד על השולחן.</p>
+        <p class="note">בונה או משפץ? כדאי לשבת איתנו מוקדם, כשכל אפשרות בחצר עוד פתוחה.</p>
       </div>
       <figure class="fb"><img src="frames/1280/flight_000.webp" alt="תוכנית של מטבח חוץ במבט מלמעלה: קיר עם משטח, גריל וטאבון, ואי מולו" width="1280" height="855" loading="lazy" decoding="async"></figure>
     </article>
@@ -157,30 +167,33 @@
 
 <!-- ===== הערבים: הסיפור נגמר על הצילום שנמס אל הלילה, וכאן הערבים עצמם, אחד אחרי השני, בלי מסגרות ===== -->
 <section class="moments" id="moments" aria-labelledby="moments-h" data-axis="start" data-theme="night">
-  <h2 id="moments-h" class="m-h rv-h">ואז מתחילים הערבים.</h2>
+  <div class="m-head">
+    <h2 id="moments-h" class="m-h rv-h">אחרי ההתקנה, מתחילים לחיות בחוץ.</h2>
+    <p class="m-lead rv">ארוחת שישי, חברים שנשארים עד מאוחר, הבן שחוזר מהבסיס, והחג עם כל המשפחה. ככה נראית שנה עם מטבח בחוץ.</p>
+  </div>
   <ul class="m-list">
     <li class="m m1">
-      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m1-800.webp" srcset="img/m1-800.webp 800w, img/m1-1600.webp 1600w" sizes="(max-width: 767px) 100vw, 56vw" alt="משפחה סביב שולחן ארוך בחוץ, באור של צהריים" width="1600" height="1067" loading="lazy" decoding="async"></div></div>
+      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m1-800.webp" srcset="img/m1-800.webp 800w, img/m1-1600.webp 1600w" sizes="(max-width: 767px) 100vw, 56vw" alt="משפחה עורכת שולחן ארוך במרפסת מקורה, מול הגינה והבריכה, באור של צהריים" width="1600" height="1067" loading="lazy" decoding="async"></div></div>
         <figcaption class="m-cap rv"><span class="when">שישי · 13:00</span>ארוחת שישי הראשונה בחוץ.</figcaption></figure>
     </li>
     <li class="m m2">
-      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m2-800.webp" srcset="img/m2-800.webp 800w, img/m2-1600.webp 1600w" sizes="(max-width: 767px) 84vw, 32vw" alt="חברים צוחקים סביב שולחן בלילה, מתחת לשרשרת נורות" width="1600" height="1068" loading="lazy" decoding="async"></div></div>
-        <figcaption class="m-cap rv"><span class="when">01:00</span>חברים שקפצו לשעה, ונשארו עד אחת בלילה.</figcaption></figure>
+      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m2-800.webp" srcset="img/m2-800.webp 800w, img/m2-1600.webp 1600w" sizes="(max-width: 767px) 84vw, 32vw" alt="חברים סביב שולחן במרפסת של בית, מתחת לשרשרת נורות, כשהערב יורד" width="1600" height="1067" loading="lazy" decoding="async"></div></div>
+        <figcaption class="m-cap rv"><span class="when">21:30</span>חברים שקפצו לשעה, ונשארו עד אחת בלילה.</figcaption></figure>
     </li>
     <li class="m m3">
-      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m3-800.webp" srcset="img/m3-800.webp 800w, img/m3-1600.webp 1600w" sizes="(max-width: 767px) 84vw, 32vw" alt="ילדים אוכלים כריכים סביב שולחן" width="1600" height="1067" loading="lazy" decoding="async"></div></div>
-        <figcaption class="m-cap rv"><span class="when">16:30</span>הילדים מביאים חברים מבית הספר, וכולם נשארים לאכול.</figcaption></figure>
+      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m3-800.webp" srcset="img/m3-800.webp 800w, img/m3-1600.webp 1600w" sizes="(max-width: 767px) 84vw, 32vw" alt="הילדים הגדולים וחברים שלהם מכניסים פיצה לטאבון בחצר" width="1600" height="1067" loading="lazy" decoding="async"></div></div>
+        <figcaption class="m-cap rv"><span class="when">שבת · 16:30</span>הילדים הגדולים מביאים חברים, ומישהו כבר מדליק את הטאבון.</figcaption></figure>
     </li>
     <li class="m m4">
-      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m4-800.webp" srcset="img/m4-800.webp 800w, img/m4-1600.webp 1600w" sizes="(max-width: 767px) 100vw, 48vw" alt="אמא מחבקת את הבן הבוגר שלה במטבח" width="1600" height="1067" loading="lazy" decoding="async"></div></div>
+      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m4-800.webp" srcset="img/m4-800.webp 800w, img/m4-1600.webp 1600w" sizes="(max-width: 767px) 100vw, 48vw" alt="אמא עורכת את השולחן בחצר בשקיעה, ואבא ליד הגריל" width="1600" height="1067" loading="lazy" decoding="async"></div></div>
         <figcaption class="m-cap rv"><span class="when">חמישי · 18:45</span>הבן חוזר מהבסיס, והגריל כבר דולק.</figcaption></figure>
     </li>
     <li class="m m5">
-      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m5-800.webp" srcset="img/m5-800.webp 800w, img/m5-1600.webp 1600w" sizes="(max-width: 767px) 100vw, 64vw" alt="שולחן חג ערוך, וידיים מרימות כוסות" width="1600" height="900" loading="lazy" decoding="async"></div></div>
+      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m5-800.webp" srcset="img/m5-800.webp 800w, img/m5-1600.webp 1600w" sizes="(max-width: 767px) 100vw, 64vw" alt="המשפחה מרימה כוסות סביב שולחן ערוך בגינה, מתחת לשרשרת נורות" width="1600" height="900" loading="lazy" decoding="async"></div></div>
         <figcaption class="m-cap rv"><span class="when">ערב חג</span>כל המשפחה סביב שולחן אחד.</figcaption></figure>
     </li>
     <li class="m m6">
-      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m6-800.webp" srcset="img/m6-800.webp 800w, img/m6-1600.webp 1600w" sizes="(max-width: 767px) 84vw, 24vw" alt="שולחן ריק בחצר בלילה, מתחת לשרשרת נורות דולקות" width="1600" height="1068" loading="lazy" decoding="async"></div></div>
+      <figure class="m-fig"><div class="m-ph rv-img"><div class="pic-in"><img src="img/m6-800.webp" srcset="img/m6-800.webp 800w, img/m6-1600.webp 1600w" sizes="(max-width: 767px) 84vw, 24vw" alt="מטבח חוץ בלילה: מדף מואר, כיור, תנור פיצה וגריל BLUE FIRE" width="1600" height="1067" loading="lazy" decoding="async"></div></div>
         <figcaption class="m-cap rv"><span class="when">23:30</span>וכשכולם הולכים, נשארת הפינה שלך.</figcaption></figure>
     </li>
   </ul>
@@ -196,7 +209,7 @@
 <!-- ===== פרויקטים נבחרים: פרויקט אחד עם טבלת השרטוט, ואחריו ארבעה נוספים ===== -->
 <section class="sec projects" id="projects" aria-labelledby="projects-h" data-axis="start" data-theme="paper">
   <div class="sec-head">
-    <h2 id="projects-h" class="rv-h">מטבחים שבנינו, מבאר שבע ועד חיפה.</h2>
+    <h2 id="projects-h" class="rv-h">פרויקטים נבחרים.</h2>
   </div>
 
   <article class="feature">
@@ -218,26 +231,26 @@
   <ul class="more">
     <li class="mc">
       <a href="soon.html" class="mc-link">
-        <div class="pic rv-img"><img src="img/old-img_9438-2.webp" alt="מטבח חוץ כהה על מרפסת מול הים" width="1000" height="667" loading="lazy" decoding="async"></div>
-        <h4>מרפסת מול הים</h4>
+        <div class="pic rv-img"><img src="img/proj-099-800.webp" srcset="img/proj-099-800.webp 800w, img/proj-099-1440.webp 1440w" sizes="(max-width:767px) 84vw, 24vw" alt="מטבח חוץ לבן לאורך קיר, עם תאורה חמה, גריל וטאבון, ומולו פינת אוכל ובריכה בשקיעה" width="1440" height="960" loading="lazy" decoding="async"></div>
+        <h4>ליד הבריכה, בשקיעה</h4>
       </a>
     </li>
     <li class="mc">
       <a href="soon.html" class="mc-link">
-        <div class="pic rv-img"><img src="img/old-img_0661.webp" alt="אי משיש לבן עם כיסאות בר ומקרר יין" width="1000" height="666" loading="lazy" decoding="async"></div>
-        <h4>אי בשיש לבן</h4>
+        <div class="pic rv-img"><img src="img/proj-122-800.webp" srcset="img/proj-122-800.webp 800w, img/proj-122-1440.webp 1440w" sizes="(max-width:767px) 84vw, 24vw" alt="מטבח חוץ על מרפסת גג: טאבון, מקרר יין וגריל נירוסטה, וקו הרקיע של העיר בשקיעה" width="1440" height="960" loading="lazy" decoding="async"></div>
+        <h4>מרפסת גג מול העיר</h4>
       </a>
     </li>
     <li class="mc">
       <a href="soon.html" class="mc-link">
-        <div class="pic rv-img"><img src="img/old-img_9207-4.webp" alt="מטבח חוץ בגינה עם דשא ועשבים גבוהים" width="1000" height="667" loading="lazy" decoding="async"></div>
-        <h4>בלב הגינה</h4>
+        <div class="pic rv-img"><img src="img/proj-124-800.webp" srcset="img/proj-124-800.webp 800w, img/proj-124-1440.webp 1440w" sizes="(max-width:767px) 84vw, 24vw" alt="אי ישיבה ארוך בחצר, עם כיור וכיסאות בר כתומים, בתאורת ערב" width="1440" height="960" loading="lazy" decoding="async"></div>
+        <h4>אי ישיבה בחצר</h4>
       </a>
     </li>
     <li class="mc">
       <a href="soon.html" class="mc-link">
-        <div class="pic rv-img"><img src="img/old-rsh09627.webp" alt="מטבח חוץ ליד בריכה בחצר מרוצפת" width="1000" height="666" loading="lazy" decoding="async"></div>
-        <h4>חצר מרוצפת, ליד הבריכה</h4>
+        <div class="pic rv-img"><img src="img/proj-098-800.webp" srcset="img/proj-098-800.webp 800w, img/proj-098-1440.webp 1440w" sizes="(max-width:767px) 84vw, 24vw" alt="מטבח חוץ בתוך מבנה טרוורטין: מקרר משקאות, טאבון, כיור וגריל נירוסטה, בין עצי זית בשעת ערב" width="1440" height="960" loading="lazy" decoding="async"></div>
+        <h4>בין עצי הזית</h4>
       </a>
     </li>
   </ul>
@@ -252,7 +265,7 @@
     <div class="bf-pin">
       <picture>
         <source media="(max-width: 1023px) and (orientation: portrait)" srcset="img/bf-p-900.webp" width="900" height="1600">
-        <img src="img/bf-1280.webp" srcset="img/bf-1280.webp 1280w, img/bf-1920.webp 1920w" sizes="100vw" alt="מטבח של KFT באור יום: גריל נירוסטה משולב במשטח אבן, טאבון לבן, מדף עם צמחים ושלושה כיסאות בר" width="1920" height="1081" loading="lazy" decoding="async">
+        <img src="img/bf-1280.webp" srcset="img/bf-1280.webp 1280w, img/bf-1920.webp 1920w" sizes="100vw" alt="מטבח של KFT באור יום: גריל נירוסטה משולב במשטח אבן, טאבון לבן, מדף עם צמחים ושלושה כיסאות בר" width="1920" height="1080" loading="lazy" decoding="async">
       </picture>
       <div class="bf-fade" aria-hidden="true"></div>
       <svg class="bf-cut" aria-hidden="true" focusable="false"></svg>
@@ -387,9 +400,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
-<script src="js/site.js?v=202610301756" defer></script>
-<script src="js/story.js?v=202610301756" defer></script>
-<script src="js/a11y.js?v=202610301756" defer></script>
+<script src="js/site.js?v=202611011238" defer></script>
+<script src="js/story.js?v=202611011238" defer></script>
+<script src="js/a11y.js?v=202611011238" defer></script>
 <!-- the client comments tool from the CRM: does nothing unless the link carries ?review=<portal token> -->
 <script src="https://crm.liavmatzri.co.il/review.js" defer></script>
 </body>

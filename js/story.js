@@ -1,7 +1,9 @@
 /* KFT · the story stage, BLUE FIRE, the evenings' drift and the architects' plan.
    One pinned stage and one master timeline on scroll (MV:g18), full screen all the way: the chapters ride on the film.
    The timeline runs 248 units over the .runway's 340vh of scroll (css/site.css), slow enough to watch each part.
-   At its end the photo melts into the night ground at its foot, and the evenings start on the same night below it.
+   It opens on the real kitchen in the afternoon, which pales into its own ink drawing (1.11.2026, Liat: the hard wipe
+   from the photo to the drawing needed another way); it ends on the same kitchen at night, melting into the night
+   ground at its foot, and the evenings start on the same night below it.
    The BLUE FIRE name is cut out of the white page, the camera flying through its I into the grill photo (MV:g156, 40vh).
    The story's own ground follows the film (white paper while the drawing shows, night over the photo and the dusk):
    it writes data-theme on the story and tells js/site.js, which turns the page's ground.
@@ -19,6 +21,7 @@
   const ctx = canvas.getContext('2d', { alpha: false });
   const heroCopy = $('.hero');
   const hero = $('.ph-hero');
+  const nightImg = $('.ph-night');
   const scrim = $('.scrim');
   const linesOver = $('.lines-over');
   const dim = $('.dim');
@@ -51,6 +54,8 @@
   let loading = false;
 
   function loadFrames() {
+    // the night photo the story ends on comes after the page, so it never competes with the day photo it opens on
+    if (nightImg && nightImg.dataset.srcset) { nightImg.srcset = nightImg.dataset.srcset; nightImg.removeAttribute('data-srcset'); }
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const tier = innerWidth >= 1024 && innerWidth * dpr > 1500 ? '1920' : '1280';
     const order = [];
@@ -120,7 +125,7 @@
   }
 
   /* ---- state, written by the timeline and painted in one place, and only what changed ---- */
-  const S0 = { frame: 0, lines: 0, dim: 0, wipe: 0, edge: 0, tags: 0, yard: 0, photo: 1, scrim: 1, copy: 1, c0: 0, c1: 0, c2: 0, paper: 0, chs: 0, fade: 0 };
+  const S0 = { frame: 0, lines: 0, dim: 0, wash: 0, wipe: 0, edge: 0, tags: 0, yard: 0, photo: 1, night: 0, scrim: 1, copy: 1, cw: 0, c0: 0, c1: 0, c2: 0, paper: 0, chs: 0, fade: 0 };
   const S = { ...S0 };
   const last = new Map();
   const put = (key, val, fn) => { if (last.get(key) !== val) { last.set(key, val); fn(val); } };
@@ -134,6 +139,9 @@
     put('wipe', S.wipe.toFixed(2), (v) => stage.style.setProperty('--wipe', `${v}%`));
     put('hero', S.wipe >= 99.9 || S.photo <= 0, (v) => { hero.style.visibility = v ? 'hidden' : ''; });
     put('photo', S.photo.toFixed(3), (v) => { hero.style.opacity = v; });
+    put('wash', S.wash.toFixed(3), (v) => hero.style.setProperty('--wash', v));
+    // the photo the story ends on is the same kitchen at night, its lights and its oven on
+    put('night', S.night > 0.5, (v) => hero.classList.toggle('is-night', v));
     put('scrim', S.scrim.toFixed(3), (v) => { scrim.style.opacity = v; });
     // once the whole story has scrolled away, the hero's words are back in the page, out of sight, as they are without motion
     put('copy', past ? '' : S.copy.toFixed(3), (v) => { heroCopy.style.opacity = v; heroCopy.style.visibility = v === '' || +v ? '' : 'hidden'; });
@@ -145,15 +153,14 @@
     put('paper', S.paper.toFixed(3), (v) => chaptersEl.style.setProperty('--paper', v));
     put('fade', S.fade.toFixed(3), (v) => { stFade.style.opacity = v; });
     put('pv', (1 - S.yard).toFixed(3), (v) => veil.style.setProperty('--pv', v));
-    [S.c0, S.c1, S.c2].forEach((c, i) => put(`c${i}`, c.toFixed(3), (v) => {
+    [S.cw, S.c0, S.c1, S.c2].forEach((c, i) => put(`c${i}`, c.toFixed(3), (v) => {
       chapters[i].style.setProperty('--show', v);
       chapters[i].classList.toggle('is-shown', +v > 0.001);
     }));
     draw(false);
-    // the photo shows at the start, until it is half erased, and again at the very end; the yard is a photo too, so
-    // the rail takes its dark dress halfway through the paper becoming the yard, and keeps it to the end
-    const photo = S.photo > 0.5 && S.wipe < 50;
-    put('tone', photo || S.yard > 0.5 || S.chs > 0.5 || S.frame > 150 ? 'dark' : 'light', (v) => { stage.dataset.tone = v; theme(v === 'dark' ? 'night' : 'paper'); });
+    // the day photo and the paper it turns into are light; the yard is a photo in the evening sun, so the rail takes
+    // its dark dress halfway through the paper becoming the yard, and keeps it to the night at the end
+    put('tone', S.yard > 0.5 || S.chs > 0.5 || S.frame > 150 ? 'dark' : 'light', (v) => { stage.dataset.tone = v; theme(v === 'dark' ? 'night' : 'paper'); });
     put('rail', Math.max(0, Math.min(1, (p - RAIL_A) / (RAIL_B - 8 - RAIL_A))).toFixed(3), (v) => rail.style.setProperty('--rail', v));
     put('ch', p < RAIL_A || p > RAIL_B ? '' : p < 129 ? 'table' : p < 182 ? 'factory' : 'install', (ch) => {
       railItems.forEach((li) => li.classList.toggle('on', li.dataset.ch === ch));
@@ -164,18 +171,22 @@
 
   function build() {
     tl = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: paint });
-    // 1 · the photo is traced: cream lines over the evening photo, which dims under them
-    tl.to(S, { lines: 1, dim: 0.38, duration: 23 }, 5);
-    // 2 · the photo is erased from the bottom up and leaves the drawing of the same kitchen, on white paper
-    tl.to(S, { wipe: 100, duration: 46, ease: 'power1.inOut' }, 31);
-    tl.to(S, { edge: 1, duration: 5 }, 31).to(S, { edge: 0, duration: 6 }, 71);
-    // the hero's words leave with the photo, before the rising edge reaches them, so they never sit on the paper
-    tl.to(S, { copy: 0, duration: 12 }, 49);
-    // the photo stays out of sight from here until the end, clean: no lines, no dimming, no hero scrim
-    tl.set(S, { photo: 0, wipe: 0, lines: 0, dim: 0, scrim: 0 }, 78);
+    // 1 · the hero's words leave first, and the photo is left alone on the screen
+    tl.to(S, { copy: 0, duration: 10 }, 6);
+    tl.to(S, { scrim: 0, duration: 14 }, 6);
+    // 2 · the photo pales towards the paper, as a print does in the light, and the drawing of the same kitchen comes
+    // up in ink over it, line on line; then the photo lets go and only the drawing is left, on white paper
+    tl.to(S, { wash: 1, dim: 0.55, duration: 24, ease: 'power1.inOut' }, 10);
+    tl.to(S, { lines: 1, duration: 18, ease: 'power1.inOut' }, 18);
+    tl.to(S, { photo: 0, duration: 18, ease: 'power1.inOut' }, 36);
+    // 3 · who we are, on the drawing of their own kitchen, before the work itself
+    tl.to(S, { paper: 1, duration: 6 }, 46);
+    tl.to(S, { cw: 1, duration: 6, ease: 'power2.out' }, 50).to(S, { cw: 0, duration: 5, ease: 'power2.in' }, 72);
+    // the photo stays out of sight from here until the end, clean, and the one that comes back is the night
+    tl.set(S, { lines: 0, dim: 0, wash: 0, scrim: 0, night: 1 }, 78);
     // 3 · the table: the camera rises until the drawing is a plan; the chapter rises out of its hairline beside it
     tl.to(S, { frame: YARD - 1, duration: 42, ease: 'power1.inOut' }, 74);
-    tl.to(S, { paper: 1, duration: 6 }, 78).to(S, { paper: 0, duration: 5 }, 121);
+    tl.to(S, { paper: 0, duration: 5 }, 121);
     tl.to(S, { c0: 1, duration: 6, ease: 'power2.out' }, 80).to(S, { c0: 0, duration: 5, ease: 'power2.in' }, 121);
     tl.to(S, { tags: 1, duration: 6 }, 104).to(S, { tags: 0, duration: 5 }, 121);
     // the paper becomes the yard: the same plan, chalked on the paving in the late afternoon sun
@@ -352,6 +363,7 @@
       stage.removeAttribute('data-tone');
       [heroCopy, hero, scrim, linesOver, dim, edge, tags, chScrim, chaptersEl, rail, stFade, veil, ...chapters].forEach((el) => el.removeAttribute('style'));
       chapters.forEach((c) => c.classList.remove('is-shown'));
+      hero.classList.remove('is-night');
       rail.classList.remove('show');
       veil.classList.remove('show');
       railItems.forEach((li) => li.classList.remove('on'));
