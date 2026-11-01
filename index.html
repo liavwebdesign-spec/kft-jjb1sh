@@ -17,7 +17,7 @@
 <link rel="preload" href="fonts/GoogleSans-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/GoogleSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="img/night_nofire-1280.webp" imagesrcset="img/night_nofire-1280.webp 1280w, img/night_nofire-1920.webp 1920w" imagesizes="100vw" fetchpriority="high">
-<link rel="stylesheet" href="css/site.css?v=202611011238">
+<link rel="stylesheet" href="css/site.css?v=202611011400">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -204,6 +204,42 @@
       <a class="btn" href="#contact">לקבוע פגישת תכנון</a>
     </div>
   </div>
+</section>
+
+<!-- ===== מהכיסא שלך: אותו מטבח מהשרטוט, דרך המודל הלבן והחומרים, ועד הערב הראשון, בגלילה; ובסוף הגולש בוחר את האבן בעצמו.
+     הכל נגזר מהדמיית המטבח הלילי מהמסמך הממותג של KFT (1.11.2026). js/yours.js ===== -->
+<section class="yours" id="yours" aria-labelledby="yours-h" data-axis="start" data-theme="night">
+  <div class="y-stage">
+    <canvas class="y-seq" aria-hidden="true"></canvas>
+    <div class="y-stones">
+      <img class="on" data-stone="green" src="img/stone-green-1280.webp" srcset="img/stone-green-1280.webp 1280w, img/stone-green-1920.webp 1920w" sizes="100vw" alt="מטבח חוץ בלילה מתחת לפרגולה: קיר אבן, ארונות בגוון נחושת, גריל שחור ומקרר יין, ושולחן אבן עם נרות מול נוף של עמק" width="1920" height="1068" loading="lazy" decoding="async">
+      <img data-stone="black" data-srcset="img/stone-black-1280.webp 1280w, img/stone-black-1920.webp 1920w" sizes="100vw" alt="" width="1920" height="1068" decoding="async">
+      <img data-stone="white" data-srcset="img/stone-white-1280.webp 1280w, img/stone-white-1920.webp 1920w" sizes="100vw" alt="" width="1920" height="1068" decoding="async">
+      <img data-stone="grey" data-srcset="img/stone-grey-1280.webp 1280w, img/stone-grey-1920.webp 1920w" sizes="100vw" alt="" width="1920" height="1068" decoding="async">
+    </div>
+    <div class="y-scrim" aria-hidden="true"></div>
+    <div class="y-copy">
+      <h2 id="yours-h" class="y-h">ככה זה נראה מהכיסא שלך.</h2>
+      <ol class="y-beats">
+        <li><span class="y-n">01</span><h3>השרטוט</h3><p>אתה מספר איך נראה אצלך ערב בחוץ, והמעצב משרטט את זה מולך, קו אחרי קו.</p></li>
+        <li><span class="y-n">02</span><h3>הצורה</h3><p>איפה הגריל, איפה הכיור, כמה יושבים סביב השולחן. כל דבר עומד איפה שבחרת.</p></li>
+        <li><span class="y-n">03</span><h3>החומרים</h3><p>האבן, גוון הארונות, הגריל והצמחייה. אתה בוחר, ואנחנו דואגים שהכל יתחבר.</p></li>
+        <li><span class="y-n">04</span><h3>הערב הראשון</h3><p>האורות נדלקים, השולחן ערוך, והמטבח שבחרת עומד אצלך בחצר.</p></li>
+      </ol>
+    </div>
+    <div class="y-pick" role="group" aria-labelledby="y-pick-h">
+      <p id="y-pick-h" class="y-pick-h">נסה בעצמך: איזו אבן?</p>
+      <div class="y-sw">
+        <button type="button" data-stone="green" aria-pressed="true"><i aria-hidden="true" style="background-image: url('img/sw-green.webp')"></i>שיש ירוק</button>
+        <button type="button" data-stone="black" aria-pressed="false"><i aria-hidden="true" style="background-image: url('img/sw-black.webp')"></i>שחור ועורק זהב</button>
+        <button type="button" data-stone="white" aria-pressed="false"><i aria-hidden="true" style="background-image: url('img/sw-white.webp')"></i>לבן ועורק אפור</button>
+        <button type="button" data-stone="grey" aria-pressed="false"><i aria-hidden="true" style="background-image: url('img/sw-grey.webp')"></i>אפור חם</button>
+      </div>
+      <p class="y-pick-note">את האבן עצמה בוחרים מול הדוגמאות, בפגישת התכנון.</p>
+      <p class="sr-only" aria-live="polite" data-said></p>
+    </div>
+  </div>
+  <div class="y-run" aria-hidden="true"></div>
 </section>
 
 <!-- ===== פרויקטים נבחרים: פרויקט אחד עם טבלת השרטוט, ואחריו ארבעה נוספים ===== -->
@@ -400,9 +436,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
-<script src="js/site.js?v=202611011238" defer></script>
-<script src="js/story.js?v=202611011238" defer></script>
-<script src="js/a11y.js?v=202611011238" defer></script>
+<script src="js/site.js?v=202611011400" defer></script>
+<script src="js/story.js?v=202611011400" defer></script>
+<script src="js/yours.js?v=202611011400" defer></script>
+<script src="js/a11y.js?v=202611011400" defer></script>
 <!-- the client comments tool from the CRM: does nothing unless the link carries ?review=<portal token> -->
 <script src="https://crm.liavmatzri.co.il/review.js" defer></script>
 </body>

@@ -448,6 +448,80 @@ html.a11y-still .btn .rc { transform: none !important; }
   .m-cap { font-size: var(--f-body); }
 }
 
+/* ===== from your chair: the same kitchen from the sketch, through the white model and the materials, to its first
+   evening, played by the scroll on one pinned stage (js/yours.js, live only with motion); at its end the reader picks
+   the stone himself. Without motion: the four steps as text, the night picture and the stones under it ===== */
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.yours { position: relative; }
+.y-stage { position: relative; display: grid; color: var(--cream); background: var(--night); }
+.y-seq, .y-run, .y-scrim { display: none; }
+.y-copy { order: -1; padding: var(--sec) var(--gut) var(--gap-l); display: grid; gap: var(--gap-l); }
+.y-h { font-size: var(--f-h1); line-height: var(--lh-h1); letter-spacing: -.02em; max-width: 12em; }
+.y-beats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap-m); }
+.y-beats li { display: grid; gap: 10px; align-content: start; }
+.y-n { font-size: var(--f-meta); font-variant-numeric: tabular-nums; letter-spacing: .08em; opacity: .7; }
+.y-beats h3 { font-size: var(--f-h3); font-weight: 500; line-height: 1.15; }
+.y-beats p { font-size: var(--f-text); line-height: 1.5; max-width: 26em; }
+.y-stones { position: relative; aspect-ratio: 1920 / 1068; overflow: hidden; background: #0F1218; }
+.y-stones img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--yfx, 50%) 50%; opacity: 0; transition: opacity .7s var(--ease); }
+.y-stones img.on { opacity: 1; }
+.y-pick { display: grid; gap: 18px; justify-items: start; padding: var(--gap-l) var(--gut) var(--sec); }
+.y-pick-h { font-size: var(--f-h3); font-weight: 500; }
+.y-sw { display: flex; flex-wrap: wrap; gap: 16px 24px; }
+.y-sw button {
+  display: grid; justify-items: center; gap: 10px; min-width: 76px; padding: 4px 2px; border: 0; background: none;
+  color: inherit; font: inherit; font-size: var(--f-meta); line-height: 1.2; cursor: pointer; opacity: .78; transition: opacity .3s var(--ease);
+}
+.y-sw button i {
+  display: block; width: 58px; height: 58px; border-radius: 50%; background: center / cover no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .28); outline: 1px solid transparent; outline-offset: 4px;
+  transition: outline-color .3s var(--ease), transform .4s var(--ease-out);
+}
+.y-sw button[aria-pressed="true"] { opacity: 1; }
+.y-sw button[aria-pressed="true"] i { outline: 2px solid var(--cream); }
+@media (hover: hover) and (pointer: fine) { .y-sw button:hover { opacity: 1; } .y-sw button:hover i { transform: scale(1.06); } }
+.y-sw button:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+.y-pick-note { font-size: var(--f-meta); opacity: .72; }
+@media (max-width: 1023px) { .y-beats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 767px) {
+  .y-beats { grid-template-columns: 1fr; } :root { --yfx: 40%; }
+  .y-sw { flex-wrap: nowrap; gap: 6px; justify-content: space-between; width: 100%; }
+  .y-sw button { min-width: 0; flex: 1 1 0; gap: 8px; }
+  .y-sw button i { width: 50px; height: 50px; }
+}
+
+/* live: the stage holds the screen while the run under it is scrolled; the copy and the stones ride over the film */
+.yours.y-live .y-stage { position: sticky; top: 0; height: 100svh; display: block; overflow: hidden; isolation: isolate; background: #FFFFFF; }
+.yours.y-live .y-run { display: block; height: 420vh; }
+.yours.y-live .y-seq { display: block; position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+.yours.y-live .y-stones { position: absolute; inset: 0; aspect-ratio: auto; z-index: 1; opacity: 0; background: none; }
+.yours.y-live .y-scrim { display: block; position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.y-scrim::before, .y-scrim::after { content: ""; position: absolute; inset: 0; transition: opacity .6s var(--ease); }
+.y-scrim::before { background: linear-gradient(to left, rgba(255, 255, 255, .9) 0%, rgba(255, 255, 255, .62) 30%, rgba(255, 255, 255, 0) 56%); }
+.y-scrim::after { background: linear-gradient(to left, rgba(10, 12, 16, .84) 0%, rgba(10, 12, 16, .58) 34%, rgba(10, 12, 16, 0) 60%); opacity: 0; }
+.y-stage[data-tone="dark"] .y-scrim::before { opacity: 0; }
+.y-stage[data-tone="dark"] .y-scrim::after { opacity: 1; }
+.yours.y-live .y-copy {
+  position: absolute; z-index: 3; inset-inline-start: var(--gut); top: calc(var(--hd-h) + 8vh); width: min(30em, 36vw);
+  padding: 0; display: grid; color: #16140F; transition: color .6s var(--ease);
+}
+.y-stage[data-tone="dark"] .y-copy { color: var(--cream); }
+.yours.y-live .y-copy > *, .yours.y-live .y-beats > li { grid-area: 1 / 1; }
+.yours.y-live .y-h { font-size: var(--f-h2); line-height: var(--lh-h); }
+.yours.y-live .y-beats { display: grid; grid-template-columns: none; }
+.yours.y-live .y-beats h3 { font-size: var(--f-h2); font-family: 'BR', 'GS', 'Google Sans', system-ui, sans-serif; font-weight: 400; line-height: var(--lh-h); letter-spacing: -.01em; }
+.yours.y-live .y-beats li { gap: 16px; }
+.yours.y-live .y-h, .yours.y-live .y-beats li { opacity: 0; visibility: hidden; }
+.yours.y-live .y-pick { position: absolute; z-index: 3; inset-inline-start: var(--gut); bottom: 9vh; padding: 0; opacity: 0; visibility: hidden; }
+@media (max-width: 767px), (max-width: 1023px) and (orientation: portrait) {
+  .y-scrim::before { background: linear-gradient(to top, rgba(255, 255, 255, .94) 0%, rgba(255, 255, 255, .7) 34%, rgba(255, 255, 255, 0) 62%); }
+  .y-scrim::after { background: linear-gradient(to top, rgba(10, 12, 16, .86) 0%, rgba(10, 12, 16, .5) 38%, rgba(10, 12, 16, 0) 66%); }
+  .yours.y-live .y-copy { top: auto; bottom: calc(9vh + env(safe-area-inset-bottom, 0px)); inset-inline-end: var(--gut); width: auto; }
+  .yours.y-live .y-pick { inset-inline-end: var(--gut); bottom: calc(84px + env(safe-area-inset-bottom, 0px)); gap: 14px; }
+  .yours.y-live .y-copy { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+  .yours.y-live .y-run { height: 360vh; }
+}
+
 /* ===== projects: one featured project with a drawing's title block, then four more as pictures to open ===== */
 .feature { margin-bottom: var(--sec); }
 .f-link { display: grid; grid-template-columns: 8fr 3fr; grid-template-rows: 1fr 1fr; gap: var(--gap-s); }
