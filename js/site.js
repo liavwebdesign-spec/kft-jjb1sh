@@ -1,5 +1,5 @@
-/* KFT · the page's ground, the buttons' letters, header, menu, in-page links, mobile action bar, reveals and the lead
-   form (proof: nothing is sent).
+/* KFT · the buttons' letters, what the fixed parts stand on, header, menu, in-page links, mobile action bar, reveals and
+   the lead form (proof: nothing is sent).
    The same file runs on the small pages (thanks, 404, accessibility), so every part checks that its elements exist. */
 (() => {
   const root = document.documentElement;
@@ -24,77 +24,41 @@
   };
   document.querySelectorAll('.btn').forEach((b) => roll(b, b.textContent.trim()));
 
-  /* ---- the ground (as on Liav's own site): one fixed layer per colour behind the page. The section that crosses the
-     middle of the screen picks it, and the newest layer fades in over the last one. A beat later (FLIP) the header,
-     the phone bar and the sections near the screen take the ground's colours (t-* on the body, th-* on the sections),
-     so their words always match what is behind them. The story changes its own ground with the film (kft:theme) ---- */
-  const bg = document.getElementById('bg');
-  if (bg) {
-    const layers = [...bg.children];
-    const THEMES = layers.map((l) => l.dataset.t);
-    const STAGE = {};
-    layers.forEach((l) => { STAGE[l.dataset.t] = getComputedStyle(l).backgroundColor; });
-    const FLIP = reduce.matches ? 0 : 200;
-    let secs = [], cur = 'night', shown = 'night', z = 1, timer = 0, queued = false;
-    const query = () => { secs = [...document.querySelectorAll('[data-theme]')]; };
-    root.style.setProperty('--stage', STAGE[cur]);
-    const paintSec = (s, t) => {
-      if (s._t === t) return;
-      s._t = t;
-      THEMES.forEach((x) => s.classList.toggle(`th-${x}`, x === t));
-    };
-    const near = (r) => r.bottom > -innerHeight && r.top < innerHeight * 2;
-    const sync = (rects) => secs.forEach((s, i) => { if (near(rects[i])) paintSec(s, shown); });
-    const pick = () => {
-      queued = false;
-      if (!secs.length) return;
-      const rects = secs.map((s) => s.getBoundingClientRect()), mid = innerHeight / 2;
-      let t = cur;
-      for (let i = 0; i < secs.length; i++) {
-        if (rects[i].top <= mid && rects[i].bottom > mid) { t = secs[i].dataset.theme; break; }
-      }
-      if (rects[secs.length - 1].bottom <= mid) t = secs[secs.length - 1].dataset.theme;
-      if (t !== cur) {
-        cur = t;
-        layers.forEach((l) => {
-          const on = l.dataset.t === t;
-          if (on) l.style.zIndex = String(++z);
-          l.classList.toggle('on', on);
-        });
-        root.style.setProperty('--stage', STAGE[t]);
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          shown = cur;
-          THEMES.forEach((x) => document.body.classList.toggle(`t-${x}`, x === shown));
-          sync(secs.map((s) => s.getBoundingClientRect()));
-        }, FLIP);
-      }
-      sync(rects);
-    };
-    const ask = () => { if (!queued) { queued = true; requestAnimationFrame(pick); } };
-    query();
-    addEventListener('scroll', ask, { passive: true });
-    addEventListener('resize', () => { query(); ask(); });
-    addEventListener('load', ask);
-    document.addEventListener('kft:theme', () => { query(); ask(); });
-    pick();
-  }
-
-  /* ---- header: clear over the hero photo, the ground's own colour elsewhere, hides on the way down ---- */
+  /* ---- the ground: every section paints its own, black or white, and where two meet the line is hard. The header, the
+     phone bar and the accessibility button have no ground of their own: each takes its colours from the section under
+     its own line (data-ground), at once. The process and "from your chair" change theirs with the film (kft:theme) ---- */
   const hd = document.querySelector('.hd');
   const bar = document.querySelector('.bar');
-  const overHero = !!document.querySelector('.hero');
-  let lastY = scrollY, ticking = false, menuOpen = false, blocked = false, fieldFocus = false, wasClear = null;
+  const fabs = document.querySelector('.fabs');
+  const heroEl = document.querySelector('.hero');
+  const secs = [...document.querySelectorAll('[data-theme]')];
+  const groundAt = (y) => {
+    let t = '';
+    // the last match is the innermost, a section inside a section comes later in the page
+    secs.forEach((s) => { const r = s.getBoundingClientRect(); if (r.top <= y && r.bottom > y) t = s.dataset.theme; });
+    return t;
+  };
+  const readers = [[hd, () => 36], [bar, () => innerHeight - 30], [fabs, () => innerHeight - 38]].filter((r) => r[0]);
+  const paintGrounds = () => {
+    if (!secs.length) return;
+    readers.forEach(([el, y]) => {
+      const t = groundAt(y());
+      if (t && el.dataset.ground !== t) el.dataset.ground = t;
+    });
+  };
+  document.addEventListener('kft:theme', paintGrounds);
+
+  /* ---- header: lighter over the hero's film, its glass everywhere else, hides on the way down ---- */
+  let lastY = scrollY, ticking = false, menuOpen = false, blocked = false, fieldFocus = false, wasOver = null;
   const onScroll = () => {
     ticking = false;
     const y = scrollY, vh = innerHeight;
-    // clear only while the hero's text is still far below it: the title never passes under a clear header
-    const clear = overHero && y < vh * 0.25;
-    if (hd && clear !== wasClear) {
-      hd.dataset.tone = clear ? 'clear' : 'paper';
-      hd.toggleAttribute('data-over-image', clear);
-      wasClear = clear;
+    const over = !!heroEl && heroEl.getBoundingClientRect().bottom > 72;
+    if (hd && over !== wasOver) {
+      hd.toggleAttribute('data-over-image', over);
+      wasOver = over;
     }
+    paintGrounds();
     const down = y > lastY + 2, up = y < lastY - 2;
     if (hd) {
       if (y < 160 || up) hd.classList.remove('is-hidden');
@@ -105,6 +69,7 @@
   };
   addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
   addEventListener('resize', onScroll);
+  addEventListener('load', onScroll);
   if (hd) hd.addEventListener('focusin', () => hd.classList.remove('is-hidden'));
 
   /* ---- phone action bar: it steps aside while the form, the footer or a button for the same action is on screen, and
@@ -128,32 +93,97 @@
   }
   onScroll();
 
-  /* ---- full-screen menu ---- */
+  /* ---- the header's links: a pill slides under the link you point at and rests on the section you are in. It is a
+     second, inverted copy of all the labels, and a clip opens only the part over that link, so only the letters inside
+     the pill invert (MV:b55). offsetLeft is physical, so it reads the same right to left. Plain transitions: the small
+     pages have no GSAP ---- */
+  const nav = hd && hd.querySelector('.hd-nav');
+  if (nav) {
+    const links = [...nav.querySelectorAll('a')];
+    const pill = document.createElement('span');
+    pill.className = 'hd-ind';
+    pill.setAttribute('aria-hidden', 'true');
+    const copies = links.map((a) => { const s = document.createElement('span'); s.textContent = a.textContent; pill.appendChild(s); return s; });
+    nav.appendChild(pill);
+    let active = null, shown = null;
+    const fit = () => links.forEach((a, i) => {
+      const s = copies[i].style;
+      s.left = `${a.offsetLeft}px`; s.top = `${a.offsetTop}px`; s.width = `${a.offsetWidth}px`; s.height = `${a.offsetHeight}px`;
+    });
+    const put = (a) => {
+      const from = shown;
+      shown = a;
+      if (!a) { pill.style.opacity = '0'; return; }
+      // out of nothing it appears in place, it only slides from another link
+      if (!from) pill.style.transition = 'none';
+      const end = nav.clientWidth - a.offsetLeft - a.offsetWidth, foot = nav.clientHeight - a.offsetTop - a.offsetHeight;
+      pill.style.clipPath = `inset(${a.offsetTop}px ${end}px ${foot}px ${a.offsetLeft}px round 999px)`;
+      if (!from) { void pill.offsetWidth; pill.style.transition = ''; }
+      pill.style.opacity = '1';
+    };
+    const rest = () => put(active);
+    links.forEach((a) => {
+      a.addEventListener('mouseenter', () => put(a));
+      a.addEventListener('focus', () => put(a));
+    });
+    nav.addEventListener('mouseleave', rest);
+    nav.addEventListener('focusout', () => setTimeout(() => { if (!nav.contains(document.activeElement)) rest(); }, 0));
+    const remeasure = () => { fit(); if (shown) { const a = shown; shown = null; put(a); } };
+    addEventListener('resize', remeasure);
+    remeasure();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(remeasure);
+    // the section crossing the middle of the screen is the one you are in
+    const marks = links.map((a) => {
+      const id = (a.getAttribute('href') || '').split('#')[1];
+      return [id && a.pathname === location.pathname ? document.getElementById(id) : null, a];
+    }).filter((m) => m[0]);
+    if (marks.length) {
+      const io = new IntersectionObserver((es) => {
+        es.forEach((e) => {
+          const m = marks.find((x) => x[0] === e.target);
+          if (e.isIntersecting) { active = m[1]; m[1].setAttribute('aria-current', 'true'); }
+          else { m[1].removeAttribute('aria-current'); if (active === m[1]) active = null; }
+        });
+        if (!nav.matches(':hover') && !nav.contains(document.activeElement)) rest();
+      }, { rootMargin: '-50% 0px -50% 0px' });
+      marks.forEach((m) => io.observe(m[0]));
+    }
+  }
+
+  /* ---- the menu under 1024: the capsule opens in place into its own card (MV:hd8). Escape, a link, a click outside or
+     tabbing past its end all close it; from the keyboard the focus goes in with it ---- */
   const menu = document.getElementById('menu');
   const openBtn = document.querySelector('.hd-menu');
-  if (menu && openBtn) {
-    const closeBtn = menu.querySelector('.menu-close');
-    const setMenu = (open) => {
+  if (menu && openBtn && hd) {
+    const label = openBtn.querySelector('span');
+    const inMenu = [...menu.querySelectorAll('a')];
+    menu.querySelectorAll('.menu-nav a').forEach((a, i) => a.style.setProperty('--i', i));
+    const setMenu = (open, keyboard) => {
       menuOpen = open;
-      menu.hidden = !open;
+      hd.classList.toggle('menu-open', open);
       openBtn.setAttribute('aria-expanded', String(open));
+      label.textContent = open ? 'סגירה' : 'תפריט';
+      menu.inert = !open;
       root.classList.toggle('lock', open);
-      (open ? closeBtn : openBtn).focus();
+      if (open && keyboard) setTimeout(() => inMenu[0].focus({ preventScroll: true }), 120);
       onScroll();
     };
-    openBtn.addEventListener('click', () => setMenu(true));
-    closeBtn.addEventListener('click', () => setMenu(false));
+    setMenu(false);
+    openBtn.addEventListener('click', (e) => setMenu(!menuOpen, e.detail === 0));
     menu.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
-    addEventListener('keydown', (e) => {
-      if (!menuOpen) return;
-      if (e.key === 'Escape') setMenu(false);
-      if (e.key === 'Tab') {
-        const f = [...menu.querySelectorAll('a, button')];
-        const first = f[0], end = f[f.length - 1];
-        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); end.focus(); }
-        else if (!e.shiftKey && document.activeElement === end) { e.preventDefault(); first.focus(); }
-      }
+    document.addEventListener('click', (e) => { if (menuOpen && !hd.contains(e.target)) setMenu(false); });
+    hd.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menuOpen) { setMenu(false); openBtn.focus(); }
     });
+    let tabbing = false;
+    hd.addEventListener('keydown', (e) => { if (e.key === 'Tab') { tabbing = true; setTimeout(() => { tabbing = false; }, 0); } });
+    hd.addEventListener('focusout', (e) => {
+      if (!menuOpen) return;
+      const to = e.relatedTarget;
+      if (to ? !hd.contains(to) : tabbing) setMenu(false);
+    });
+    // a tablet turned on its side has the links in the bar and no menu to leave open
+    matchMedia('(min-width: 1024px)').addEventListener('change', (e) => { if (e.matches && menuOpen) setMenu(false); });
   }
 
   /* ---- in-page links glide under the header (instant with reduced motion); from the keyboard the focus follows ---- */

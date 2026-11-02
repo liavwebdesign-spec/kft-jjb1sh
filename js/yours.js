@@ -121,7 +121,7 @@
   }
 
   /* ---- state, written by the timeline and painted in one place ---- */
-  const S0 = { frame: 0, h: 0, b0: 0, b1: 0, b2: 0, b3: 0, stones: 0, pick: 0 };
+  const S0 = { frame: 0, h: 1, b0: 0, b1: 0, b2: 0, b3: 0, stones: 0, pick: 0 };
   const S = { ...S0 };
   const last = new Map();
   const put = (key, val, fn) => { if (last.get(key) !== val) { last.set(key, val); fn(val); } };
@@ -138,12 +138,15 @@
     put('pick', S.pick.toFixed(3), (v) => show(pickEl, +v));
     // the drawing and the white model are paper; from the stone on, the picture is dark enough for light words
     put('tone', S.frame < COLOUR ? 'light' : 'dark', (v) => { stage.dataset.tone = v; theme(v === 'dark' ? 'night' : 'paper'); });
+    // the paper in the frames is warm and the page is pure white (Liav, 2.11.2026: "צבע רקע לבן מלא"), so the sketch and the white model are neutral until the stone comes
+    put('paper', Math.max(0, Math.min(1, (COLOUR - S.frame) / 14)).toFixed(3), (v) => { canvas.style.filter = +v > 0 ? `grayscale(${v}) brightness(${(1 + 0.05 * v).toFixed(3)})` : ''; });
     draw(false);
   }
   function build() {
     tl = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: paint });
     const beat = (k, a, b) => tl.to(S, { [k]: 1, duration: 4, ease: 'power2.out' }, a).to(S, { [k]: 0, duration: 3, ease: 'power2.in' }, b);
-    beat('h', 0, 10);
+    // the title is already there while the stage rises into view
+    tl.to(S, { h: 0, duration: 2.5, ease: 'power2.in' }, 9.5);
     // 01 · the sketch, line by line, and the model rises out of it
     beat('b0', 12, 28);
     tl.to(S, { frame: 30, duration: 16, ease: 'power1.inOut' }, 14);
@@ -180,7 +183,7 @@
       sec.classList.remove('y-live');
       Object.assign(S, S0);
       stage.removeAttribute('data-tone');
-      [head, pickEl, stonesEl, ...beats].forEach((el) => el.removeAttribute('style'));
+      [head, pickEl, stonesEl, canvas, ...beats].forEach((el) => el.removeAttribute('style'));
       theme('night');
       last.clear();
       tl = null;
