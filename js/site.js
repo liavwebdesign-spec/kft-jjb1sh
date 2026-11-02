@@ -256,7 +256,30 @@
       near.unobserve(e.target);
     });
   }, { rootMargin: '1200px 0px' });
-  document.querySelectorAll('.rv-img').forEach((el) => near.observe(el));
+  document.querySelectorAll('.rv-img, .more').forEach((el) => near.observe(el));
+
+  /* ---- more projects: a row to swipe, and two arrows that move it one picture at a time. The page reads right to
+     left, so "next" is to the left and scrollLeft runs negative ---- */
+  const more = document.querySelector('.more');
+  const moreNav = document.querySelector('.more-nav');
+  if (more && moreNav) {
+    const [back, next] = moreNav.children;
+    const sync = () => {
+      const max = more.scrollWidth - more.clientWidth, at = Math.abs(more.scrollLeft);
+      moreNav.hidden = max < 2;
+      back.setAttribute('aria-disabled', at < 2);
+      next.setAttribute('aria-disabled', at > max - 2);
+    };
+    const step = (dir) => {
+      const [a, b] = more.children;
+      more.scrollBy({ left: dir * Math.abs(a.offsetLeft - b.offsetLeft), behavior: quiet() ? 'auto' : 'smooth' });
+    };
+    back.addEventListener('click', () => step(1));
+    next.addEventListener('click', () => step(-1));
+    more.addEventListener('scroll', sync, { passive: true });
+    addEventListener('resize', sync);
+    sync();
+  }
 
   /* ---- lead form: on success the first name goes to the thank-you page ---- */
   const form = document.getElementById('lead');

@@ -6,7 +6,9 @@
    the oven, the shelf, the fridge), the sun going down and the lights coming on. Each part gets a tag where it lands
    (frames/build-tags.json, the same camera projected in Blender) and a tick in the list of what already stands.
    The last frame sits on the real photo (img/night_nofire), which takes over and drifts; there the reader picks the
-   hour and lights the oven. The four chapters in the rail jump to their place in the scroll.
+   hour and lights the oven. In the corner a small plan of the kitchen draws itself along the way, and the four chapters
+   under it jump to their place in the scroll. At the end the photo closes into a window behind one line across the screen,
+   their other kitchens flip by in it, and the line stays with the button to book the meeting.
    The hour and the fire work in both versions; without GSAP, with reduced motion or with "stop animations" on,
    the section stays static: four chapters with a picture each, and the photo with the hour under them. */
 (() => {
@@ -22,6 +24,7 @@
   const ph = $('.p-ph');
   const shots = $$('.p-ph img[data-time]');
   const flame = $('.p-flame');
+  const flips = $$('.p-flip img');
   const timeBtns = $$('.p-times button');
   const fireBtn = $('.p-fire');
   const said = $('[data-said]');
@@ -31,7 +34,7 @@
   const loadPhotos = () => {
     if (photosLoaded) return;
     photosLoaded = true;
-    [...shots, flame].forEach((img) => { if (img.dataset.srcset) { img.srcset = img.dataset.srcset; img.removeAttribute('data-srcset'); } });
+    [...shots, flame, ...flips].forEach((img) => { if (img.dataset.srcset) { img.srcset = img.dataset.srcset; img.removeAttribute('data-srcset'); } });
   };
   let hour = 'night';
   let lit = false;
@@ -70,8 +73,13 @@
   const tod = $('.p-tod');
   const rail = $('.p-rail');
   const chBtns = $$('.p-rail button');
+  const plan = $('.p-plan');
+  const pen = $('.p-pen');
+  const lines = $$('.p-plan path').map((el) => { const [a, b] = el.dataset.at.split(' ').map(Number); return { el, a, b, len: 0, last: '' }; });
   const tagsEl = $('.p-tags');
   const turn = $('.p-turn');
+  const turnW = $('.p-tw');
+  const go = $('.p-go');
   const FLIGHT = 60;
   const BUILD = 240;
   const N = FLIGHT + BUILD;
@@ -80,9 +88,11 @@
   const LAND = { shell: 41, wall: 80, fronts: 108, tops: 129, sink: 143, grill: 160, oven: 172, shelf: 189, fridge: 196, light: 205 };
   const TAGS = [['shell', 'ארונות'], ['wall', 'קיר אבן'], ['fronts', 'חזיתות'], ['tops', 'שיש'], ['sink', 'כיור'],
     ['grill', 'גריל', 'dn'], ['oven', 'טאבון'], ['shelf', 'מדף'], ['fridge', 'מקרר']];
-  // where each chapter starts on the timeline (0-100), for the rail and its jumps; 100-122 is the way out, the photo closing
+  // where each chapter starts on the timeline (0-100), for its jump; 100-146 is the way out: the photo closes, the kitchens flip, the line and the button hold
   const CH = [0, 22, 37, 75];
-  const TOTAL = 122;
+  const TOTAL = 146;
+  // the last line of the plan is done when the lights come on in the film; then the oven turns red
+  const LIT_AT = 79;
   // after the sun has gone, the picture is dark enough for light words
   const DARK_AT = 185;
   const theme = (t) => { if (sec.dataset.theme !== t) { sec.dataset.theme = t; document.dispatchEvent(new Event('kft:theme')); } };
@@ -206,7 +216,7 @@
 
   /* ---- state, written by the timeline and painted in one place ---- */
   // the title is already there and the sketch already started while the stage rises into view, so the page never shows an empty white screen
-  const S0 = { g: 0, sketch: 0, pre: 0, x: 0, h: 1, b0: 0, b1: 0, b2: 0, b3: 0, build: 0, photo: 0, drift: 0, pick: 0, close: 0 };
+  const S0 = { g: 0, sketch: 0, pre: 0, x: 0, h: 1, b0: 0, b1: 0, b2: 0, b3: 0, build: 0, photo: 0, drift: 0, pick: 0, close: 0, rail: 1, flip: 0, go: 0 };
   const S = { ...S0 };
   const last = new Map();
   const put = (key, val, fn) => { if (last.get(key) !== val) { last.set(key, val); fn(val); } };
@@ -217,6 +227,20 @@
   };
   let tl = null;
   let st = null;
+  // each line of the plan by its own stretch of the timeline; the pen rides on the one being drawn
+  function drawPlan(p) {
+    let at = null;
+    lines.forEach((l) => {
+      const v = Math.max(0, Math.min(1, (p - l.a) / (l.b - l.a)));
+      const key = v.toFixed(3);
+      if (key !== l.last) { l.last = key; l.el.style.strokeDashoffset = 1 - v; }
+      if (v > 0 && v < 1) at = { l, v };
+    });
+    const tip = at ? at.l.el.getPointAtLength((at.l.len || (at.l.len = at.l.el.getTotalLength())) * at.v) : null;
+    if (tip) { pen.setAttribute('cx', tip.x.toFixed(1)); pen.setAttribute('cy', tip.y.toFixed(1)); }
+    put('pen', !!tip, (v) => { pen.style.opacity = v ? 1 : 0; });
+    put('lit', p >= LIT_AT, (v) => plan.classList.toggle('lit', v));
+  }
   function paint() {
     put('h', S.h.toFixed(3), (v) => show(head, +v));
     [S.b0, S.b1, S.b2, S.b3].forEach((b, i) => put(`b${i}`, b.toFixed(3), (v) => show(steps[i], +v)));
@@ -228,12 +252,18 @@
     put('close', S.close.toFixed(4), (v) => {
       stage.style.setProperty('--close', v);
       canvas.style.visibility = +v > 0 ? 'hidden' : '';
-      const on = Math.min(1, v * 6), off = Math.max(0, 1 - v * 6);
-      turn.style.opacity = on;
-      turn.style.visibility = on > 0.001 ? 'visible' : 'hidden';
-      rail.style.opacity = off;
-      rail.style.visibility = off > 0.001 ? 'visible' : 'hidden';
+      const on = Math.min(1, v * 6);
+      [turn, turnW].forEach((el) => {
+        el.style.opacity = on;
+        el.style.visibility = on > 0.001 ? 'visible' : 'hidden';
+      });
     });
+    put('rail', S.rail.toFixed(3), (v) => { rail.style.opacity = v; rail.style.visibility = +v > 0.001 ? 'visible' : 'hidden'; });
+    // a hard cut from kitchen to kitchen, each one settling a little; the ones before it stay under it until the next has loaded
+    const shown = Math.min(flips.length, Math.floor(S.flip));
+    put('flip', shown, (n) => flips.forEach((im, k) => { im.style.opacity = k < n ? 1 : 0; }));
+    if (shown > 0) put('flipz', (shown < flips.length ? 1.08 - 0.08 * (S.flip % 1) : 1).toFixed(4), (v) => { flips[shown - 1].style.transform = `scale(${v})`; });
+    put('go', S.go.toFixed(3), (v) => show(go, +v));
     const f = S.g - FLIGHT;
     // the header turns dark once the white has cleared the top of the screen, and back as soon as the photo starts closing
     put('tone', (f >= DARK_AT || S.photo > 0.5) && S.close < 0.04 ? 'dark' : 'light', (v) => { stage.dataset.tone = v; theme(v === 'dark' ? 'night' : 'paper'); });
@@ -242,7 +272,7 @@
     let ch = 0;
     CH.forEach((c, i) => { if (p >= c) ch = i; });
     put('ch', ch, (c) => chBtns.forEach((b, i) => { b.classList.toggle('on', i <= c); if (i === c) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); }));
-    put('pr', Math.min(1, p / 100).toFixed(3), (v) => rail.style.setProperty('--pr', v));
+    drawPlan(p);
     tagsAt(f);
     draw(false);
   }
@@ -265,13 +295,17 @@
     beat('b2', 37.5, 72);
     beat('b3', 75.5, 85);
     tl.to(S, { build: 0, duration: 3 }, 84);
+    tl.to(S, { rail: 0, duration: 3 }, 85);
     // the last frame and the photo are the same picture, so the swap does not show; then it drifts, and the hour is his
     tl.to(S, { photo: 1, duration: 3 }, 88);
     tl.to(S, { drift: 1, duration: 11, ease: 'power1.out' }, 89);
     tl.to(S, { pick: 1, duration: 4, ease: 'power2.out' }, 92);
-    // the way out: the photo, at the hour he chose, closes into a window on the white page the next section starts from
+    // the way out: the photo, at the hour he chose, closes into a window on the white page the next section starts from;
+    // the kitchens flip fast and slow down to the last one, the button comes, and the white carries on into the next section
     tl.to(S, { pick: 0, duration: 2, ease: 'power2.in' }, 105);
     tl.to(S, { close: 1, duration: 10, ease: 'power2.inOut' }, 106);
+    tl.to(S, { flip: flips.length, duration: 22, ease: 'power2.out' }, 115.5);
+    tl.to(S, { go: 1, duration: 4, ease: 'power2.out' }, 134);
     tl.set({}, {}, TOTAL);
     st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: 'bottom bottom', scrub: 0.8, animation: tl });
   }
@@ -303,7 +337,9 @@
       sec.classList.remove('p-live');
       Object.assign(S, S0);
       stage.removeAttribute('data-tone');
-      [head, tod, build, real, scrim, copy, turn, canvas, rail, ...steps].forEach((el) => el.removeAttribute('style'));
+      [head, tod, build, real, scrim, copy, turn, turnW, go, canvas, rail, pen, ...flips, ...steps].forEach((el) => el.removeAttribute('style'));
+      lines.forEach((l) => { l.el.removeAttribute('style'); l.last = ''; });
+      plan.classList.remove('lit');
       ph.style.removeProperty('--drift');
       stage.style.removeProperty('--close');
       parts.forEach((li) => li.classList.remove('on'));

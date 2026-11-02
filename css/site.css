@@ -172,6 +172,9 @@ html.a11y-still .btn .rc { transform: none !important; }
   --fill: var(--ink); --on-fill: var(--on-ink); min-height: 52px; padding: 10px 24px; overflow: hidden; border-radius: 999px;
   background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--ring);
 }
+/* this rule comes after the shared hover, so it has to turn the words over itself (Liav, 2.11.2026: white words on the white fill) */
+@media (hover: hover) and (pointer: fine) { .hd-cta.btn:hover { color: var(--on-fill); } }
+.hd-cta.btn:focus-visible { color: var(--on-fill); }
 /* over the film: the logo bare and the button only a hairline on a clear ground (Liav, 2.11.2026: "לעשות את הרקע של הכפתור שקוף"). From the next section they take the glass, so words passing under them never fight it */
 @media (min-width: 1024px) {
   .hd[data-over-image] :is(.hd-logo, .hd-end)::before { content: none; }
@@ -277,43 +280,33 @@ html.a11y-still .btn .rc { transform: none !important; }
 .sec { position: relative; padding: var(--sec) var(--gut); }
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* ===== which kitchen: a centred heading and one line, then the eight of theirs in one carousel. Without motion it is a
-   row to swipe; live (js/kitchens.js) the row goes on an arc you drag, with inertia, and the kitchen in the centre names
-   itself under it. ?k=b is the cylinder and ?k=c the glide, for Liav to choose ===== */
+/* ===== what we specialise in: a centred heading and one line, then the eight of theirs in one strip. Without motion it is
+   a row to swipe. Live (js/kit-strip.js, after MV:g65) the stage pins, the vertical scroll carries the strip sideways, and the
+   kitchen in the centre grows and sharpens while the rest recede ===== */
 .kit { overflow: clip; padding-inline: 0; }
 .kit-head { display: grid; justify-items: center; gap: var(--gap-m); padding-inline: var(--gut); text-align: center; }
 .kit h2 { font-size: var(--f-h1); line-height: var(--lh-h1); letter-spacing: -.02em; }
 .kit .lead { font-size: var(--f-lead); line-height: var(--lh-lead); color: var(--ink-2); max-width: 34em; }
+.kit-view { container-type: inline-size; margin-top: var(--gap-l); }
 .kit-rail {
-  --kw: clamp(280px, 42vw, 800px);
+  --kw: min(48vw, 70svh);
   display: flex; gap: var(--gap-s); overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none;
-  margin-top: var(--gap-l); padding-inline: calc(50% - var(--kw) / 2); outline-offset: 8px;
+  padding-inline: calc(50cqw - var(--kw) / 2); outline-offset: 8px;
 }
 .kit-rail::-webkit-scrollbar { display: none; }
 .kit-c { flex: 0 0 var(--kw); scroll-snap-align: center; }
 .kit-im { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--ph); }
 .kit-im img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.kit-im::after { content: ""; position: absolute; inset: 0; background: var(--bg); opacity: var(--sh, 0); pointer-events: none; }
-.kit-c figcaption, .kit-cap { display: grid; gap: 4px; margin-top: 16px; text-align: center; }
-.kit-c strong, .kit-cap strong { font-weight: 500; font-size: var(--f-text); line-height: 1.3; }
-.kit-c figcaption span, .kit-cap span { font-size: var(--f-meta); line-height: 1.45; color: var(--ink-2); }
-.kit-foot { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--gap-s); width: min(calc(100% - var(--gut) * 2), 680px); margin: var(--gap-m) auto 0; }
-.kit-cap { grid-column: 2; margin: 0; visibility: hidden; }
-.kit-cap.swap { animation: fade .5s var(--ease) both; }
-.kit-arr { display: grid; place-items: center; width: 48px; height: 48px; color: var(--ink); transition: opacity .3s var(--ease); opacity: .62; }
-.kit-arr svg { width: 28px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1; }
-@media (hover: hover) and (pointer: fine) { .kit-arr:hover { opacity: 1; } }
-/* live: the cards leave the row and take their place from js/kitchens.js */
-.kit.k-live .kit-rail { display: block; position: relative; overflow: visible; padding: 0; cursor: grab; touch-action: pan-y; user-select: none; }
-.kit.k-live .kit-rail.grabbing { cursor: grabbing; }
-.kit.k-live .kit-c { position: absolute; left: 50%; /* qa-allow: physical, the arc is measured from the middle of the stage */ top: 0; width: var(--kw); translate: -50% 0; will-change: transform, opacity; }
-.kit.k-live .kit-c img { pointer-events: none; }
-.kit.k-live .kit-c figcaption { display: none; }
-.kit.k-live .kit-cap { visibility: visible; }
-.kit.k-b .kit-rail { perspective: 1500px; perspective-origin: 50% 42%; }
-.kit.k-b .kit-c { backface-visibility: hidden; }
-.kit.k-c .kit-im img { inset: 0 -15%; width: 130%; max-width: none; will-change: transform; }
-@media (max-width: 767px) { .kit-rail { --kw: 78vw; } }
+.kit-c figcaption { display: grid; gap: 4px; margin-top: 16px; text-align: center; }
+.kit-c strong { font-weight: 500; font-size: var(--f-text); line-height: 1.3; }
+.kit-c figcaption span { font-size: var(--f-meta); line-height: 1.45; color: var(--ink-2); }
+/* live: the view is measured left to right while the strip inside stays right to left, as in MV:g65 */
+.kit.k-live { height: 400vh; padding: 0; }
+.kit.k-live .kit-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; display: grid; align-content: center; gap: var(--gap-l); }
+.kit.k-live .kit-view { margin-top: 0; direction: ltr; overflow: hidden; padding-block: 3vh; }
+.kit.k-live .kit-rail { width: max-content; overflow: visible; scroll-snap-type: none; direction: rtl; }
+.kit.k-live .kit-c { will-change: transform, filter; }
+@media (max-width: 767px) { .kit-rail { --kw: min(86vw, 58svh); } }
 
 /* ===== the process: one kitchen, the villa one, from the sketch to its first evening. Live, it is built in the yard part
    after part on one pinned stage (js/process.js): a tag on each part as it lands, a list of what already stands, the sun
@@ -321,9 +314,9 @@ html.a11y-still .btn .rc { transform: none !important; }
    Static: four chapters, each with its picture, and the photo with the hour under them ===== */
 .proc { position: relative; }
 .p-stage { position: relative; display: grid; gap: var(--gap-l); padding: var(--sec) var(--gut); }
-.p-seq, .p-run, .p-scrim, .p-tags, .p-build, .p-rail { display: none; }
+.p-seq, .p-run, .p-scrim, .p-tags, .p-build, .p-rail, .p-flip, .p-tw { display: none; }
 /* static: the chapters first, then the photo with its hour under it (in the page's order the photo comes first, for the live stage) */
-.p-copy { order: 1; } .p-real { order: 2; } .p-tod { order: 3; } .p-turn { order: 4; }
+.p-copy { order: 1; } .p-real { order: 2; } .p-tod { order: 3; } .p-turn { order: 4; } .p-go { order: 5; justify-self: center; }
 .p-turn { font-family: var(--font-h); font-weight: var(--w-h); font-size: var(--f-d); line-height: var(--lh-h1); letter-spacing: -.02em; text-align: center; }
 .p-h { font-size: var(--f-h1); line-height: var(--lh-h1); letter-spacing: -.02em; margin-bottom: var(--gap-l); }
 .p-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap-l) var(--gap-m); }
@@ -361,17 +354,27 @@ html.a11y-still .btn .rc { transform: none !important; }
   .p-times { width: 100%; } .p-times button { flex: 1 1 0; padding: 0 8px; }
 }
 
-/* live: the stage holds the screen while the run under it is scrolled (830vh, 640vh on phones: Liav, 1.11.2026, "built
+/* live: the stage holds the screen while the run under it is scrolled (990vh, 765vh on phones: Liav, 1.11.2026, "built
    slowly, bit by bit"); the film fills the screen, the words ride on it at the start side, the list at the end side */
 .proc.p-live .p-stage { position: sticky; top: 0; height: 100svh; display: block; padding: 0; overflow: hidden; isolation: isolate; background: #FFFFFF; }
-.proc.p-live .p-run { display: block; height: 830vh; }
+.proc.p-live .p-run { display: block; height: 990vh; }
 .proc.p-live :is(.p-seq, .p-real, .p-tags) { position: absolute; inset: 0; width: 100%; height: 100%; }
 .proc.p-live .p-seq { display: block; z-index: 0; }
 /* --close (js/process.js): at the end the photo closes into a window, and the white page around it is already the next section's */
-.proc.p-live .p-real { z-index: 1; opacity: 0; overflow: hidden; clip-path: inset(calc(var(--close, 0) * 21%) calc(var(--close, 0) * 34%)); }
-.proc.p-live .p-ph { position: absolute; inset: 0; aspect-ratio: auto; background: none; transform: scale(calc(var(--drift, 1) * (1 - var(--close, 0) * var(--shrink, .36)))); transform-origin: calc(56% - var(--close, 0) * 40%) 54%; } /* the origin slides so the oven and its fire end up inside the window */
-.proc.p-live .p-turn { position: absolute; inset: 0; z-index: 0; display: grid; grid-template-columns: 1fr 32% 1fr; align-items: center; justify-items: center; color: #000000; opacity: 0; visibility: hidden; }
-.p-turn span:last-child { grid-column: 3; }
+.proc.p-live .p-real { z-index: 1; opacity: 0; overflow: hidden; clip-path: inset(calc(var(--close, 0) * 14%) calc(var(--close, 0) * 30%)); }
+.proc.p-live .p-ph { position: absolute; inset: 0; aspect-ratio: auto; background: none; transform: scale(calc(var(--drift, 1) * (1 - var(--close, 0) * var(--shrink, .28)))); transform-origin: calc(56% - var(--close, 0) * 40%) 54%; } /* the origin slides so the oven and its fire end up inside the window */
+/* the closing scene (Liav, 2.11.2026: "KICK רציני"): one line across the whole screen, black on the white and white where it
+   crosses the window, the second copy is inside the photo so the window itself cuts it. In the window their other kitchens flip by */
+.proc.p-live :is(.p-turn, .p-tw) {
+  position: absolute; inset: 0; margin: 0; display: flex; align-items: center; justify-content: center; gap: .24em; font-family: var(--font-h); font-weight: var(--w-h);
+  font-size: 23.5vw; line-height: 1; letter-spacing: -.02em; white-space: nowrap; opacity: 0; visibility: hidden; transform: scale(calc(.9 + var(--close, 0) * .1));
+}
+.proc.p-live .p-turn { z-index: 0; color: #000000; }
+.proc.p-live .p-tw { z-index: 3; color: #FFFFFF; }
+.proc.p-live .p-flip { display: block; position: absolute; inset: 14% 30%; z-index: 1; overflow: hidden; }
+.p-flip img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.proc.p-live .p-real::before { content: ""; position: absolute; inset: 0; z-index: 2; background: #000000; opacity: calc(var(--close, 0) * .3); pointer-events: none; }
+.proc.p-live .p-go { --ink: #FFFFFF; --on-ink: #000000; position: absolute; z-index: 5; inset-inline: 0; margin-inline: auto; width: max-content; bottom: calc(14% + 24px); opacity: 0; visibility: hidden; }
 /* the film's scrim gives way with the photo (js/process.js), which keeps only a corner for its own words and a floor for the rail */
 .proc.p-live .p-real::after {
   content: ""; position: absolute; inset: 0; pointer-events: none; opacity: calc(1 - var(--close, 0) * 4);
@@ -434,19 +437,23 @@ html.a11y-still .btn .rc { transform: none !important; }
 .proc.p-live .p-tod { position: absolute; z-index: 4; inset-inline-start: var(--gut); bottom: calc(76px + var(--gap-l)); width: min(34em, 44vw); color: #000000; }
 .proc.p-live .p-tod-h { font-size: var(--f-h2); font-family: var(--font-h); font-weight: var(--w-h); line-height: var(--lh-h); letter-spacing: -.01em; }
 .proc.p-live .p-tod-q { color: inherit; opacity: .86; }
-.proc.p-live .p-rail {
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); position: absolute; z-index: 4; inset-inline: var(--gut); bottom: 20px;
-  color: #000000; 
-}
+/* where we are in the story (Liav, 2.11.2026, instead of the progress bar): a small plan of this kitchen that draws itself in
+   the corner, each part as it lands in the film (js/process.js), a pen point on the line and the oven red at the end;
+   under it the four chapters, as they were, each jumps to its place */
+.proc.p-live .p-rail { display: grid; justify-items: start; gap: 6px; position: absolute; z-index: 4; inset-inline-start: var(--gut); bottom: 10px; color: #000000; }
 /* after the three blocks above, which have the same weight */
 .p-stage[data-tone="dark"] :is(.p-copy, .p-build, .p-rail, .p-tod) { color: #FFFFFF; }
-.p-rail::before, .p-rail::after { content: ""; position: absolute; inset-inline: 0; top: 0; height: 1px; background: currentColor; opacity: .28; }
-.p-rail::after { background: var(--red); opacity: 1; transform: scaleX(var(--pr, 0)); transform-origin: right; }
+.p-plan { display: block; width: 181px; height: 73px; overflow: visible; fill: none; stroke: currentColor; stroke-width: 1; }
+.p-plan path { stroke-dasharray: 1 1; stroke-dashoffset: 1; }
+.p-plan .p-pen { fill: var(--red); stroke: none; opacity: 0; }
+.p-plan .p-oven { transition: fill .6s var(--ease), stroke .6s var(--ease); }
+.p-plan.lit .p-oven { fill: var(--red); stroke: var(--red); }
+.p-chs { display: flex; gap: 24px; }
 .p-rail button {
-  min-height: 48px; padding: 14px 0 0; border: 0; background: none; color: inherit; font: inherit; font-size: var(--f-meta);
-  text-align: start; cursor: pointer; opacity: .62; transition: opacity .4s var(--ease);
+  min-height: 44px; padding: 0; border: 0; background: none; color: inherit; font: inherit; font-size: var(--f-meta);
+  text-align: start; white-space: nowrap; cursor: pointer; opacity: .62; transition: opacity .4s var(--ease);
 }
-.p-rail button.on { opacity: 1; }
+.p-rail button[aria-current] { opacity: 1; font-weight: 500; }
 @media (hover: hover) and (pointer: fine) { .p-rail button:hover { opacity: 1; } }
 .p-rail button:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
 
@@ -454,7 +461,7 @@ html.a11y-still .btn .rc { transform: none !important; }
    under the header, the words under it on the section's own ground (white, then night), the chapters over the action bar */
 @media (max-width: 767px), (max-width: 1023px) and (orientation: portrait) {
   .proc.p-live .p-stage { background: var(--bg); --shrink: .08; }
-  .proc.p-live .p-run { height: 640vh; }
+  .proc.p-live .p-run { height: 765vh; }
   .proc.p-live :is(.p-seq, .p-real, .p-tags) { top: calc(var(--hd-h) + 6px); height: min(66.7vw, 46svh); }
   /* the band comes down to the middle of what the header and the action bar leave, between the two words */
   .proc.p-live .p-real {
@@ -462,9 +469,13 @@ html.a11y-still .btn .rc { transform: none !important; }
     transform: translateY(calc(var(--close, 0) * ((100svh - var(--hd-h) - 76px) / 2 - 6px - min(66.7vw, 46svh) / 2)));
   }
   .proc.p-live .p-turn {
-    inset: var(--hd-h) 0 76px; grid-template-columns: none; grid-template-rows: 1fr min(66.7vw, 46svh) 1fr; font-size: calc(64px * var(--a11y-scale));
+    inset: var(--hd-h) 0 76px; display: grid; gap: 0; justify-items: center; grid-template-rows: 1fr min(66.7vw, 46svh) 1fr; font-size: min(43vw, (100svh - var(--hd-h) - 76px - min(66.7vw, 46svh)) / 2 - 8px); transform: none;
   }
-  .p-turn span:last-child { grid-column: auto; grid-row: 3; }
+  .proc.p-live .p-turn span:last-child { grid-row: 3; }
+  .proc.p-live .p-tw, .proc.p-live .p-real::before { display: none; }
+  .proc.p-live .p-flip { inset: 0 10%; }
+  /* in the window, over the photo, in the middle of what the header and the action bar leave */
+  .proc.p-live .p-go { bottom: calc(76px + (100svh - var(--hd-h) - 76px - min(66.7vw, 46svh)) / 2 + 14px); }
   .proc.p-live .p-scrim, .proc.p-live .p-build, .proc.p-live .p-real::after, .proc.p-live .p-copy::before { display: none; }
   .proc.p-live :is(.p-copy, .p-tod) {
     top: calc(var(--hd-h) + 6px + min(66.7vw, 46svh) + 24px); bottom: auto; inset-inline: var(--gut); width: auto;
@@ -474,7 +485,9 @@ html.a11y-still .btn .rc { transform: none !important; }
   .proc.p-live .p-txt { gap: 10px; }
   .proc.p-live .p-txt p { font-size: calc(16px * var(--a11y-scale)); line-height: 1.55; }
   .proc.p-live .p-tod { gap: 12px; }
-  .proc.p-live .p-rail { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  .proc.p-live .p-rail { inset-inline: var(--gut); bottom: calc(76px + env(safe-area-inset-bottom, 0px)); grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 14px; }
+  .p-plan { width: 84px; height: 34px; stroke-width: 2; }
+  .p-chs { justify-content: space-between; gap: 8px; }
   .p-rail button { font-size: calc(12px * var(--a11y-scale)); }
   .p-tag span { font-size: calc(12px * var(--a11y-scale)); padding: 3px 8px; bottom: 30px; }
   .p-tag b { height: 22px; }
@@ -483,17 +496,54 @@ html.a11y-still .btn .rc { transform: none !important; }
 
 /* ===== about: after the letters, on the black, one centred column over the logo: the name, the story, the button ===== */
 .ab-in { position: relative; isolation: isolate; overflow: hidden; min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; justify-items: center; text-align: center; }
-.ab-mark { position: absolute; inset: 0; z-index: -1; width: min(92%, 1280px); height: auto; margin: auto; opacity: .1; pointer-events: none; }
+.ab-mk { position: absolute; inset: 0; z-index: -1; display: grid; place-items: center; pointer-events: none; }
+.ab-mark { width: min(92%, 1280px); height: auto; opacity: .05; }
+/* live: the scroll carries the logo (buildMark in js/home.js), and the box around it keeps drifting while the reader stops to read */
+.is-live .ab-mark { will-change: transform; }
+.is-live .ab-mk { animation: ab-drift 18s ease-in-out infinite alternate; animation-play-state: paused; }
+.is-live .ab-mk.is-on { animation-play-state: running; }
+@keyframes ab-drift { from { transform: translate(-3.5%, 2%) rotate(-2deg); } to { transform: translate(3.5%, -2%) rotate(2deg); } }
 .about h2 { font-size: var(--f-d); line-height: var(--lh-h1); letter-spacing: -.02em; }
 .about .lead { font-size: var(--f-lead); line-height: var(--lh-lead); margin: var(--gap-m) 0 var(--gap-l); max-width: 34em; color: var(--ink-2); }
 
-/* ===== more projects: four pictures to open, on the black ===== */
+/* ===== more projects: four pictures to open, in a row that runs off the page's edge, with two arrows in the buttons' line ===== */
 .pic { position: relative; overflow: hidden; background: var(--ph); }
 .pic img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
 @media (hover: hover) and (pointer: fine) { .mc-link:hover .pic img { transform: scale(1.04); } }
 .more-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 24px; margin-bottom: var(--gap-m); }
 .more-h { font-size: var(--f-h2); }
-.more { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap-m) var(--gap-s); }
+.more-acts { display: flex; align-items: center; gap: 12px; }
+.more-nav { display: flex; gap: 8px; }
+.more-nav[hidden] { display: none; }
+.arr {
+  position: relative; isolation: isolate; flex: none; display: grid; place-items: center; width: 52px; height: 52px; cursor: pointer;
+  background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-2);
+  transition: color .45s var(--ease-io) .05s, box-shadow .45s var(--ease-io), opacity .3s var(--ease);
+}
+.arr::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--ink); transform: scaleX(0); transform-origin: left; transition: transform .55s var(--ease-io); }
+.arr::after {
+  content: ''; width: 24px; height: 12px; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10'%3E%3Cpath d='M17 5H3M7 1 3 5l4 4M37 5H23M27 1l-4 4 4 4' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 50% / 200% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10'%3E%3Cpath d='M17 5H3M7 1 3 5l4 4M37 5H23M27 1l-4 4 4 4' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 50% / 200% 100% no-repeat;
+  transition: -webkit-mask-position .5s var(--ease-io), mask-position .5s var(--ease-io);
+}
+.arr.back::after { transform: scaleX(-1); }
+.arr.back::before { transform-origin: right; }
+.arr:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.arr[aria-disabled="true"] { opacity: .3; cursor: default; }
+@media (hover: hover) and (pointer: fine) {
+  .arr:not([aria-disabled="true"]):hover { color: var(--on-ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .arr:not([aria-disabled="true"]):hover::before { transform: scaleX(1); transform-origin: right; }
+  .arr.back:not([aria-disabled="true"]):hover::before { transform-origin: left; }
+  .arr:not([aria-disabled="true"]):hover::after { -webkit-mask-position: 100% 50%; mask-position: 100% 50%; }
+}
+.more {
+  --mw: 30vw;
+  display: flex; gap: var(--gap-s); overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none;
+  margin-inline: calc(var(--gut) * -1); padding-inline: var(--gut); scroll-padding-inline: var(--gut);
+}
+.more::-webkit-scrollbar { display: none; }
+.mc { flex: 0 0 var(--mw); scroll-snap-align: start; }
 .mc-link { display: block; }
 .mc .pic { aspect-ratio: 4 / 5; }
 .mc .pic img { position: absolute; inset: 0; }
@@ -509,9 +559,11 @@ html.a11y-still .btn .rc { transform: none !important; }
 }
 @media (hover: hover) and (pointer: fine) { .mc-link:hover h3::after { opacity: 1; transform: none; } }
 .mc-link:focus-visible h3::after { opacity: 1; transform: none; }
-@media (max-width: 1023px) { .more { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1023px) { .more { --mw: 44vw; } }
 @media (max-width: 767px) {
+  .more { --mw: 78vw; }
   .more-head { align-items: start; flex-direction: column; }
+  .more-acts { width: 100%; justify-content: space-between; }
   .mc h3 { margin-top: 10px; }
 }
 
@@ -562,7 +614,8 @@ html.a11y-still .btn .rc { transform: none !important; }
 .yours.y-live .y-stones { position: absolute; inset: 0; aspect-ratio: auto; z-index: 1; opacity: 0; background: none; }
 .yours.y-live .y-scrim { display: block; position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 .y-scrim::before, .y-scrim::after { content: ""; position: absolute; inset: 0; transition: opacity .6s var(--ease); }
-.y-scrim::before { background: linear-gradient(to left, rgba(255, 255, 255, .9) 0%, rgba(255, 255, 255, .62) 30%, rgba(255, 255, 255, 0) 56%); }
+/* the first picture is pale on the pale page above it: while the tone is light its top melts into the white (Liav, 2.11.2026: "לעשות FADE בחלק העליון") */
+.y-scrim::before { background: linear-gradient(to bottom, #FFFFFF 0%, rgba(255, 255, 255, 0) 30%), linear-gradient(to left, rgba(255, 255, 255, .9) 0%, rgba(255, 255, 255, .62) 30%, rgba(255, 255, 255, 0) 56%); }
 .y-scrim::after { background: linear-gradient(to left, rgba(0, 0, 0, .84) 0%, rgba(0, 0, 0, .58) 34%, rgba(0, 0, 0, 0) 60%); opacity: 0; }
 .y-stage[data-tone="dark"] .y-scrim::before { opacity: 0; }
 .y-stage[data-tone="dark"] .y-scrim::after { opacity: 1; }
@@ -579,7 +632,7 @@ html.a11y-still .btn .rc { transform: none !important; }
 .yours.y-live .y-h, .yours.y-live .y-beats li { opacity: 0; visibility: hidden; }
 .yours.y-live .y-pick { position: absolute; z-index: 3; inset-inline-start: var(--gut); bottom: 9vh; padding: 0; opacity: 0; visibility: hidden; }
 @media (max-width: 767px), (max-width: 1023px) and (orientation: portrait) {
-  .y-scrim::before { background: linear-gradient(to top, rgba(255, 255, 255, .94) 0%, rgba(255, 255, 255, .7) 34%, rgba(255, 255, 255, 0) 62%); }
+  .y-scrim::before { background: linear-gradient(to bottom, #FFFFFF 0%, rgba(255, 255, 255, 0) 24%), linear-gradient(to top, rgba(255, 255, 255, .94) 0%, rgba(255, 255, 255, .7) 34%, rgba(255, 255, 255, 0) 62%); }
   .y-scrim::after { background: linear-gradient(to top, rgba(0, 0, 0, .86) 0%, rgba(0, 0, 0, .5) 38%, rgba(0, 0, 0, 0) 66%); }
   .yours.y-live .y-copy { top: auto; bottom: calc(9vh + env(safe-area-inset-bottom, 0px)); inset-inline-end: var(--gut); width: auto; }
   .yours.y-live .y-pick { inset-inline-end: var(--gut); bottom: calc(84px + env(safe-area-inset-bottom, 0px)); gap: 14px; }
@@ -593,6 +646,10 @@ html.a11y-still .btn .rc { transform: none !important; }
 .bf-scene { position: relative; }
 .bf-pin { position: relative; height: min(100svh, 62vw); overflow: hidden; background: #000000; }
 .bf-pin img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+/* the one fade between two grounds on the page: the photo melts into the black of "about" so the two read as one
+   (Liav, 2.11.2026: "כן תעשה בFADE לצבע השחור כדי שזה ייראה קשור"). Live it comes up only as the letters open up, under them */
+.bf-pin::after { content: ''; position: absolute; inset: auto 0 0; height: 62%; z-index: 1; pointer-events: none; background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, .12) 22%, rgba(0, 0, 0, .42) 50%, rgba(0, 0, 0, .8) 78%, #000000); }
+.is-live .bf-pin::after { opacity: var(--bf-fade, 0); }
 .bf-cut { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; display: none; }
 .bf-cut text { font-family: 'PM', 'GS', sans-serif; font-weight: 500; }
 .bf-out { fill: none; stroke: #000000; stroke-width: 1; vector-effect: non-scaling-stroke; }

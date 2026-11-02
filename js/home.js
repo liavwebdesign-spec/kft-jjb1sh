@@ -174,6 +174,7 @@
       bfSvg.style.visibility = z > 0.995 ? 'hidden' : '';
       Z.go.setAttribute('opacity', Math.max(0, 1 - z / 0.3).toFixed(3));
       bfImg.style.transform = `scale(${(1.12 - 0.12 * z).toFixed(4)})`;
+      bfPin.style.setProperty('--bf-fade', Math.max(0, (z - 0.55) / 0.45).toFixed(3));
     }
     const run = () => document.fonts.load(BF_FONT).then(layout, layout);
     // on the way in: the outline draws, then the letters open onto the photo
@@ -189,6 +190,23 @@
       entry.kill(); zoom.kill();
       bfSvg.textContent = '';
       [bfImg, bfSvg].forEach((el) => el && el.removeAttribute('style'));
+      bfPin.style.removeProperty('--bf-fade');
+    };
+  }
+
+  /* ---- the logo behind "about" comes toward the reader with the scroll; its slow drift (css/site.css) runs only on screen ---- */
+  function buildMark() {
+    const mark = document.querySelector('.ab-mark');
+    if (!mark) return () => {};
+    const box = mark.parentNode;
+    const tw = gsap.fromTo(mark, { yPercent: 16, scale: 0.82, rotation: -5 }, {
+      yPercent: -16, scale: 1.18, rotation: 5, ease: 'none',
+      scrollTrigger: { trigger: box, start: 'top bottom', end: 'bottom top', scrub: 0.6, toggleClass: { targets: box, className: 'is-on' } },
+    });
+    // gsap's matchMedia has already reverted the tween by the time this runs
+    return () => {
+      gsap.set(mark, { clearProps: 'all' });
+      box.classList.remove('is-on');
     };
   }
 
@@ -211,7 +229,7 @@
 
   function goLive(isSheet) {
     root.classList.add('is-live');
-    const un = [buildGrill(isSheet), buildPlot()];
+    const un = [buildGrill(isSheet), buildMark(), buildPlot()];
     ScrollTrigger.refresh();
     return () => {
       un.forEach((f) => f());
