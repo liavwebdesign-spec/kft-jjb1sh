@@ -722,6 +722,23 @@ html.a11y-still .btn .rc { transform: none !important; }
 .ft-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
 .ft-bg img { width: 100%; height: 100%; object-fit: cover; object-position: 72% 62%; opacity: .36; }
 html.a11y-contrast .ft-bg { display: none; }
+/* the way in, when things move (js/home.js): no line between the white and the black. Under the form a narrow window on
+   that same photo rises with the page and opens to the whole screen, the photo dims, and the closing line comes up on it.
+   The white behind the window is the page's own ground, so the form above it never meets an edge (Liav, 2.11.2026) */
+.ft-win { display: contents; }
+.ft-ground { display: none; }
+.ft.is-gate { --o: 0; --d: 0; --gate: 140lvh; --side: 38%; overflow: clip; }
+.ft.is-gate .ft-ground { display: block; position: absolute; inset-inline: 0; top: 0; height: var(--gate); z-index: -2; }
+.ft.is-gate .ft-win {
+  display: block; position: sticky; top: 0; height: 100lvh; overflow: hidden; background: #000;
+  clip-path: inset(calc((1 - var(--o)) * 7%) calc((1 - var(--o)) * var(--side)) calc((1 - var(--o)) * 26%));
+}
+.ft.is-gate .ft-win img { opacity: calc(1 - .64 * var(--d)); transform: scale(calc(1.3 - .3 * var(--o))); }
+.ft.is-gate .ft-top { margin-top: calc(var(--gate) - var(--sec)); }
+html.a11y-contrast .ft.is-gate .ft-ground { display: none; }
+html.a11y-contrast .ft.is-gate .ft-top { margin-top: 0; }
+/* on a phone the crop follows the oven, the one thing burning in the picture */
+@media (max-width: 767px) { .ft.is-gate { --side: 26%; } .ft.is-gate .ft-win img { object-position: 90% 62%; } }
 .ft-top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 20px; padding-bottom: var(--gap-l); }
 .ft-top p { font-size: var(--f-h1); line-height: var(--lh-h1); letter-spacing: -.02em; }
 .ft-cols { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: var(--gap-m); padding-block: var(--gap-l); font-size: var(--f-meta); border-top: 1px solid var(--line-2); }

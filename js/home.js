@@ -227,9 +227,35 @@
     };
   }
 
+  /* ---- the way into the footer: a window on the night kitchen rises under the form and opens to the whole screen, then
+     the photo dims for the closing line. The white under the window answers for the header and the floating buttons ---- */
+  function buildGate() {
+    const ft = document.querySelector('.ft');
+    const ground = ft && ft.querySelector('.ft-ground');
+    const top = ft && ft.querySelector('.ft-top');
+    if (!ground || !top) return () => {};
+    ft.classList.add('is-gate');
+    const theme = (t) => { if (ground.dataset.theme !== t) { ground.dataset.theme = t; document.dispatchEvent(new Event('kft:theme')); } };
+    const P = { o: 0, d: 0 };
+    const gt = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: () => {
+      ft.style.setProperty('--o', P.o.toFixed(3));
+      ft.style.setProperty('--d', P.d.toFixed(3));
+      theme(P.o >= 1 ? 'night' : 'paper');
+    } });
+    // whole by the time it reaches the top, a moment with the lights on, and it dims while the line comes up
+    gt.to(P, { o: 1, duration: 0.57, ease: 'power1.inOut' }, 0).to(P, { d: 1, duration: 0.34 }, 0.66);
+    const st = ScrollTrigger.create({ trigger: ft, start: 'top bottom', endTrigger: top, end: 'top 65%', scrub: 0.6, animation: gt });
+    return () => {
+      st.kill(); gt.kill();
+      ft.classList.remove('is-gate');
+      ft.style.removeProperty('--o'); ft.style.removeProperty('--d');
+      theme('paper');
+    };
+  }
+
   function goLive(isSheet) {
     root.classList.add('is-live');
-    const un = [buildGrill(isSheet), buildMark(), buildPlot()];
+    const un = [buildGrill(isSheet), buildMark(), buildPlot(), buildGate()];
     ScrollTrigger.refresh();
     return () => {
       un.forEach((f) => f());
