@@ -117,7 +117,7 @@
       // out of nothing it appears in place, it only slides from another link
       if (!from) pill.style.transition = 'none';
       const end = nav.clientWidth - a.offsetLeft - a.offsetWidth, foot = nav.clientHeight - a.offsetTop - a.offsetHeight;
-      pill.style.clipPath = `inset(${a.offsetTop}px ${end}px ${foot}px ${a.offsetLeft}px round 999px)`;
+      pill.style.clipPath = `inset(${a.offsetTop}px ${end}px ${foot}px ${a.offsetLeft}px)`;
       if (!from) { void pill.offsetWidth; pill.style.transition = ''; }
       pill.style.opacity = '1';
     };
@@ -313,7 +313,6 @@
     r.push(['f-name', show('e-name', name ? '' : msg.name)]);
     r.push(['f-tel', show('e-tel', !form.tel.value.trim() ? msg.telEmpty : tel.length < 9 || tel.length > 10 ? msg.telBad : '')]);
     r.push(['home', show('e-home', form.home.value ? '' : msg.pick)]);
-    r.push(['stage', show('e-stage', form.stage.value ? '' : msg.pick)]);
     nameIn.setAttribute('aria-invalid', String(!r[0][1]));
     form.tel.setAttribute('aria-invalid', String(!r[1][1]));
     return r;

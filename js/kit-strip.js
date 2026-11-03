@@ -25,12 +25,14 @@
     const unit = Math.abs(cards[1].offsetLeft - cards[0].offsetLeft) || cards[0].offsetWidth || 1;
     cards.forEach((el) => {
       const r = el.getBoundingClientRect();
-      const d = Math.min(1, Math.abs(r.left + r.width / 2 - mid) / (unit * 1.7)); // 0 in the centre, 1 about two cards away
+      const off = r.left + r.width / 2 - mid;
+      const d = Math.min(1, Math.abs(off) / (unit * 1.7)); // 0 in the centre, 1 about two cards away
       const f = 1 - d * d;
+      // the ones on the sides lie tilted and a little lower, photos fanned out around the one in the middle
       // written directly: a gsap.set here can land inside another script's matchMedia during a refresh, and its revert would put these back
-      el.style.transform = `scale(${(0.84 + f * 0.24).toFixed(4)})`;
+      el.style.transform = `translateY(${((1 - f) * 5).toFixed(2)}vh) rotate(${(Math.sign(off) * (1 - f) * 7).toFixed(2)}deg) scale(${(0.84 + f * 0.24).toFixed(4)})`;
       el.style.opacity = (0.5 + f * 0.5).toFixed(3);
-      el.style.filter = `blur(${((1 - f) * 2.4).toFixed(2)}px)`;
+      el.style.filter = `blur(${((1 - f) * 1.4).toFixed(2)}px)`;
       el.style.zIndex = Math.round(f * 10);
     });
   };

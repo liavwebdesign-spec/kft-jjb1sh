@@ -1,23 +1,23 @@
-/* KFT · הוכחת קונספט לעמוד הבית
-   מסגרת נוזלית (MV:fluid) · שפת "גיליון", בלי קופסאות ובלי צללים: קו שיער, צילום וטיפוגרפיה.
-   שני רקעים בלבד, שחור מלא ולבן מלא, ובין סקשן לסקשן שבירה נקייה בלי מעבר (ליאב, 2.11.2026: "מעברים ושבירות גסות
-   קלאסיות לאורך העמוד בלי הFADEים", "צבע רקע שחור מלא וצבע רקע לבן מלא"). כל סקשן צובע את עצמו לפי data-theme.
-   Pompei לכותרות, Google Sans לכל השאר. האדום של KFT (#AC191A) רק בפעולה ובנקודה הפעילה.
+/* KFT · מתיחת פנים לסקיצה א', ניסיון בהשראת Still Form (ליאב, 3.11.2026: "מבנה ותוכן העמוד נשאר זהה ורק העיצוב משתנה").
+   אותו עמוד, אותו טקסט, אותן אנימציות. אחרי הסיבוב של 3.11 (ליאב: "בוא נחזור חזרה לצבעים הלבנים"): לבן מלא ושחור מלא, פומפאי
+   בכותרות, ובלי שום פינה מעוגלת: לא בתמונות, לא בכפתורים ולא בכותר. מההשראה נשארו הכותר, הכפתור עם החץ והמקצב.
+   כל סקשן צובע את עצמו לפי data-theme. Google Sans לכל השאר. האדום של KFT (#AC191A) רק בפעולה ובנקודה הפעילה.
    הקונספט ולוח האפיון: CLAUDE.md בתיקייה הזו */
 
 @font-face { font-family: 'GS'; src: url('../fonts/GoogleSans-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
 @font-face { font-family: 'GS'; src: url('../fonts/GoogleSans-Medium.woff2') format('woff2'); font-weight: 500; font-display: swap; }
 @font-face { font-family: 'GS'; src: url('../fonts/GoogleSans-Bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
-/* הכותרות: Pompei FS (ליאב, 2.11.2026: 'תחליף את ברוטליסט בפונט "פומפאי", אם לא אתחבר נחזיר חזרה'). F 0.974, λ 1, לטינית משלו.
-   בחזרה לברוטליסט: --font-h ל-'BR', --w-h ל-400 ו---lh-h / --lh-h1 ל-.94 / .9 (הקבצים נשארו בתיקיית הפונטים) */
+/* הכותרות: Pompei Medium (ליאב, 2.11: "פחות מתחבר למשקל הכבד"). Bold נשאר רק לאותיות KFT שנפתחות אל אודות (js/home.js): הן צריכות את הגזע העבה של ה-T כדי לעוף דרכו */
 @font-face { font-family: 'PM'; src: url('../fonts/Pompei_FS-Medium.woff2') format('woff2'); font-weight: 400 500; font-display: swap; size-adjust: 97.4%; }
 @font-face { font-family: 'PM'; src: url('../fonts/Pompei_FS-Bold.woff2') format('woff2'); font-weight: 600 900; font-display: swap; size-adjust: 97.4%; }
 @font-face { font-family: 'BR'; src: url('../fonts/TelAviv-BrutalistRegular.woff2') format('woff2'); unicode-range: U+0590-05FF, U+FB1D-FB4F, U+0020-002C, U+002E-002F, U+003A-003F, U+2018-201F, U+2026; font-weight: 400 500; font-display: swap; }
 @font-face { font-family: 'BR'; src: url('../fonts/TelAviv-BrutalistBold.woff2') format('woff2'); unicode-range: U+0590-05FF, U+FB1D-FB4F, U+0020-002C, U+002E-002F, U+003A-003F, U+2018-201F, U+2026; font-weight: 600 900; font-display: swap; }
 
 :root {
+  /* the ground of the whole page, one line: js/process.js, js/yours.js and the letters in js/home.js read it too */
+  --ground: #FFFFFF; --char: #000000; --ivory: #FFFFFF;
   --white: #FFFFFF; --err: #B3261E;
-  --font-h: 'PM', 'GS', 'Google Sans', system-ui, sans-serif; --w-h: 500; /* Medium (ליאב, 2.11.2026: "פחות מתחבר למשקל הכבד") */
+  --font-h: 'PM', 'GS', 'Google Sans', system-ui, sans-serif; --w-h: 500;
   --red: #AC191A; --red-d: #8E1415;
   --ease: cubic-bezier(.2, .6, .2, 1); --ease-io: cubic-bezier(.76, 0, .24, 1); --ease-out: cubic-bezier(.05, .7, .1, 1);
 
@@ -47,25 +47,25 @@
 }
 @media (max-width: 767px) { :root { --fx: 62%; --hd-h: 60px; } }
 
-/* ===== two grounds and nothing between them. Every section paints its own, so where two meet the line is hard. The
+/* ===== two grounds, white and black. Every section paints its own, so where two meet the line is hard. The
    header, the phone bar and the accessibility button read the section under them (data-ground, js/site.js), at once ===== */
 :root, [data-theme="paper"], [data-ground="paper"] {
-  --bg: #FFFFFF; --ink: #000000; --ink-2: #333333; --muted: #666666;
-  --line: rgba(0, 0, 0, .14); --line-2: rgba(0, 0, 0, .32); --on-ink: #FFFFFF; --ph: #EEEEEE; --lnk: var(--red); --nt: 0;
+  --bg: var(--ground); --ink: var(--char); --ink-2: #333333; --muted: #666666;
+  --line: rgba(0, 0, 0, .14); --line-2: rgba(0, 0, 0, .32); --on-ink: var(--ivory); --ph: #EEEEEE; --lnk: var(--red); --nt: 0;
 }
 [data-theme="night"], [data-ground="night"] {
-  --bg: #000000; --ink: #FFFFFF; --ink-2: #D9D9D9; --muted: #A6A6A6;
-  --line: rgba(255, 255, 255, .16); --line-2: rgba(255, 255, 255, .36); --on-ink: #000000; --ph: #1A1A1A; --lnk: #FFFFFF; --nt: 1;
+  --bg: var(--char); --ink: var(--ivory); --ink-2: #D9D9D9; --muted: #A6A6A6;
+  --line: rgba(255, 255, 255, .16); --line-2: rgba(255, 255, 255, .36); --on-ink: var(--char); --ph: #1A1A1A; --lnk: var(--ivory); --nt: 1;
 }
 [data-theme] { background: var(--bg); color: var(--ink); }
 
 *, *::before, *::after { box-sizing: border-box; }
 html, body { overflow-x: clip; }
 /* anchors glide in js/site.js: a CSS smooth scroll would corrupt every ScrollTrigger refresh */
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--hd-h) + 32px); scrollbar-gutter: stable; background: #FFFFFF; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--hd-h) + 32px); scrollbar-gutter: stable; background: var(--ground); }
 html.lock { overflow: hidden; }
 body {
-  margin: 0; background: #FFFFFF; color: var(--ink);
+  margin: 0; background: var(--ground); color: var(--ink);
   font-family: 'GS', 'Google Sans', system-ui, sans-serif; font-size: var(--f-body); line-height: var(--lh-body);
   font-weight: 400; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
 }
@@ -83,27 +83,27 @@ h1, h2, .m-h, .c-line, .ft-top p { font-family: var(--font-h); font-weight: var(
 .ft-top p { text-wrap: balance; }
 p { text-wrap: pretty; }
 :focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
-.hero :focus-visible, .p-stage[data-tone="dark"] :focus-visible, [data-theme="night"] :focus-visible, [data-ground="night"] :focus-visible { outline-color: #FFFFFF; }
+.hero :focus-visible, .p-stage[data-tone="dark"] :focus-visible, [data-theme="night"] :focus-visible, [data-ground="night"] :focus-visible { outline-color: var(--ivory); }
 main:focus { outline: none; }
 [hidden] { display: none !important; }
 
 .skip {
   position: fixed; inset-block-start: 12px; inset-inline-start: 12px; z-index: 200;
-  background: #000000; color: #FFFFFF; padding: 12px 20px;
+  background: var(--char); color: var(--ivory); padding: 12px 20px;
   transform: translateY(-160%); transition: transform .2s var(--ease);
 }
 .skip:focus { transform: none; }
 
 
-/* ===== buttons: a hard rectangle in the ground's ink. On hover the brand's red sweeps in from the start side, the
+/* ===== buttons: a block in the ground's ink, with the arrow in a square chip at its end. On hover the brand's red sweeps in from the start side, the
    letters roll over to their twin underneath, and the arrow runs forward (left, in Hebrew) while the next one comes
    in behind it. The red is an accent, never a whole surface (1.11.2026, Liat: the brand colours need not be everywhere).
    The letters are split in js/site.js; the button keeps its words as its name ===== */
 .btn {
-  --fill: var(--red); --on-fill: #FFFFFF; --rh: 1.36em;
-  position: relative; isolation: isolate;
-  display: inline-flex; align-items: center; justify-content: center; gap: 14px; min-height: 52px;
-  padding: 14px 24px; font-weight: 500; font-size: calc(clamp(15px, 0.3vw + 0.75rem, 18px) * var(--a11y-scale));
+  --fill: var(--red); --on-fill: var(--ivory); --rh: 1.36em; --chip: 2.3em;
+  position: relative; isolation: isolate; overflow: hidden;
+  display: inline-flex; align-items: center; justify-content: center; gap: 14px; min-height: 54px;
+  padding: 8px 28px 8px 8px; font-weight: 500; font-size: calc(clamp(15px, 0.3vw + 0.75rem, 18px) * var(--a11y-scale));
   line-height: 1.2; white-space: nowrap; background: var(--ink); color: var(--on-ink);
   transition: color .45s var(--ease-io) .05s, box-shadow .45s var(--ease-io);
 }
@@ -112,29 +112,32 @@ main:focus { outline: none; }
   transform: scaleX(0); transform-origin: left; transition: transform .55s var(--ease-io);
 }
 .btn::after {
-  content: ''; flex: none; width: 1.25em; height: .625em; background: currentColor;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10'%3E%3Cpath d='M17 5H3M7 1 3 5l4 4M37 5H23M27 1l-4 4 4 4' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 50% / 200% 100% no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10'%3E%3Cpath d='M17 5H3M7 1 3 5l4 4M37 5H23M27 1l-4 4 4 4' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 50% / 200% 100% no-repeat;
-  transition: -webkit-mask-position .5s var(--ease-io), mask-position .5s var(--ease-io);
+  /* the chip is the word's own colour with the arrow punched out of it, so the ground under it shows through the arrow */
+  content: ''; flex: none; width: var(--chip); height: var(--chip); background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10'%3E%3Cpath d='M17 5H3M7 1 3 5l4 4M37 5H23M27 1l-4 4 4 4' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 50% / calc(var(--chip) * 2) calc(var(--chip) / 2) no-repeat, linear-gradient(#000 0 0);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10'%3E%3Cpath d='M17 5H3M7 1 3 5l4 4M37 5H23M27 1l-4 4 4 4' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 50% / calc(var(--chip) * 2) calc(var(--chip) / 2) no-repeat, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  transition: -webkit-mask-position .5s var(--ease-io), mask-position .5s var(--ease-io), transform .5s var(--ease-io);
 }
 .btn .rb { display: inline-flex; height: var(--rh); line-height: var(--rh); contain: paint; }
 .btn .rc { display: inline-block; white-space: pre; text-shadow: 0 var(--rh) currentColor; transition: transform .5s var(--ease-io) calc(var(--i, 0) * 18ms); }
-.btn.sm { min-height: 44px; padding: 10px 18px; font-size: 15px; gap: 10px; }
+.btn.sm { min-height: 44px; padding: 6px 18px 6px 6px; font-size: 15px; gap: 10px; --chip: 2.13em; }
 .btn.b2 { --fill: var(--ink); --on-fill: var(--on-ink); background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-2); }
 @media (hover: hover) and (pointer: fine) { .btn.b2:hover { box-shadow: inset 0 0 0 1px var(--fill); } }
 /* on the hero photo: the first is white, the second white lines, and white sweeps in */
-.btn.cr { background: #FFFFFF; color: #000000; }
-.btn.ghost { --fill: #FFFFFF; --on-fill: #000000; background: transparent; color: #FFFFFF; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .6); }
+.btn.cr { background: var(--ivory); color: var(--char); }
+.btn.ghost { --fill: var(--ivory); --on-fill: var(--char); background: rgba(0, 0, 0, .22); color: var(--ivory); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .6); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 /* the hover and focus colours come after the variants, so the words always turn to the colour that sweeps in under them */
 @media (hover: hover) and (pointer: fine) {
   .btn:hover { color: var(--on-fill); }
   .btn:hover::before { transform: scaleX(1); transform-origin: right; }
-  .btn:hover::after { -webkit-mask-position: 100% 50%; mask-position: 100% 50%; }
+  .btn:hover::after { -webkit-mask-position: 100% 50%, 0 0; mask-position: 100% 50%, 0 0; }
   .btn:hover .rc { transform: translateY(calc(var(--rh) * -1)); }
 }
 .btn:focus-visible { color: var(--on-fill); }
 .btn:focus-visible::before { transform: scaleX(1); transform-origin: right; }
 .btn.wa::after, .btn.no-arrow::after { content: none; }
+.btn.wa, .btn.no-arrow { padding-inline: 28px; }
 .btn:disabled { cursor: progress; }
 @media (prefers-reduced-motion: reduce) { .btn .rc { transform: none !important; } }
 html.a11y-still .btn .rc { transform: none !important; }
@@ -151,12 +154,12 @@ html.a11y-still .btn .rc { transform: none !important; }
   color: var(--ink); transition: transform .45s var(--ease);
 }
 .hd.is-hidden { transform: translateY(-100%); }
-.hd[data-over-image] { --glass: rgba(0, 0, 0, .28); --ring: rgba(255, 255, 255, .24); }
+.hd[data-over-image] { --glass: rgba(0, 0, 0, .3); --ring: rgba(255, 255, 255, .24); }
 .hd-card { position: relative; isolation: isolate; }
 .hd-bar { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: var(--gap-s); }
-.hd-logo, .hd-nav, .hd-end { position: relative; isolation: isolate; border-radius: 999px; pointer-events: auto; }
+.hd-logo, .hd-nav, .hd-end { position: relative; isolation: isolate; pointer-events: auto; }
 :is(.hd-logo, .hd-nav, .hd-end)::before {
-  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--glass); box-shadow: inset 0 0 0 1px var(--ring);
+  content: ""; position: absolute; inset: 0; z-index: -1; background: var(--glass); box-shadow: inset 0 0 0 1px var(--ring);
   -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
 }
 .hd-logo { justify-self: start; display: grid; place-items: center; width: 92px; height: 52px; }
@@ -164,12 +167,12 @@ html.a11y-still .btn .rc { transform: none !important; }
 .hd-logo .m-color { opacity: calc(1 - var(--nt)); }
 .hd-logo .m-white { opacity: var(--nt); }
 .hd-nav { display: flex; padding: 4px; font-size: calc(clamp(15px, 0.2vw + 0.8rem, 17px) * var(--a11y-scale)); }
-.hd-nav a { display: grid; place-items: center; min-height: 44px; padding-inline: clamp(12px, 1.2vw, 24px); border-radius: 999px; white-space: nowrap; }
-.hd-ind { position: absolute; inset: 0; z-index: 2; background: var(--ink); color: var(--on-ink); pointer-events: none; opacity: 0; clip-path: inset(0 100% 0 0 round 999px); transition: clip-path .4s var(--ease), opacity .25s var(--ease); }
+.hd-nav a { display: grid; place-items: center; min-height: 44px; padding-inline: clamp(12px, 1.2vw, 24px); white-space: nowrap; }
+.hd-ind { position: absolute; inset: 0; z-index: 2; background: var(--ink); color: var(--on-ink); pointer-events: none; opacity: 0; clip-path: inset(0 100% 0 0); transition: clip-path .4s var(--ease), opacity .25s var(--ease); }
 .hd-ind span { position: absolute; display: grid; place-items: center; white-space: nowrap; }
 .hd-end { justify-self: end; display: flex; align-items: center; gap: 4px; }
 .hd-cta.btn {
-  --fill: var(--ink); --on-fill: var(--on-ink); min-height: 52px; padding: 10px 24px; overflow: hidden; border-radius: 999px;
+  --fill: var(--ink); --on-fill: var(--on-ink); min-height: 52px; padding: 8px 24px 8px 8px;
   background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--ring);
 }
 /* this rule comes after the shared hover, so it has to turn the words over itself (Liav, 2.11.2026: white words on the white fill) */
@@ -181,9 +184,9 @@ html.a11y-still .btn .rc { transform: none !important; }
 }
 .hd[data-over-image] .hd-cta.btn { --ring: rgba(255, 255, 255, .6); }
 .hd-a11y, .hd-menu { display: none; }
-.hd-a11y { width: 44px; height: 44px; place-items: center; border-radius: 50%; }
+.hd-a11y { width: 44px; height: 44px; place-items: center; }
 .hd-a11y svg { width: 24px; height: 24px; }
-.hd-menu { align-items: center; gap: 8px; min-height: 44px; padding-inline: 16px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 8%, transparent); font-weight: 500; font-size: 15px; }
+.hd-menu { align-items: center; gap: 8px; min-height: 44px; padding-inline: 16px; background: color-mix(in srgb, var(--ink) 8%, transparent); font-weight: 500; font-size: 15px; }
 .hd-menu i { position: relative; width: 12px; height: 12px; transition: transform .35s var(--ease); }
 .hd-menu i::before, .hd-menu i::after { content: ""; position: absolute; inset-inline: 0; top: 50%; height: 1px; background: currentColor; }
 .hd-menu i::after { transform: rotate(90deg); }
@@ -191,12 +194,11 @@ html.a11y-still .btn .rc { transform: none !important; }
 .hd-panel { display: none; }
 @media (max-width: 1023px) {
   .hd { padding: 12px 16px; }
-  .hd-card { max-width: 680px; margin-inline: auto; border-radius: 30px; pointer-events: auto; overflow: hidden; transition: border-radius .4s var(--ease); }
+  .hd-card { max-width: 680px; margin-inline: auto; pointer-events: auto; overflow: hidden;; }
   .hd-card::before {
-    content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--glass); box-shadow: inset 0 0 0 1px var(--ring);
+    content: ""; position: absolute; inset: 0; z-index: -1; background: var(--glass); box-shadow: inset 0 0 0 1px var(--ring);
     -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4); transition: background-color .3s var(--ease);
   }
-  .hd.menu-open .hd-card { border-radius: 24px; }
   .hd.menu-open .hd-card::before { background: var(--bg); }
   .hd-bar { display: flex; justify-content: space-between; padding: 6px; padding-inline-start: 8px; }
   .hd-logo, .hd-end { isolation: auto; }
@@ -210,62 +212,72 @@ html.a11y-still .btn .rc { transform: none !important; }
   .hd-panel-in { min-height: 0; overflow: hidden; }
   .hd.menu-open .hd-panel-in { max-height: calc(100svh - 96px); overflow-y: auto; }
   .menu-nav { display: flex; flex-direction: column; padding: 8px 20px 4px; }
-  .menu-nav a { padding-block: 6px; font-family: var(--font-h); font-weight: var(--w-h); font-size: calc(clamp(26px, 7.4vw, 36px) * var(--a11y-scale)); line-height: 1.2; opacity: 0; transform: translateY(12px); transition: opacity .15s var(--ease), transform .15s var(--ease); }
+  .menu-nav a { padding-block: 6px; font-family: var(--font-h); font-weight: var(--w-h); font-size: calc(clamp(32px, 8.6vw, 42px) * var(--a11y-scale)); line-height: 1.2; opacity: 0; transform: translateY(12px); transition: opacity .15s var(--ease), transform .15s var(--ease); }
   .hd.menu-open .menu-nav a { opacity: 1; transform: none; transition-duration: .4s; transition-delay: calc(.12s + var(--i, 0) * 45ms); }
   .menu-actions { display: grid; gap: 8px; padding: 16px 20px 20px; opacity: 0; transition: opacity .15s var(--ease); }
   .hd.menu-open .menu-actions { opacity: 1; transition: opacity .4s var(--ease) .3s; }
 }
 
-/* ===== the hero: one kitchen, one slow film in a loop (2.11.2026: "an electrifying atmosphere video").
-   The still frame is the poster; js/home.js picks the film's size and plays it for everyone, reduced motion too,
-   with a pause button in the corner; the accessibility panel's "stop animations" stops it ===== */
+/* ===== the hero (the meeting of 3.11.2026): on a wide screen a real wide photo, bright, the pool and the back wall in it; on the
+   way out it closes into a window on the white of the next section (js/home.js). On a phone the tall film stays:
+   js/home.js plays it for everyone, reduced motion too; the accessibility panel's "stop animations" stops it ===== */
 .hero {
   position: relative; z-index: 4; min-height: 100svh; display: flex; align-items: flex-end;
-  padding: calc(var(--hd-h) + 16px) var(--gut) clamp(40px, 5vw, 112px); color: #FFFFFF;
+  padding: calc(var(--hd-h) + 16px) var(--gut) clamp(40px, 5vw, 112px); color: var(--ivory);
 }
-/* lower third: the kitchen stays clear above the text; the line of text and the buttons share one baseline */
+/* the headline runs across the frame on a diagonal: its first line at the start edge, its second at the end edge; the small line sits
+   in the room the second line leaves, like a label on the picture, and the buttons close the diagonal under the second line */
 .hero-in { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--gap-l); align-items: end; }
-.hero h1 { grid-column: 1 / -1; font-size: var(--f-d); line-height: var(--lh-h1); letter-spacing: -.02em; text-wrap: initial; }
+.hero-label { grid-column: 1 / -1; grid-row: 1; font-size: var(--f-text); font-weight: 500; line-height: 1.3; margin-bottom: var(--gap-s); }
+.hero h1 { grid-column: 1 / -1; grid-row: 2; font-size: var(--f-d); line-height: var(--lh-h1); letter-spacing: -.015em; text-wrap: initial; }
 .hero h1 .ln { display: block; }
-.hero-sub { grid-column: 1; margin-top: clamp(20px, 1.8vw, 40px); font-size: var(--f-lead); line-height: var(--lh-lead); max-width: 34em; color: rgba(255, 255, 255, .92); }
+.hero h1 .ln + .ln { text-align: end; }
+.hero-sub { grid-column: 1; grid-row: 2; align-self: end; padding-bottom: .2em; font-size: var(--f-lead); line-height: var(--lh-lead); max-width: 25em; color: rgba(255, 255, 255, .92); }
 .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: clamp(20px, 2vw, 40px); }
-.hero .ctas { grid-column: 2; grid-row: 2; align-self: end; margin-top: clamp(20px, 1.8vw, 40px); }
+.hero .ctas { grid-column: 2; grid-row: 3; align-self: end; margin-top: clamp(20px, 2.2vw, 48px); }
 @media (prefers-reduced-motion: no-preference) {
   html:not(.a11y-still) .hero h1 .ln { animation: rise 1.1s var(--ease-out) both; }
   html:not(.a11y-still) .hero h1 .ln + .ln { animation-delay: .12s; }
-  html:not(.a11y-still) .hero-sub, html:not(.a11y-still) .hero .ctas { animation: fade .9s var(--ease) .6s both; }
+  html:not(.a11y-still) .hero-label, html:not(.a11y-still) .hero-sub, html:not(.a11y-still) .hero .ctas { animation: fade .9s var(--ease) .6s both; }
 }
-@keyframes rise { from { opacity: 0; transform: translateY(.35em); clip-path: inset(0 0 100% 0); } to { opacity: 1; transform: none; clip-path: inset(0 0 -20% 0); } }
+@keyframes rise { from { opacity: 0; transform: translateY(.35em); clip-path: inset(0 0 100% 0); } to { opacity: 1; transform: none; clip-path: inset(-.2em 0 -.2em 0); } }
 @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @media (max-width: 1023px) {
   .hero-in { grid-template-columns: 1fr; }
+  .hero-sub { grid-row: auto; padding-bottom: 0; margin-top: var(--gap-m); max-width: 34em; }
   .hero .ctas { grid-column: 1; grid-row: auto; }
 }
 /* phone: the content sits in the middle of what the header leaves */
 @media (max-width: 767px) {
   .hero { align-items: center; padding: calc(var(--hd-h) + 12px) var(--gut) calc(12px + env(safe-area-inset-bottom)); }
-  .hero h1 .ln { display: inline; }
   html:not(.a11y-still) .hero h1 .ln { animation: none; }
   .hero .ctas .btn { flex: 1 1 100%; }
 }
 
 .hv { isolation: isolate; overflow: hidden; }
-/* the film runs to the very edge of the hero, and the next section starts on a hard line */
+/* --hi (js/home.js): the way out, the picture closes into a window and the white under it is the next section's */
+.is-live .hv { clip-path: inset(0 calc(var(--hi, 0) * var(--gut)) calc(var(--hi, 0) * 8svh)); }
+/* the film runs to the very edge of the hero, and its foot ends over the white of the next section */
 .hv-media { position: absolute; inset: 0; z-index: -1; }
 .hv-media img, .hv-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hv-vid { opacity: 0; transition: opacity 1.2s var(--ease); }
 .hv-vid.on { opacity: 1; }
-/* a dusk at the top under the header, and a dark one at the foot under the words; the kitchen stays as it was shot */
+/* a little dusk under the header and a dark floor under the words, no higher than they reach: the picture stays bright */
 .hv-scrim {
   position: absolute; inset: 0;
   background:
-    linear-gradient(to bottom, rgba(0, 0, 0, .5) 0%, rgba(0, 0, 0, 0) 22%),
-    linear-gradient(to top, rgba(0, 0, 0, .84) 0%, rgba(0, 0, 0, .66) 26%, rgba(0, 0, 0, .36) 42%, rgba(0, 0, 0, .1) 56%, rgba(0, 0, 0, 0) 64%),
-    radial-gradient(90% 70% at 100% 100%, rgba(0, 0, 0, .42), rgba(0, 0, 0, 0) 62%);
+    radial-gradient(ellipse 30% calc(var(--hd-h) * 1.5) at 0 calc(var(--hd-h) / 2), rgba(0, 0, 0, .34) 0%, rgba(0, 0, 0, .3) 60%, rgba(0, 0, 0, 0) 100%),
+    linear-gradient(to bottom, rgba(0, 0, 0, .46) 0, rgba(0, 0, 0, .42) var(--hd-h), rgba(0, 0, 0, 0) calc(var(--hd-h) * 2)),
+    radial-gradient(ellipse 88% 30% at 100% 61%, rgba(0, 0, 0, .6) 0%, rgba(0, 0, 0, .5) 55%, rgba(0, 0, 0, 0) 100%),
+    linear-gradient(to top, rgba(0, 0, 0, .62) 0%, rgba(0, 0, 0, .44) 20%, rgba(0, 0, 0, .14) 36%, rgba(0, 0, 0, 0) 46%);
 }
 @media (max-width: 767px) {
   .hv-scrim { background: linear-gradient(to bottom, rgba(0, 0, 0, .5) 0%, rgba(0, 0, 0, .42) 20%, rgba(0, 0, 0, .58) 44%, rgba(0, 0, 0, .7) 72%, rgba(0, 0, 0, .82) 100%); }
 }
+/* the second photo option has a white table and a light wall where the words sit */
+.hero[data-p="1"] .hv-scrim { background: radial-gradient(ellipse 30% calc(var(--hd-h) * 1.5) at 0 calc(var(--hd-h) / 2), rgba(0, 0, 0, .34) 0%, rgba(0, 0, 0, .3) 60%, rgba(0, 0, 0, 0) 100%), linear-gradient(to bottom, rgba(0, 0, 0, .46) 0, rgba(0, 0, 0, .42) var(--hd-h), rgba(0, 0, 0, 0) calc(var(--hd-h) * 2)), linear-gradient(to top, rgba(0, 0, 0, .72) 0%, rgba(0, 0, 0, .62) 34%, rgba(0, 0, 0, .3) 54%, rgba(0, 0, 0, 0) 68%); }
+.p-pick { inset-block-start: calc(var(--hd-h) + 16px + 52px); }
+@media (max-width: 767px), (max-width: 1023px) and (orientation: portrait) { .p-pick { display: none; } }
 /* the hero's film has no pause button of its own (Liav, 2.11.2026: "למחוק את כפתור הפליי"): "stop animations" in the accessibility panel stops it */
 /* the headline directions, only with ?h in the address, to switch between them in the meeting (js/home.js) */
 .h-pick {
@@ -273,69 +285,58 @@ html.a11y-still .btn .rc { transform: none !important; }
   display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgba(255, 255, 255, .8);
 }
 .h-pick span { margin-inline-end: 6px; }
-.h-pick button { min-width: 44px; min-height: 44px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .5); color: #FFFFFF; font-variant-numeric: tabular-nums; }
-.h-pick button[aria-pressed="true"] { background: #FFFFFF; color: #000000; }
+.h-pick button { min-width: 44px; min-height: 44px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .5); color: var(--ivory); font-variant-numeric: tabular-nums; }
+.h-pick button[aria-pressed="true"] { background: var(--ivory); color: var(--char); }
 
 /* ===== sections: each on its own ground, separated by the change of ground and by space ===== */
 .sec { position: relative; padding: var(--sec) var(--gut); }
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* ===== what we specialise in: a centred heading and one line, then the eight of theirs in one strip. Without motion it is
-   a row to swipe. Live (js/kit-strip.js, after MV:g65) the stage pins, the vertical scroll carries the strip sideways, and the
-   kitchen in the centre grows and sharpens while the rest recede ===== */
-.kit { overflow: clip; padding-inline: 0; }
-.kit-head { display: grid; justify-items: center; gap: var(--gap-m); padding-inline: var(--gut); text-align: center; }
+/* ===== what we specialise in (the meeting of 3.11.2026, no forced scroll): a centred heading and one line, then the eight kinds,
+   two in a row and large, each with its name in the display font. The kind's own page comes later ===== */
+.kit-head { display: grid; justify-items: center; gap: var(--gap-m); text-align: center; }
 .kit h2 { font-size: var(--f-h1); line-height: var(--lh-h1); letter-spacing: -.02em; }
 .kit .lead { font-size: var(--f-lead); line-height: var(--lh-lead); color: var(--ink-2); max-width: 34em; }
-.kit-view { container-type: inline-size; margin-top: var(--gap-l); }
-.kit-rail {
-  --kw: min(48vw, 70svh);
-  display: flex; gap: var(--gap-s); overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none;
-  padding-inline: calc(50cqw - var(--kw) / 2); outline-offset: 8px;
-}
-.kit-rail::-webkit-scrollbar { display: none; }
-.kit-c { flex: 0 0 var(--kw); scroll-snap-align: center; }
+.kit-grid { list-style: none; margin: var(--gap-l) 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap-s); }
+.kit-c figure { position: relative; }
 .kit-im { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--ph); }
-.kit-im img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.kit-c figcaption { display: grid; gap: 4px; margin-top: 16px; text-align: center; }
-.kit-c strong { font-weight: 500; font-size: var(--f-text); line-height: 1.3; }
-.kit-c figcaption span { font-size: var(--f-meta); line-height: 1.45; color: var(--ink-2); }
-/* live: the view is measured left to right while the strip inside stays right to left, as in MV:g65 */
-.kit.k-live { height: 400vh; padding: 0; }
-.kit.k-live .kit-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; display: grid; align-content: center; gap: var(--gap-l); }
-.kit.k-live .kit-view { margin-top: 0; direction: ltr; overflow: hidden; padding-block: 3vh; }
-.kit.k-live .kit-rail { width: max-content; overflow: visible; scroll-snap-type: none; direction: rtl; }
-.kit.k-live .kit-c { will-change: transform, filter; }
-@media (max-width: 767px) { .kit-rail { --kw: min(86vw, 58svh); } }
+.kit-im img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+@media (hover: hover) and (pointer: fine) { .kit-c .mc-link:hover .kit-im img { transform: scale(1.04); } }
+/* the name on the picture itself (Liav, 3.11.2026: "זה צריך להיות עליה וקריא"): the foot of each photo goes dark under it, and the photo still wipes in under the name */
+.kit-im::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to top, rgba(0, 0, 0, .8) 0%, rgba(0, 0, 0, .56) 24%, rgba(0, 0, 0, 0) 56%); }
+.kit-c figcaption { position: absolute; inset-inline: 0; bottom: 0; padding: var(--gap-m); color: var(--ivory); font-family: var(--font-h); font-weight: var(--w-h); font-size: var(--f-h2); line-height: var(--lh-h); letter-spacing: -.01em; }
+@media (max-width: 767px) { .kit-grid { grid-template-columns: 1fr; } }
 
-/* ===== the process: one kitchen, the villa one, from the sketch to its first evening. Live, it is built in the yard part
+/* ===== the process: one kitchen, the villa one, from the sketch until it is ready. Live, it is built in the yard part
    after part on one pinned stage (js/process.js): a tag on each part as it lands, a list of what already stands, the sun
-   going down and the lights coming on, and at the end the real photo, where the reader picks the hour and lights the oven.
+   climbing to noon, and at the end the real photo at noon, where the reader picks the hour and lights the oven.
    Static: four chapters, each with its picture, and the photo with the hour under them ===== */
 .proc { position: relative; }
 .p-stage { position: relative; display: grid; gap: var(--gap-l); padding: var(--sec) var(--gut); }
-.p-seq, .p-run, .p-scrim, .p-tags, .p-build, .p-rail, .p-flip, .p-tw { display: none; }
+.p-seq, .p-run, .p-scrim, .p-tags, .p-build, .p-rail { display: none; }
 /* static: the chapters first, then the photo with its hour under it (in the page's order the photo comes first, for the live stage) */
-.p-copy { order: 1; } .p-real { order: 2; } .p-tod { order: 3; } .p-turn { order: 4; } .p-go { order: 5; justify-self: center; }
-.p-turn { font-family: var(--font-h); font-weight: var(--w-h); font-size: var(--f-d); line-height: var(--lh-h1); letter-spacing: -.02em; text-align: center; }
+.p-copy { order: 1; } .p-real { order: 2; } .p-tod { order: 3; }
 .p-h { font-size: var(--f-h1); line-height: var(--lh-h1); letter-spacing: -.02em; margin-bottom: var(--gap-l); }
 .p-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap-l) var(--gap-m); }
 .p-step { display: grid; gap: var(--gap-s); align-content: start; }
 .p-fig { aspect-ratio: 3 / 2; overflow: hidden; background: var(--ph); }
+/* the sketch on paper: multiplied, its white is the page's own white */
+.p-step:first-child .p-fig { background: none; }
+.p-step:first-child .p-fig img { mix-blend-mode: multiply; }
 .p-fig img { width: 100%; height: 100%; object-fit: cover; }
 .p-txt { display: grid; gap: 12px; align-content: start; }
 .p-txt h3 { font-size: var(--f-h3); font-weight: 500; line-height: 1.15; }
 .p-txt p { font-size: var(--f-text); line-height: 1.6; max-width: 32em; }
 .p-txt .note { font-size: var(--f-meta); color: var(--muted); }
 .p-real { position: relative; }
-.p-ph { position: relative; aspect-ratio: 1920 / 1282; overflow: hidden; background: #000000; }
+.p-ph { position: relative; aspect-ratio: 1920 / 1282; overflow: hidden; background: var(--char); }
 .p-ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .8s var(--ease); }
 .p-ph img.on { opacity: 1; }
 .p-ph .p-flame { mix-blend-mode: screen; transition: opacity 1.2s var(--ease); }
 .p-tod { display: grid; gap: 14px; justify-items: start; }
 .p-tod-h { font-size: var(--f-h3); font-weight: 500; line-height: 1.15; }
 .p-tod-q { font-size: var(--f-body); color: var(--ink-2); }
-.p-times { display: flex; border: 1px solid var(--line-2); }
+.p-times { display: flex; width: max-content; max-width: 100%; border: 1px solid var(--line-2); overflow: hidden; }
 .p-times button, .p-fire {
   min-height: 44px; padding: 0 20px; border: 0; background: none; color: inherit; font: inherit; font-size: var(--f-body); cursor: pointer;
   transition: background-color .3s var(--ease), color .3s var(--ease), border-color .3s var(--ease);
@@ -344,7 +345,7 @@ html.a11y-still .btn .rc { transform: none !important; }
 .p-times button + button { border-inline-start: 1px solid var(--line-2); }
 .p-fire { display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--line-2); }
 .p-fire svg { width: 16px; height: 16px; fill: currentColor; }
-.p-fire[aria-pressed="true"] { background: var(--red); border-color: var(--red); color: #FFFFFF; }
+.p-fire[aria-pressed="true"] { background: var(--red); border-color: var(--red); color: var(--ivory); }
 @media (hover: hover) and (pointer: fine) {
   .p-times button[aria-pressed="false"]:hover, .p-fire[aria-pressed="false"]:hover { background: var(--line); }
 }
@@ -354,39 +355,31 @@ html.a11y-still .btn .rc { transform: none !important; }
   .p-times { width: 100%; } .p-times button { flex: 1 1 0; padding: 0 8px; }
 }
 
-/* live: the stage holds the screen while the run under it is scrolled (990vh, 765vh on phones: Liav, 1.11.2026, "built
+/* live: the stage holds the screen while the run under it is scrolled (800vh, 618vh on phones: Liav, 1.11.2026, "built
    slowly, bit by bit"); the film fills the screen, the words ride on it at the start side, the list at the end side */
-.proc.p-live .p-stage { position: sticky; top: 0; height: 100svh; display: block; padding: 0; overflow: hidden; isolation: isolate; background: #FFFFFF; }
-.proc.p-live .p-run { display: block; height: 990vh; }
+.proc.p-live .p-stage { position: sticky; top: 0; height: 100svh; display: block; padding: 0; overflow: hidden; isolation: isolate; background: var(--ground); }
+.proc.p-live .p-run { display: block; height: 800vh; }
 .proc.p-live :is(.p-seq, .p-real, .p-tags) { position: absolute; inset: 0; width: 100%; height: 100%; }
 .proc.p-live .p-seq { display: block; z-index: 0; }
-/* --close (js/process.js): at the end the photo closes into a window, and the white page around it is already the next section's */
-.proc.p-live .p-real { z-index: 1; opacity: 0; overflow: hidden; clip-path: inset(calc(var(--close, 0) * 14%) calc(var(--close, 0) * 30%)); }
-.proc.p-live .p-ph { position: absolute; inset: 0; aspect-ratio: auto; background: none; transform: scale(calc(var(--drift, 1) * (1 - var(--close, 0) * var(--shrink, .28)))); transform-origin: calc(56% - var(--close, 0) * 40%) 54%; } /* the origin slides so the oven and its fire end up inside the window */
-/* the closing scene (Liav, 2.11.2026: "KICK רציני"): one line across the whole screen, black on the white and white where it
-   crosses the window, the second copy is inside the photo so the window itself cuts it. In the window their other kitchens flip by */
-.proc.p-live :is(.p-turn, .p-tw) {
-  position: absolute; inset: 0; margin: 0; display: flex; align-items: center; justify-content: center; gap: .24em; font-family: var(--font-h); font-weight: var(--w-h);
-  font-size: 23.5vw; line-height: 1; letter-spacing: -.02em; white-space: nowrap; opacity: 0; visibility: hidden; transform: scale(calc(.9 + var(--close, 0) * .1));
-}
-.proc.p-live .p-turn { z-index: 0; color: #000000; }
-.proc.p-live .p-tw { z-index: 3; color: #FFFFFF; }
-.proc.p-live .p-flip { display: block; position: absolute; inset: 14% 30%; z-index: 1; overflow: hidden; }
-.p-flip img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
-.proc.p-live .p-real::before { content: ""; position: absolute; inset: 0; z-index: 2; background: #000000; opacity: calc(var(--close, 0) * .3); pointer-events: none; }
-.proc.p-live .p-go { --ink: #FFFFFF; --on-ink: #000000; position: absolute; z-index: 5; inset-inline: 0; margin-inline: auto; width: max-content; bottom: calc(14% + 24px); opacity: 0; visibility: hidden; }
+/* --close (js/process.js): at the end the photo closes into a window, and the white around it is already the next section's */
+.proc.p-live .p-real { z-index: 1; opacity: 0; overflow: hidden; clip-path: inset(calc(var(--close, 0) * 10%) calc(var(--close, 0) * 20%)); }
+.proc.p-live .p-ph { position: absolute; inset: 0; aspect-ratio: auto; background: none; transform: scale(calc(var(--drift, 1) * (1 - var(--close, 0) * var(--shrink, .2)))); transform-origin: calc(56% - var(--close, 0) * 40%) 54%; } /* the origin slides so the oven and its fire end up inside the window */
 /* the film's scrim gives way with the photo (js/process.js), which keeps only a corner for its own words and a floor for the rail */
 .proc.p-live .p-real::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: calc(1 - var(--close, 0) * 4);
-  background: radial-gradient(ellipse 62% 74% at 100% 100%, rgba(0, 0, 0, .9) 0%, rgba(0, 0, 0, .74) 48%, rgba(0, 0, 0, 0) 100%),
-              linear-gradient(to top, rgba(0, 0, 0, .72) 0%, rgba(0, 0, 0, 0) 16%);
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: calc(1 - var(--close, 0) * 4); transition: opacity .6s var(--ease);
+  background: radial-gradient(ellipse 58% 62% at 100% 0%, rgba(0, 0, 0, .78) 0%, rgba(0, 0, 0, .52) 46%, rgba(0, 0, 0, 0) 100%),
+              radial-gradient(ellipse 46% 46% at 100% 100%, rgba(0, 0, 0, .82) 0%, rgba(0, 0, 0, .56) 50%, rgba(0, 0, 0, 0) 100%),
+              linear-gradient(to top, rgba(0, 0, 0, .6) 0%, rgba(0, 0, 0, 0) 14%);
 }
+/* at noon the picture is bright to its corners and carries dark words by itself (the meeting of 3.11.2026): nothing dims it, and only the hours sit on a ground of their own */
+.proc.p-live .p-real[data-hour="day"]::after { opacity: 0; }
+.p-stage[data-tone="light"] :is(.p-times, .p-fire) { background: color-mix(in srgb, var(--ground) 76%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
 .proc.p-live .p-scrim { display: block; position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 .p-scrim::before, .p-scrim::after { content: ""; position: absolute; inset: 0; transition: opacity .6s var(--ease); }
 .p-scrim::before {
   /* the side wash only once the yard comes in (--yard, js/process.js): on the paper the sketch stays whole and crisp, the plate behind the words is enough */
-  background: linear-gradient(to left, rgba(255, 255, 255, calc(.88 * var(--yard, 0))) 0%, rgba(255, 255, 255, calc(.66 * var(--yard, 0))) 27%, rgba(255, 255, 255, calc(.34 * var(--yard, 0))) 40%, rgba(255, 255, 255, 0) 54%),
-              linear-gradient(to top, rgba(255, 255, 255, .86) 0%, rgba(255, 255, 255, 0) 24%);
+  background: linear-gradient(to left, color-mix(in srgb, var(--ground) calc(52% * var(--yard, 0)), transparent) 0%, color-mix(in srgb, var(--ground) calc(30% * var(--yard, 0)), transparent) 24%, transparent 42%),
+              linear-gradient(to top, color-mix(in srgb, var(--ground) 62%, transparent) 0%, transparent 18%);
 }
 .p-scrim::after {
   background: linear-gradient(to left, rgba(0, 0, 0, .84) 0%, rgba(0, 0, 0, .56) 32%, rgba(0, 0, 0, 0) 58%),
@@ -397,23 +390,23 @@ html.a11y-still .btn .rc { transform: none !important; }
 .p-stage[data-tone="dark"] .p-scrim::after { opacity: 1; }
 .proc.p-live .p-tags { display: block; z-index: 3; pointer-events: none; }
 /* the tags sit on points of the picture, measured from its left edge whatever the page's direction: a fine dot, a hairline, a small crisp label */
-.p-tag { position: absolute; left: 0; /* qa-allow: physical */ top: 0; opacity: 0; visibility: hidden; color: #000000; will-change: transform, opacity; }
-.p-tag i { position: absolute; left: -3px; /* qa-allow: physical */ top: -3px; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.p-tag { position: absolute; left: 0; /* qa-allow: physical */ top: 0; opacity: 0; visibility: hidden; color: var(--char); will-change: transform, opacity; }
+.p-tag i { position: absolute; left: -3px; /* qa-allow: physical */ top: -3px; width: 6px; height: 6px; background: currentColor; }
 .p-tag b { position: absolute; left: 0; /* qa-allow: physical */ bottom: 6px; width: 1px; height: 32px; background: currentColor; opacity: .5; }
 .p-tag span {
-  position: absolute; bottom: 38px; left: 0; /* qa-allow: physical */ transform: translateX(-50%); white-space: nowrap; padding: 4px 8px;
-  font-size: var(--f-meta); font-weight: 500; line-height: 1.2; background: #FFFFFF;
+  position: absolute; bottom: 38px; left: 0; /* qa-allow: physical */ transform: translateX(-50%); white-space: nowrap; padding: 4px 12px;
+  font-size: var(--f-meta); font-weight: 500; line-height: 1.2; background: var(--ground);
 }
 .p-tag.dn b { bottom: auto; top: 6px; }
 .p-tag.dn span { bottom: auto; top: 38px; }
-.p-stage[data-tone="dark"] .p-tag { color: #FFFFFF; }
-.p-stage[data-tone="dark"] .p-tag span { background: #000000; }
+.p-stage[data-tone="dark"] .p-tag { color: var(--ivory); }
+.p-stage[data-tone="dark"] .p-tag span { background: var(--char); }
 .proc.p-live .p-copy {
   position: absolute; z-index: 4; inset-inline-start: var(--gut); top: calc(var(--hd-h) + 8vh); width: min(30em, 34vw);
-  display: grid; color: #000000; 
+  display: grid; color: var(--char); 
 }
 /* on the paper the lines of the sketch step back behind the words; in the yard the scrim does that */
-.proc.p-live .p-copy::before { content: ""; position: absolute; inset: 0; z-index: -1; background: #FFFFFF; box-shadow: 0 0 36px 28px #FFFFFF; opacity: var(--plate, 0); pointer-events: none; }
+.proc.p-live .p-copy::before { content: ""; position: absolute; inset: -70% -40%; z-index: -1; background: radial-gradient(closest-side, var(--ground) 62%, color-mix(in srgb, var(--ground) 62%, transparent) 78%, color-mix(in srgb, var(--ground) 18%, transparent) 91%, transparent); opacity: var(--plate, 0); pointer-events: none; }
 .proc.p-live .p-copy > *, .proc.p-live .p-steps > li { grid-area: 1 / 1; }
 .proc.p-live .p-h { font-size: var(--f-h2); line-height: var(--lh-h); margin: 0; }
 .proc.p-live .p-steps { grid-template-columns: none; gap: 0; }
@@ -424,7 +417,7 @@ html.a11y-still .btn .rc { transform: none !important; }
 .proc.p-live .p-txt .note { color: inherit; opacity: .78; }
 .proc.p-live :is(.p-h, .p-step, .p-tod) { opacity: 0; visibility: hidden; }
 .proc.p-live .p-build {
-  display: block; position: absolute; z-index: 4; inset-inline-end: var(--gut); bottom: calc(76px + var(--gap-m)); color: #000000;
+  display: block; position: absolute; z-index: 4; inset-inline-end: var(--gut); bottom: calc(76px + var(--gap-m)); color: var(--char);
   font-size: var(--f-meta); line-height: 1.2; opacity: 0; 
 }
 .p-build-h { font-weight: 500; margin-bottom: 12px; letter-spacing: .02em; }
@@ -434,26 +427,29 @@ html.a11y-still .btn .rc { transform: none !important; }
 .p-build li::before { content: ""; flex: none; width: 16px; height: 1px; background: currentColor; transform: scaleX(.25); transform-origin: right; transition: transform .6s var(--ease-io); }
 .p-build li.on { opacity: 1; }
 .p-build li.on::before { transform: none; }
-.proc.p-live .p-tod { position: absolute; z-index: 4; inset-inline-start: var(--gut); bottom: calc(76px + var(--gap-l)); width: min(34em, 44vw); color: #000000; }
+.proc.p-live .p-tod { position: absolute; z-index: 4; inset-inline-start: var(--gut); top: calc(var(--hd-h) + 8vh); bottom: calc(76px + var(--gap-l)); width: min(34em, 44vw); color: var(--char); grid-template-rows: auto auto 1fr auto; }
+.proc.p-live .p-times { align-self: end; }
 .proc.p-live .p-tod-h { font-size: var(--f-h2); font-family: var(--font-h); font-weight: var(--w-h); line-height: var(--lh-h); letter-spacing: -.01em; }
-.proc.p-live .p-tod-q { color: inherit; opacity: .86; }
+.proc.p-live .p-tod-q { color: inherit; }
 /* where we are in the story (Liav, 2.11.2026, instead of the progress bar): a small plan of this kitchen that draws itself in
    the corner, each part as it lands in the film (js/process.js), a pen point on the line and the oven red at the end;
    under it the four chapters, as they were, each jumps to its place */
-.proc.p-live .p-rail { display: grid; justify-items: start; gap: 6px; position: absolute; z-index: 4; inset-inline-start: var(--gut); bottom: 10px; color: #000000; }
+.proc.p-live .p-rail { display: grid; justify-items: start; gap: 6px; position: absolute; z-index: 4; inset-inline-start: var(--gut); bottom: 10px; color: var(--char); }
 /* after the three blocks above, which have the same weight */
-.p-stage[data-tone="dark"] :is(.p-copy, .p-build, .p-rail, .p-tod) { color: #FFFFFF; }
+.p-stage[data-tone="dark"] :is(.p-copy, .p-build, .p-rail, .p-tod) { color: var(--ivory); }
 .p-plan { display: block; width: 181px; height: 73px; overflow: visible; fill: none; stroke: currentColor; stroke-width: 1; }
 .p-plan path { stroke-dasharray: 1 1; stroke-dashoffset: 1; }
 .p-plan .p-pen { fill: var(--red); stroke: none; opacity: 0; }
 .p-plan .p-oven { transition: fill .6s var(--ease), stroke .6s var(--ease); }
 .p-plan.lit .p-oven { fill: var(--red); stroke: var(--red); }
-.p-chs { display: flex; gap: 24px; }
+.p-chs { display: flex; gap: 4px; }
 .p-rail button {
-  min-height: 44px; padding: 0; border: 0; background: none; color: inherit; font: inherit; font-size: var(--f-meta);
-  text-align: start; white-space: nowrap; cursor: pointer; opacity: .62; transition: opacity .4s var(--ease);
+  min-height: 44px; padding: 0 14px; border: 0; background: none; color: inherit; font: inherit; font-size: var(--f-meta);
+  text-align: start; white-space: nowrap; cursor: pointer; opacity: .62; transition: opacity .4s var(--ease), box-shadow .4s var(--ease);
 }
-.p-rail button[aria-current] { opacity: 1; font-weight: 500; }
+.p-rail button:first-child { margin-inline-start: -14px; }
+.p-rail button[aria-current] { opacity: 1; font-weight: 500; box-shadow: inset 0 0 0 1px currentColor; }
+.p-rail button[aria-current]:first-child { margin-inline-start: 0; }
 @media (hover: hover) and (pointer: fine) { .p-rail button:hover { opacity: 1; } }
 .p-rail button:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
 
@@ -461,37 +457,65 @@ html.a11y-still .btn .rc { transform: none !important; }
    under the header, the words under it on the section's own ground (white, then night), the chapters over the action bar */
 @media (max-width: 767px), (max-width: 1023px) and (orientation: portrait) {
   .proc.p-live .p-stage { background: var(--bg); --shrink: .08; }
-  .proc.p-live .p-run { height: 765vh; }
+  .proc.p-live .p-run { height: 618vh; }
   .proc.p-live :is(.p-seq, .p-real, .p-tags) { top: calc(var(--hd-h) + 6px); height: min(66.7vw, 46svh); }
-  /* the band comes down to the middle of what the header and the action bar leave, between the two words */
+  /* the band comes down to the middle of what the header and the action bar leave */
   .proc.p-live .p-real {
     clip-path: inset(0 calc(var(--close, 0) * 10%));
     transform: translateY(calc(var(--close, 0) * ((100svh - var(--hd-h) - 76px) / 2 - 6px - min(66.7vw, 46svh) / 2)));
   }
-  .proc.p-live .p-turn {
-    inset: var(--hd-h) 0 76px; display: grid; gap: 0; justify-items: center; grid-template-rows: 1fr min(66.7vw, 46svh) 1fr; font-size: min(43vw, (100svh - var(--hd-h) - 76px - min(66.7vw, 46svh)) / 2 - 8px); transform: none;
-  }
-  .proc.p-live .p-turn span:last-child { grid-row: 3; }
-  .proc.p-live .p-tw, .proc.p-live .p-real::before { display: none; }
-  .proc.p-live .p-flip { inset: 0 10%; }
-  /* in the window, over the photo, in the middle of what the header and the action bar leave */
-  .proc.p-live .p-go { bottom: calc(76px + (100svh - var(--hd-h) - 76px - min(66.7vw, 46svh)) / 2 + 14px); }
   .proc.p-live .p-scrim, .proc.p-live .p-build, .proc.p-live .p-real::after, .proc.p-live .p-copy::before { display: none; }
   .proc.p-live :is(.p-copy, .p-tod) {
     top: calc(var(--hd-h) + 6px + min(66.7vw, 46svh) + 24px); bottom: auto; inset-inline: var(--gut); width: auto;
   }
   .p-stage[data-tone] :is(.p-copy, .p-tod, .p-rail) { color: var(--ink); }
-  .proc.p-live .p-h, .proc.p-live .p-txt h3, .proc.p-live .p-tod-h { font-size: calc(28px * var(--a11y-scale)); }
+  .proc.p-live .p-h, .proc.p-live .p-txt h3, .proc.p-live .p-tod-h { font-size: calc(34px * var(--a11y-scale)); }
   .proc.p-live .p-txt { gap: 10px; }
   .proc.p-live .p-txt p { font-size: calc(16px * var(--a11y-scale)); line-height: 1.55; }
-  .proc.p-live .p-tod { gap: 12px; }
+  .proc.p-live .p-tod { gap: 12px; grid-template-rows: none; }
+  .proc.p-live .p-times { align-self: auto; }
   .proc.p-live .p-rail { inset-inline: var(--gut); bottom: calc(76px + env(safe-area-inset-bottom, 0px)); grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 14px; }
   .p-plan { width: 84px; height: 34px; stroke-width: 2; }
-  .p-chs { justify-content: space-between; gap: 8px; }
-  .p-rail button { font-size: calc(12px * var(--a11y-scale)); }
+  .p-chs { justify-content: space-between; gap: 2px; }
+  .p-rail button { font-size: calc(12px * var(--a11y-scale)); padding: 0 8px; }
+  .p-rail button:first-child, .p-rail button[aria-current]:first-child { margin-inline-start: 0; }
   .p-tag span { font-size: calc(12px * var(--a11y-scale)); padding: 3px 8px; bottom: 30px; }
   .p-tag b { height: 22px; }
   .p-tag.dn span { top: 30px; }
+}
+
+/* ===== your turn (the meeting of 3.11.2026): one picture in layers, the words in one clean colour behind its beams and a single button.
+   Static: the same layers in a frame. Live (js/turn.js) the frame opens to the whole screen and closes again on the white ===== */
+.turn { position: relative; padding: var(--sec) var(--gut); }
+.t-run { display: none; }
+.t-frame { position: relative; isolation: isolate; height: min(92svh, 70vw); overflow: hidden; background: var(--char); color: var(--ivory); }
+.t-bg, .t-fg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--t-x, 50%) 0; }
+.t-bg { z-index: 0; }
+.t-fg { z-index: 3; pointer-events: none; }
+/* only the sky darkens, so the words read and the kitchen stays as it was shot */
+.t-frame::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, rgba(0, 0, 0, .3) 0%, rgba(0, 0, 0, 0) 56%); pointer-events: none; }
+.t-h {
+  position: absolute; z-index: 2; inset-inline: 0; top: var(--t-top, 4%); display: flex; justify-content: center; gap: .24em; color: var(--ivory);
+  font-size: min(21vw, 44svh); line-height: 1; letter-spacing: -.02em; white-space: nowrap; text-wrap: initial;
+}
+.t-go { position: absolute; z-index: 4; inset-inline: 0; margin-inline: auto; width: max-content; bottom: clamp(24px, 6svh, 72px); }
+/* --t-in: 1 the window on the white, 0 the whole screen; --t-y: the words' own slow drift */
+.turn.t-live { padding: 0; }
+.turn.t-live .t-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+.turn.t-live .t-run { display: block; height: 200vh; }
+.turn.t-live .t-frame {
+  height: 100%;
+  clip-path: inset(calc(var(--t-in, 1) * var(--t-iy, 10svh)) calc(var(--t-in, 1) * var(--t-ix, 12vw)));
+}
+.turn.t-live .t-h { transform: translateY(calc((var(--t-y, .5) - .5) * 8svh)); opacity: calc(1 - var(--t-in, 1) * 1.3); }
+.turn.t-live .t-go { opacity: calc(1 - var(--t-in, 1) * 1.6); }
+@media (max-width: 767px), (max-width: 1023px) and (orientation: portrait) {
+  /* the crop stands the chimney and its beam to one side and the two lines in the open sky over the oven, or they would cut the words in two.
+     The picture is cropped by its height, so that sky is as wide as the screen is tall, and the words are sized on the height too */
+  .t-frame { --t-x: 100%; --t-top: 7%; --t-ix: 4vw; --t-iy: 12svh; height: 84svh; }
+  .t-h { flex-direction: column; align-items: flex-start; gap: 0; padding-inline-start: 5vw; font-size: 12.5svh; line-height: .95; }
+  .turn.t-live .t-h { font-size: 15svh; }
+  .t-go { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
 }
 
 /* ===== about: after the letters, on the black, one centred column over the logo: the name, the story, the button ===== */
@@ -516,7 +540,7 @@ html.a11y-still .btn .rc { transform: none !important; }
 .more-nav { display: flex; gap: 8px; }
 .more-nav[hidden] { display: none; }
 .arr {
-  position: relative; isolation: isolate; flex: none; display: grid; place-items: center; width: 52px; height: 52px; cursor: pointer;
+  position: relative; isolation: isolate; overflow: hidden; flex: none; display: grid; place-items: center; width: 54px; height: 54px; cursor: pointer;
   background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-2);
   transition: color .45s var(--ease-io) .05s, box-shadow .45s var(--ease-io), opacity .3s var(--ease);
 }
@@ -545,6 +569,8 @@ html.a11y-still .btn .rc { transform: none !important; }
 .more::-webkit-scrollbar { display: none; }
 .mc { flex: 0 0 var(--mw); scroll-snap-align: start; }
 .mc-link { display: block; }
+/* every second one a step lower, photos laid out on the white */
+.mc:nth-child(even) { padding-top: var(--gap-l); }
 .mc .pic { aspect-ratio: 4 / 5; }
 .mc .pic img { position: absolute; inset: 0; }
 .mc h3 {
@@ -571,7 +597,7 @@ html.a11y-still .btn .rc { transform: none !important; }
    evening, played by the scroll on one pinned stage (js/yours.js, live only with motion); at its end the reader picks
    the stone himself. Without motion: the four steps as text, the night picture and the stones under it ===== */
 .yours { position: relative; }
-.y-stage { position: relative; display: grid; color: #FFFFFF; background: #000000; }
+.y-stage { position: relative; display: grid; color: var(--ivory); background: var(--char); }
 .y-seq, .y-run, .y-scrim { display: none; }
 .y-copy { order: -1; padding: var(--sec) var(--gut) var(--gap-l); display: grid; gap: var(--gap-l); }
 .y-h { font-size: var(--f-h1); line-height: var(--lh-h1); letter-spacing: -.02em; max-width: 12em; }
@@ -579,7 +605,7 @@ html.a11y-still .btn .rc { transform: none !important; }
 .y-beats li { display: grid; gap: 10px; align-content: start; }
 .y-beats h3 { font-size: var(--f-h3); font-weight: 500; line-height: 1.15; }
 .y-beats p { font-size: var(--f-text); line-height: 1.5; max-width: 26em; }
-.y-stones { position: relative; aspect-ratio: 1920 / 1068; overflow: hidden; background: #000000; }
+.y-stones { position: relative; aspect-ratio: 1920 / 1068; overflow: hidden; background: var(--char); }
 .y-stones img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--yfx, 50%) 50%; opacity: 0; transition: opacity .7s var(--ease); }
 .y-stones img.on { opacity: 1; }
 .y-pick { display: grid; gap: 18px; justify-items: start; padding: var(--gap-l) var(--gut) var(--sec); }
@@ -590,40 +616,40 @@ html.a11y-still .btn .rc { transform: none !important; }
   color: inherit; font: inherit; font-size: var(--f-meta); line-height: 1.2; cursor: pointer; opacity: .78; transition: opacity .3s var(--ease);
 }
 .y-sw button i {
-  display: block; width: 58px; height: 58px; border-radius: 50%; background: center / cover no-repeat;
+  display: block; width: 58px; height: 58px; background: center / cover no-repeat;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .28); outline: 1px solid transparent; outline-offset: 4px;
   transition: outline-color .3s var(--ease), transform .4s var(--ease-out);
 }
 .y-sw button[aria-pressed="true"] { opacity: 1; }
-.y-sw button[aria-pressed="true"] i { outline: 1px solid #FFFFFF; }
+.y-sw button[aria-pressed="true"] i { outline: 1px solid var(--ivory); }
 @media (hover: hover) and (pointer: fine) { .y-sw button:hover { opacity: 1; } .y-sw button:hover i { transform: scale(1.06); } }
-.y-sw button:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; }
+.y-sw button:focus-visible { outline: 2px solid var(--ivory); outline-offset: 2px; }
 .y-pick-note { font-size: var(--f-meta); opacity: .72; }
 @media (max-width: 1023px) { .y-beats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 767px) {
-  .y-beats { grid-template-columns: 1fr; } :root { --yfx: 40%; }
+  .y-beats { grid-template-columns: 1fr; } :root { --yfx: 10%; }
   .y-sw { flex-wrap: nowrap; gap: 6px; justify-content: space-between; width: 100%; }
   .y-sw button { min-width: 0; flex: 1 1 0; gap: 8px; }
   .y-sw button i { width: 50px; height: 50px; }
 }
 
 /* live: the stage holds the screen while the run under it is scrolled; the copy and the stones ride over the film */
-.yours.y-live .y-stage { position: sticky; top: 0; height: 100svh; display: block; overflow: hidden; isolation: isolate; background: #FFFFFF; }
+.yours.y-live .y-stage { position: sticky; top: 0; height: 100svh; display: block; overflow: hidden; isolation: isolate; background: var(--ground); }
 .yours.y-live .y-run { display: block; height: 420vh; }
 .yours.y-live .y-seq { display: block; position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
 .yours.y-live .y-stones { position: absolute; inset: 0; aspect-ratio: auto; z-index: 1; opacity: 0; background: none; }
 .yours.y-live .y-scrim { display: block; position: absolute; inset: 0; z-index: 2; pointer-events: none; }
-.y-scrim::before, .y-scrim::after { content: ""; position: absolute; inset: 0; transition: opacity .6s var(--ease); }
+.y-scrim::before, .y-scrim::after { content: ""; position: absolute; inset: 0; }
 /* the first picture is pale on the pale page above it: while the tone is light its top melts into the white (Liav, 2.11.2026: "לעשות FADE בחלק העליון") */
-.y-scrim::before { background: linear-gradient(to bottom, #FFFFFF 0%, rgba(255, 255, 255, 0) 30%), linear-gradient(to left, rgba(255, 255, 255, .9) 0%, rgba(255, 255, 255, .62) 30%, rgba(255, 255, 255, 0) 56%); }
-.y-scrim::after { background: linear-gradient(to left, rgba(0, 0, 0, .84) 0%, rgba(0, 0, 0, .58) 34%, rgba(0, 0, 0, 0) 60%); opacity: 0; }
-.y-stage[data-tone="dark"] .y-scrim::before { opacity: 0; }
-.y-stage[data-tone="dark"] .y-scrim::after { opacity: 1; }
+.y-scrim::before { background: linear-gradient(to bottom, var(--ground) 0%, transparent 30%), linear-gradient(to left, color-mix(in srgb, var(--ground) 90%, transparent) 0%, color-mix(in srgb, var(--ground) 62%, transparent) 30%, transparent 56%); opacity: var(--y-paper, 1); }
+.y-scrim::after { background: linear-gradient(to left, rgba(0, 0, 0, .84) 0%, rgba(0, 0, 0, .58) 34%, rgba(0, 0, 0, 0) 60%); opacity: var(--y-night, 0); }
+/* the floor is still white while the scrim rises, and the words are above it: the band stays off the floor until the floor arrives */
+@media (min-width: 768px) and (orientation: landscape), (min-width: 1024px) { .y-scrim::after { -webkit-mask-image: linear-gradient(to bottom, #000 70%, rgba(0, 0, 0, var(--y-floor, 1)) 80%); mask-image: linear-gradient(to bottom, #000 70%, rgba(0, 0, 0, var(--y-floor, 1)) 80%); } }
 .yours.y-live .y-copy {
   position: absolute; z-index: 3; inset-inline-start: var(--gut); top: calc(var(--hd-h) + 8vh); width: min(30em, 36vw);
-  padding: 0; display: grid; color: #000000; 
+  padding: 0; display: grid; color: var(--char); 
 }
-.y-stage[data-tone="dark"] .y-copy { color: #FFFFFF; }
+.y-stage[data-tone="dark"] .y-copy { color: var(--ivory); }
 .yours.y-live .y-copy > *, .yours.y-live .y-beats > li { grid-area: 1 / 1; }
 .yours.y-live .y-h { font-size: var(--f-h2); line-height: var(--lh-h); }
 .yours.y-live .y-beats { display: grid; grid-template-columns: none; }
@@ -632,7 +658,7 @@ html.a11y-still .btn .rc { transform: none !important; }
 .yours.y-live .y-h, .yours.y-live .y-beats li { opacity: 0; visibility: hidden; }
 .yours.y-live .y-pick { position: absolute; z-index: 3; inset-inline-start: var(--gut); bottom: 9vh; padding: 0; opacity: 0; visibility: hidden; }
 @media (max-width: 767px), (max-width: 1023px) and (orientation: portrait) {
-  .y-scrim::before { background: linear-gradient(to bottom, #FFFFFF 0%, rgba(255, 255, 255, 0) 24%), linear-gradient(to top, rgba(255, 255, 255, .94) 0%, rgba(255, 255, 255, .7) 34%, rgba(255, 255, 255, 0) 62%); }
+  .y-scrim::before { background: linear-gradient(to bottom, var(--ground) 0%, transparent 24%), linear-gradient(to top, color-mix(in srgb, var(--ground) 94%, transparent) 0%, color-mix(in srgb, var(--ground) 70%, transparent) 34%, transparent 62%); }
   .y-scrim::after { background: linear-gradient(to top, rgba(0, 0, 0, .86) 0%, rgba(0, 0, 0, .5) 38%, rgba(0, 0, 0, 0) 66%); }
   .yours.y-live .y-copy { top: auto; bottom: calc(9vh + env(safe-area-inset-bottom, 0px)); inset-inline-end: var(--gut); width: auto; }
   .yours.y-live .y-pick { inset-inline-end: var(--gut); bottom: calc(84px + env(safe-area-inset-bottom, 0px)); gap: 14px; }
@@ -640,19 +666,18 @@ html.a11y-still .btn .rc { transform: none !important; }
   .yours.y-live .y-run { height: 360vh; }
 }
 
-/* ===== the letters: KFT cut out of the white page, a kitchen photo behind them; the camera flies through the stem of
+/* ===== the letters: the logo itself cut out of the white page, a kitchen photo behind them; the camera flies through the stem of
    the T into the photo (after MV:g156; js/home.js), and the photo ends on a hard line on the black of the about section.
    Without motion: just the photo ===== */
 .bf-scene { position: relative; }
-.bf-pin { position: relative; height: min(100svh, 62vw); overflow: hidden; background: #000000; }
+.bf-pin { position: relative; height: min(100svh, 62vw); overflow: hidden; background: var(--char); }
 .bf-pin img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
 /* the one fade between two grounds on the page: the photo melts into the black of "about" so the two read as one
    (Liav, 2.11.2026: "כן תעשה בFADE לצבע השחור כדי שזה ייראה קשור"). Live it comes up only as the letters open up, under them */
-.bf-pin::after { content: ''; position: absolute; inset: auto 0 0; height: 62%; z-index: 1; pointer-events: none; background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, .12) 22%, rgba(0, 0, 0, .42) 50%, rgba(0, 0, 0, .8) 78%, #000000); }
+.bf-pin::after { content: ''; position: absolute; inset: auto 0 0; height: 62%; z-index: 1; pointer-events: none; background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, .12) 22%, rgba(0, 0, 0, .42) 50%, rgba(0, 0, 0, .8) 78%, var(--char)); }
 .is-live .bf-pin::after { opacity: var(--bf-fade, 0); }
 .bf-cut { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; display: none; }
-.bf-cut text { font-family: 'PM', 'GS', sans-serif; font-weight: 500; }
-.bf-out { fill: none; stroke: #000000; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.bf-out { fill: none; stroke: var(--char); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .is-live .bf-scene { height: calc(100svh + 40vh); }
 .is-live .bf-pin { position: sticky; top: 0; height: 100svh; }
 .is-live .bf-cut { display: block; }
@@ -665,7 +690,7 @@ html.a11y-still .btn .rc { transform: none !important; }
 .arch h2 { font-size: var(--f-h2); }
 .arch .lead { font-size: var(--f-lead); line-height: var(--lh-lead); margin: var(--gap-m) 0 var(--gap-l); max-width: 26em; color: var(--ink-2); }
 .plot { position: relative; }
-.plot img { width: 100%; }
+.plot img { width: 100%; mix-blend-mode: multiply; } /* the plan on paper: its white is the page's own */
 .plot svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .dim-l path { fill: none; stroke: var(--red); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .is-live .plot img { clip-path: inset(0 0 calc(100% - var(--plot, 0) * 100%) 0); }
@@ -674,15 +699,36 @@ html.a11y-still .btn .rc { transform: none !important; }
 .is-live .plot-head { opacity: calc((1 - var(--plot, 0)) * 12); }
 @media (max-width: 1023px) { .arch-in { grid-template-columns: 1fr; } }
 
-/* ===== contact: on the white, lines to write on, not boxes ===== */
-.contact-in { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--gap-l); align-items: start; }
+/* ===== contact (the meeting of 3.11.2026): the words and the branches on a picture that follows the kind of home picked
+   in the form (js/home.js), and the form on a black card, with lines to write on inside it ===== */
+.contact-in { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--gap-m); align-items: stretch; }
+.contact-copy {
+  --ink-2: rgba(255, 255, 255, .92);
+  position: relative; isolation: isolate; overflow: hidden; display: flex; align-items: flex-end; min-height: min(90svh, 50vw);
+  padding: clamp(24px, 3.4vw, 72px); background: var(--char); color: var(--ivory);
+}
+.c-words { width: 100%; }
+.c-pics, .c-pics img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.c-pics { z-index: -1; }
+.c-pics img { opacity: 0; transition: opacity .8s var(--ease); }
+.c-pics img.on { opacity: 1; }
+.c-pics::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0, 0, 0, .88) 0%, rgba(0, 0, 0, .74) 42%, rgba(0, 0, 0, .2) 74%, rgba(0, 0, 0, .08) 100%); }
+@media (max-width: 767px) { .c-pics::after { background: linear-gradient(to top, rgba(0, 0, 0, .88) 0%, rgba(0, 0, 0, .78) 50%, rgba(0, 0, 0, .66) 100%); } }
+@media (prefers-reduced-motion: reduce) { .c-pics img { transition: none; } }
+html.a11y-contrast .c-pics { display: none; }
 .contact h2 { font-size: var(--f-h2); }
 .contact .lead { font-size: var(--f-lead); line-height: var(--lh-lead); margin-top: var(--gap-m); color: var(--ink-2); max-width: 30em; }
 .branches { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-m); margin-top: var(--gap-l); font-size: var(--f-meta); }
 .branches h3 { font-size: var(--f-body); margin-bottom: 8px; font-weight: 500; }
 .branches p { color: var(--ink-2); }
 .branches p + p { margin-top: 12px; }
-.form { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-m) var(--gap-l); }
+.form {
+  /* the night's tokens by hand: no data-theme here, js/site.js reads any [data-theme] across the whole width of the page for the header */
+  --bg: var(--char); --ink: var(--ivory); --ink-2: #D9D9D9; --muted: #A6A6A6; --line: rgba(255, 255, 255, .16); --line-2: rgba(255, 255, 255, .4); --on-ink: var(--char); --lnk: var(--ivory); --err: #FFB4A9;
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-m) var(--gap-l); align-content: space-between;
+  padding: clamp(24px, 3.4vw, 72px); background: var(--bg); color: var(--ink);
+}
+.form :focus-visible { outline-color: var(--ivory); }
 .fld { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 4px; grid-column: 1 / -1; }
 .fld.half { grid-column: auto; }
 .fld label, .fld legend { font-size: var(--f-meta); color: var(--muted); padding: 0; }
@@ -695,15 +741,15 @@ html.a11y-still .btn .rc { transform: none !important; }
 .in[dir="ltr"] { text-align: right; /* qa-allow: physical; a phone number typed left to right still sits on the start edge of this right-to-left form */ }
 .in:hover { border-color: var(--ink); }
 .in:focus { outline: none; border-color: var(--ink); box-shadow: 0 1px 0 0 var(--ink); }
-.in:focus-visible { outline: 2px solid var(--red); outline-offset: 4px; }
+.in:focus-visible { outline: 2px solid var(--ivory); outline-offset: 4px; }
 .in[aria-invalid="true"] { border-color: var(--err); }
 .opts { display: flex; flex-wrap: wrap; gap: 8px; }
 .opt { position: relative; }
 .opt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
-.opt span { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 18px; box-shadow: inset 0 0 0 1px var(--line-2); font-size: 15px; transition: background-color .2s, box-shadow .2s, color .2s; }
+.opt span { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 20px; box-shadow: inset 0 0 0 1px var(--line-2); font-size: 15px; transition: background-color .2s, box-shadow .2s, color .2s; }
 .opt:hover span { box-shadow: inset 0 0 0 1px var(--ink); }
 .opt input:checked + span { background: var(--ink); color: var(--on-ink); box-shadow: inset 0 0 0 1px var(--ink); }
-.opt input:focus-visible + span { outline: 2px solid var(--red); outline-offset: 3px; }
+.opt input:focus-visible + span { outline: 2px solid var(--ivory); outline-offset: 3px; }
 .err { color: var(--err); font-size: var(--f-small); }
 .form-msg { grid-column: 1 / -1; }
 .form-msg:empty { display: none; }
@@ -711,12 +757,12 @@ html.a11y-still .btn .rc { transform: none !important; }
 .consent, .alt { font-size: var(--f-small); color: var(--muted); }
 .consent a, .alt a { display: inline-flex; align-items: center; min-height: 44px; }
 .consent a { text-decoration: underline; text-underline-offset: .2em; }
-.form-fail { grid-column: 1 / -1; display: grid; gap: 12px; padding: 18px; background: rgba(179, 38, 30, .06); color: var(--ink); }
+.form-fail { grid-column: 1 / -1; display: grid; gap: 12px; padding: 18px; background: rgba(255, 255, 255, .08); color: var(--ink); }
 .form-fail .ctas { margin-top: 0; }
-@media (max-width: 1023px) { .contact-in { grid-template-columns: 1fr; } }
+@media (max-width: 1023px) { .contact-in { grid-template-columns: 1fr; } .contact-copy { min-height: min(80svh, 96vw); } }
 @media (max-width: 767px) { .branches, .form { grid-template-columns: 1fr; } .fld.half { grid-column: 1 / -1; } .form-foot .btn { width: 100%; } }
 
-/* ===== footer (MV:ft1 with the two branches): on the black, one closing line over the columns, the mark large ===== */
+/* ===== footer (MV:ft1 with the two branches): on the charcoal, one closing line over the columns, the mark large ===== */
 .ft { position: relative; isolation: isolate; overflow: hidden; padding: var(--sec) var(--gut) 24px; color: var(--ink); }
 /* the villa kitchen at night behind the footer, for the mood (Liav, 2.11.2026) */
 .ft-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
@@ -730,7 +776,7 @@ html.a11y-contrast .ft-bg { display: none; }
 .ft.is-gate { --o: 0; --d: 0; --gate: 140lvh; --side: 38%; overflow: clip; }
 .ft.is-gate .ft-ground { display: block; position: absolute; inset-inline: 0; top: 0; height: var(--gate); z-index: -2; }
 .ft.is-gate .ft-win {
-  display: block; position: sticky; top: 0; height: 100lvh; overflow: hidden; background: #000;
+  display: block; position: sticky; top: 0; height: 100lvh; overflow: hidden; background: var(--char);
   clip-path: inset(calc((1 - var(--o)) * 7%) calc((1 - var(--o)) * var(--side)) calc((1 - var(--o)) * 26%));
 }
 .ft.is-gate .ft-win img { opacity: calc(1 - .64 * var(--d)); transform: scale(calc(1.3 - .3 * var(--o))); }
@@ -779,7 +825,7 @@ html.a11y-contrast .ft.is-gate .ft-top { margin-top: 0; }
 .is-live .rv { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease) calc(var(--i, 0) * 80ms), transform .6s var(--ease) calc(var(--i, 0) * 80ms); }
 .is-live .rv.is-in { opacity: 1; transform: none; }
 .is-live .rv-h { clip-path: inset(0 0 100% 0); transform: translateY(.3em); transition: clip-path 1s var(--ease-out), transform 1s var(--ease-out); }
-.is-live .rv-h.is-in { clip-path: inset(0 0 -20% 0); transform: none; }
+.is-live .rv-h.is-in { clip-path: inset(-.2em 0 -.2em 0); transform: none; }
 .is-live .rv-img { position: relative; }
 .is-live .rv-img > img, .is-live .rv-img > .pic-in, .is-live .rv-img > video { clip-path: inset(100% 0 0 0); transition: clip-path 1.1s var(--ease-io) calc(.1s + var(--i, 0) * 90ms), transform 1.2s var(--ease); }
 .is-live .rv-img.is-in > img, .is-live .rv-img.is-in > .pic-in, .is-live .rv-img.is-in > video { clip-path: inset(0 0 0 0); }
@@ -788,7 +834,7 @@ html.a11y-contrast .ft.is-gate .ft-top { margin-top: 0; }
    figure on a little glass, with no frame around it ===== */
 .fabs { position: fixed; z-index: 70; inset-inline-end: calc((var(--gut) - 44px) / 2); bottom: 16px; color: var(--ink); }
 .fab {
-  display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center; width: 44px; height: 44px;
   background: color-mix(in srgb, var(--bg) 72%, transparent); color: inherit; cursor: pointer;
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); transition: transform .24s var(--ease);
 }
@@ -801,7 +847,7 @@ html.a11y-contrast .ft.is-gate .ft-top { margin-top: 0; }
 .a11y-panel {
   position: fixed; z-index: 190; inset-inline-end: 16px; bottom: 80px; width: min(380px, calc(100vw - 32px)); max-height: min(600px, calc(100svh - 120px));
   display: flex; flex-direction: column; overflow: hidden; background: var(--white); color: var(--ink);
-  box-shadow: inset 0 0 0 1px var(--ink); opacity: 0; transform: translateY(8px); visibility: hidden;
+  box-shadow: inset 0 0 0 1px var(--line-2); opacity: 0; transform: translateY(8px); visibility: hidden;
   transition: opacity .18s var(--ease), transform .24s var(--ease), visibility 0s linear .24s;
 }
 .a11y-panel.open { opacity: 1; transform: none; visibility: visible; transition-delay: 0s; }
@@ -818,7 +864,7 @@ html.a11y-contrast .ft.is-gate .ft-top { margin-top: 0; }
 .a11y-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 12px; padding: 8px 20px 16px; }
 .a11y-note { font-size: 13px; color: var(--muted); }
 .a11y-foot a { min-height: 44px; display: inline-flex; align-items: center; text-decoration: underline; text-underline-offset: .2em; }
-@media (hover: hover) and (pointer: fine) { .a11y-opts button:not([aria-pressed="true"]):hover, .a11y-x:hover { background: #E6E6E6; } }
+@media (hover: hover) and (pointer: fine) { .a11y-opts button:not([aria-pressed="true"]):hover, .a11y-x:hover { background: var(--ph); } }
 @media (max-width: 767px) { .a11y-panel { inset-inline: 0; bottom: 0; width: 100%; max-height: 82svh; transform: translateY(24px); padding-bottom: env(safe-area-inset-bottom); } }
 
 html.a11y-contrast, html.a11y-contrast body, html.a11y-contrast section, html.a11y-contrast [data-theme], html.a11y-contrast .ft,
@@ -828,6 +874,10 @@ html.a11y-contrast p, html.a11y-contrast span, html.a11y-contrast li, html.a11y-
 html.a11y-contrast a, html.a11y-contrast .lnk { color: #ffe14d !important; }
 html.a11y-contrast .btn, html.a11y-contrast .btn .rc { background: #ffe14d !important; color: #000 !important; }
 html.a11y-contrast .in { border-color: #fff !important; color: #fff !important; }
+/* the films run from white to night behind the words, so here each line of words brings its own plate */
+html.a11y-contrast :is(.p-h, .p-txt, .p-build, .p-tod-h, .p-tod-q, .p-chs, .y-h, .y-beats li, .y-pick) { background: #000 !important; padding: .3em .6em; }
+html.a11y-contrast :is(.t-bg, .t-fg) { display: none; }
+html.a11y-contrast .p-chs button { color: #fff !important; }
 html.a11y-gray { filter: grayscale(1); }
 html.a11y-invert { filter: invert(1) hue-rotate(180deg); }
 html.a11y-invert img, html.a11y-invert canvas { filter: invert(1) hue-rotate(180deg); }

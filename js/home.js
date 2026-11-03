@@ -1,10 +1,10 @@
-/* KFT · the home page (2.11.2026): the hero's film, the big letters into the about section and the architects' plan.
-   The hero is one slow film of one kitchen in a loop; its still frame is the poster and what "stop animations" leaves
-   (Liav, 2.11.2026: "למחוק את כפתור הפליי"). The team's film left the about section the same day.
-   The kitchens' carousel is js/kitchens.js, the process js/process.js and "from your chair" js/yours.js.
-   The letters KFT are cut out of the white page, the camera flying through the stem of the T into the photo (MV:g156, 40vh).
+/* KFT · the home page: the hero, the big letters into the about section, the picture beside the form and the way into the footer.
+   On a wide screen the hero is a real photo that closes into a window on the way out (the meeting of 3.11.2026); on a phone it
+   is one slow film in a loop, whose still frame is the poster and what "stop animations" leaves (Liav, 2.11.2026: "למחוק את כפתור הפליי").
+   The process is js/process.js, "your turn" js/turn.js and "from your chair" js/yours.js.
+   The logo is cut out of the white page, the camera flying through the stem of the T into the photo (MV:g156, 40vh).
    Without GSAP, with reduced motion or with "stop animations" on, the page stays the static version: real text and
-   still pictures. ?h in the address shows the headline directions for the meeting. */
+   still pictures. ?h in the address shows the headline directions for the meeting, and ?p the hero's photo options. */
 (() => {
   const root = document.documentElement;
   const SVGNS = 'http://www.w3.org/2000/svg';
@@ -33,6 +33,43 @@
     }));
   }
 
+  /* ---- the hero's photo options, only with ?p in the address: KFT picks one, this shows them in place ---- */
+  const HEROES = [
+    ['img/hero-w1-1280.webp 1280w, img/hero-w1-1920.webp 1920w, img/hero-w1-2560.webp 2560w', 'בית עם בריכה בשעת אחר הצהריים: הבריכה בקדמת התמונה, ומעבר לה פרגולה לבנה על עמודי אבן, פינות ישיבה, שולחן אוכל ומטבח חוץ בקצה'],
+    ['img/hero-w2-1280.webp 1280w, img/hero-w2-1600.webp 1450w', 'פינת אוכל לבנה מתחת לפרגולה לבנה עם דלתות זכוכית ומנורות קש, ובקצה מטבח לבן'],
+    ['img/hero-w3-1280.webp 1280w, img/hero-w3-1920.webp 1920w, img/hero-w3-2560.webp 2560w', 'בית לבן עם פרגולה על עמודי אבן, מעבר לדשא ולבריכת שפה, ובקצה מטבח חוץ'],
+    ['img/hero-w4-1280.webp 1280w, img/hero-w4-1450.webp 1450w', 'מטבח בקשת אבן בקצה חצר גדולה, ולפניו ספות עגולות, בריכה ובית אבן'],
+    ['img/hero-w5-1280.webp 1280w, img/hero-w5-1616.webp 1616w', 'מטבח ארוך ואי באבן כהה, עם שורת גרילי נירוסטה, על רצפה בהירה מול הגינה ועצים'],
+  ];
+  const pPick = document.querySelector('.p-pick');
+  const heroIm = document.querySelector('.hv-im');
+  if (pPick && heroIm && new URLSearchParams(location.search).has('p')) {
+    const btns = [...pPick.querySelectorAll('button')];
+    pPick.hidden = false;
+    btns.forEach((b) => b.addEventListener('click', () => {
+      const h = HEROES[+b.dataset.p];
+      if (!h) return;
+      heroIm.srcset = h[0];
+      heroIm.alt = h[1];
+      heroIm.closest('.hero').dataset.p = b.dataset.p;
+      btns.forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+    }));
+  }
+
+  /* ---- the picture beside the form follows the kind of home picked in it. The others load once the form is near ---- */
+  const homePics = [...document.querySelectorAll('.c-pics img')];
+  if (homePics.length) {
+    const loadPics = () => homePics.forEach((im) => { if (im.dataset.srcset) { im.srcset = im.dataset.srcset; im.removeAttribute('data-srcset'); } });
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { loadPics(); io.disconnect(); } }, { rootMargin: '50% 0px' });
+      io.observe(homePics[0].parentNode);
+    } else loadPics();
+    document.querySelectorAll('#lead input[name="home"]').forEach((input) => input.addEventListener('change', () => {
+      loadPics();
+      homePics.forEach((im) => im.classList.toggle('on', im.dataset.home === input.value));
+    }));
+  }
+
   /* ---- the film: it plays for everyone, reduced motion too; "stop animations" in the accessibility panel stops it
      (motion.md 2א), and film() still takes a pause button if one comes back. It is fetched only near the screen and pauses
      out of sight; its size is picked by the screen. No GSAP needed ---- */
@@ -44,8 +81,9 @@
     if (!v || !watch) return null;
     let off = still, seen = false;
     const sync = () => {
-      if (seen && !off) {
-        const src = pickSrc();
+      const src = pickSrc();
+      // no film for this screen: the photo stays
+      if (!src) { v.pause(); v.classList.remove('on'); } else if (seen && !off) {
         if (v.dataset.cur !== src) { v.dataset.cur = src; v.src = src; v.load(); }
         const p = v.play(); if (p) p.catch(() => {});
       } else v.pause();
@@ -63,11 +101,8 @@
     return f;
   };
   const hvVid = document.querySelector('.hv-vid');
-  const heroFilm = film(hvVid, null, hvVid && hvVid.closest('.hero'), () => {
-    if (matchMedia(SHEET_MQ).matches) return hvVid.dataset.tall;
-    return innerWidth * (devicePixelRatio || 1) > 1500 ? hvVid.dataset.wide : hvVid.dataset.mid;
-  }, '0px');
-  // a tablet turned on its side changes the film's size
+  const heroFilm = film(hvVid, null, hvVid && hvVid.closest('.hero'), () => (matchMedia(SHEET_MQ).matches ? hvVid.dataset.tall : ''), '0px');
+  // a tablet turned on its side leaves the film for the photo
   if (heroFilm) matchMedia(SHEET_MQ).addEventListener('change', heroFilm.sync);
   // only a change of "stop animations" reaches the films: the panel sends its state again on every other change,
   // and that must not undo a film the visitor paused with its own button
@@ -81,30 +116,17 @@
   if (!window.gsap || !window.ScrollTrigger) return;
   gsap.registerPlugin(ScrollTrigger);
 
-  /* ---- the letters, the way into the about section: KFT is cut out of the white page, a kitchen photo behind it. On the
-     way in its outline draws and the letters open; pinned, the camera flies through the stem of the T until the photo
-     fills the screen, and the photo ends on a hard line on the black below ---- */
+  /* ---- the letters, the way into the about section: the logo itself is cut out of the white page ("הלוגו עצמו"), a kitchen photo
+     behind it. On the way in its outline draws and the letters open; pinned, the camera flies through the stem of the T until the
+     photo fills the screen, and the photo ends on a hard line on the black below ---- */
   const bfScene = document.querySelector('.bf-scene');
   const bfPin = bfScene && bfScene.querySelector('.bf-pin');
   const bfSvg = bfScene && bfScene.querySelector('.bf-cut');
   const bfImg = bfScene && bfScene.querySelector('img');
-  const BF_FONT = "500 100px 'PM'";
-
-  // the stem of the T: where it starts and how wide it is at 100px, read off the drawn letter, because a font's T is not its I
-  const measureT = () => {
-    const cv = document.createElement('canvas');
-    cv.width = 400; cv.height = 300;
-    const x = cv.getContext('2d', { willReadFrequently: true });
-    x.font = BF_FONT.replace('100px', '200px');
-    x.direction = 'ltr'; x.textAlign = 'left'; x.textBaseline = 'alphabetic';
-    x.fillStyle = '#000';
-    x.fillText('T', 40, 260);
-    const cap = x.measureText('T').actualBoundingBoxAscent;
-    const row = x.getImageData(0, Math.round(260 - cap * 0.3), 400, 1).data;
-    let a = -1, b = -1;
-    for (let i = 0; i < 400; i++) if (row[i * 4 + 3] > 127) { if (a < 0) a = i; b = i; }
-    return { left: (a - 40) / 2, width: (b - a + 1) / 2, cap: cap / 2 };
-  };
+  // assets/kft-mark.svg: what opens onto the photo (K, F, T and the kitchen on the K), the first three of them drawn in outline, and the kitchen's fine lines that stay on the page
+  const LOGO_CUT = ['M151.51,261c-2.34-2.15-4.52-4.18-6.72-6.17l-28.28-25.68c-3-2.72-6-5.44-9-8.2a4.86,4.86,0,0,0-3.61-1.35q-47.36.06-94.72,0H6.41V174.39H293.58c.46,1.43.63,41.86.13,45.2H174.14L174,220c1.53,1.42,3,2.85,4.59,4.25L213.45,256q17.13,15.56,34.29,31.1,16,14.57,32,29.16c4.21,3.83,8.37,7.72,12.67,11.44a4.32,4.32,0,0,1,1.54,3.69q-.06,25,0,50.09,0,3.33,0,6.66c0,.56-.06,1.11-.12,2.12l-106.55-96.8-181,96.44V338.38Z', 'M426.68,61.36v46.76c-.79-.22-1.46-.39-2.12-.6-31.8-9.94-65.28,10.32-71.76,43.41a68.67,68.67,0,0,0-1.22,12.79c0,3.43,0,6.85,0,10.48h75v45.29c-4.92.29-9.91.09-14.9.13s-10.05,0-15.08,0H351.85c-.25.26-.31.3-.35.36a1.62,1.62,0,0,0-.1.18.8.8,0,0,0,0,.21c0,.14,0,.29,0,.43V221c0,.22,0,.43,0,.65v167c0,.07,0,.15,0,.22s0,.14,0,.21a1.55,1.55,0,0,1,0,.21,1.17,1.17,0,0,1-.06.2c-1.46.46-41.67.59-44.58.13,0-.66-.11-1.35-.11-2.05q0-117,.07-234.07a71.82,71.82,0,0,1,1.82-13.8,100.27,100.27,0,0,1,75.85-78c10.11-2.36,20.33-2.6,30.59-2C418.73,59.93,422.62,60.77,426.68,61.36Z', 'M439.16,65c3,1.28,5.7,2.34,8.32,3.55a99.7,99.7,0,0,1,31.13,22.72c1.26,1.35,2.37,2.85,3.64,4.19a5.85,5.85,0,0,1,1.62,4.43q-.08,35.79,0,71.58v2.76h75.88v45.36c-6.23.16-12.49,0-18.76.07s-12.74,0-19.11,0H484c-.06.88-.15,1.51-.15,2.13q0,25.69,0,51.38c0,4.5.07,9,.28,13.51.64,13.88,4.49,26.61,13.55,37.36a55.49,55.49,0,0,0,35.84,19.81,54.21,54.21,0,0,0,24.32-2.16c.58-.19,1.18-.32,1.92-.53v46.55c-1.1.26-2.17.55-3.26.76a101.27,101.27,0,0,1-26.64,1.22,91,91,0,0,1-24.38-5.33,98,98,0,0,1-34-20.6,99.85,99.85,0,0,1-27.32-42.59,103,103,0,0,1-4.9-25.19c-.07-1-.1-2-.1-3V65Z', 'M6.65,112.8H293.75V162.37H6.5V112.94a.15.15,0,0,1,.15-.15Z', 'M293.14,112.8H7.84l15.74-12.2H252.42l40.73,12.15C293.2,112.74,293.19,112.8,293.14,112.8Z', 'M7.11,112.73c.61-1.21,9.75-19.11,18.42-22.76,1.31-.39,88-.38,88-.38l-8.75,23.21H7.17S7.09,112.77,7.11,112.73Z', 'M105.29,112.8l11.1-8s1.4-15.4-3-15.2S105.29,112.8,105.29,112.8Z'];
+  const LOGO_KEEP = ['M6.5,124.24H293.95V125.55H6.5Z', 'M104.63,112.8h1.31v47.78h-1.31Z', 'M173.79,112.8h1.31v47.78h-1.31Z', 'M220.49,112.8h1.31v47.78h-1.31Z', 'M256.55,124.9h1.31v35.68h-1.31Z', 'M23.26,123.15a4,4,0,1,1,4-4A4,4,0,0,1,23.26,123.15Zm0-6.59A2.64,2.64,0,1,0,26,119.2,2.69,2.69,0,0,0,23.26,116.56Z', 'M44.35,123.15a4,4,0,1,1,4-4A4,4,0,0,1,44.35,123.15Zm0-6.59a2.64,2.64,0,1,0,2.72,2.64A2.69,2.69,0,0,0,44.35,116.56Z', 'M65.43,123.15a4,4,0,1,1,4-4A4,4,0,0,1,65.43,123.15Zm0-6.59a2.64,2.64,0,1,0,2.73,2.64A2.7,2.7,0,0,0,65.43,116.56Z', 'M86.52,123.15a4,4,0,1,1,4-4A4,4,0,0,1,86.52,123.15Zm0-6.59a2.64,2.64,0,1,0,2.73,2.64A2.69,2.69,0,0,0,86.52,116.56Z', 'M293.14,113.45H7.37l-.32-.9.39-.3,15.9-12.32,229.27,0,41.27,12.31-.13,1.16ZM9.73,112.14H288.89l-36.57-10.9H23.79Z', 'M106.53,113.45H6.8l-.44-.66.16-.35c1-2,10-19.37,18.75-23.07,1.39-.42,72.6-.44,87.88-.44h.36l.82.5ZM8.16,112.14h97.47l6.93-21.9c-29.81,0-85.06.08-86.89.37C18.23,93.76,10.17,108.33,8.16,112.14Z', 'M105,113.15l-.31-.46c.63-3.93,4-23.55,8.71-23.76a2.42,2.42,0,0,1,1.9.8c2.81,2.94,1.91,13.88,1.8,15.12l0,.3Zm8.51-22.91h0c-2.53.12-5.62,11.91-7.21,21.09l9.56-6.89c.28-3.42.51-11.74-1.46-13.81A1.14,1.14,0,0,0,113.46,90.24Z'];
+  const LOGO = { x: 6.41, y: 59, w: 553.6, h: 331, stem: { x: 439.16, y: 100, w: 44.7, h: 185 } };
 
 
   function buildGrill(isSheet) {
@@ -121,38 +143,30 @@
     const layout = () => {
       const W = bfPin.clientWidth, H = bfPin.clientHeight;
       if (!W || !H) return;
-      const c = document.createElement('canvas').getContext('2d');
-      c.font = BF_FONT;
-      c.direction = 'ltr'; c.textAlign = 'left';
-      const T = measureT();
-      const wide100 = c.measureText('KFT').width;
-      const fs = Math.min((W * 0.86) / wide100, (H * 0.62) / T.cap) * 100;
-      const k = fs / 100;
-      const cap = T.cap * k;
+      const k = Math.min((W * 0.86) / LOGO.w, (H * 0.62) / LOGO.h);
+      const ox = W / 2 - (LOGO.x + LOGO.w / 2) * k, oy = H / 2 - (LOGO.y + LOGO.h / 2) * k;
+      const place = `translate(${ox.toFixed(2)} ${oy.toFixed(2)}) scale(${k.toFixed(4)})`;
       bfSvg.setAttribute('viewBox', `0 0 ${W} ${H}`);
       bfSvg.textContent = '';
       const defs = make('defs', {}, bfSvg);
       const mask = make('mask', { id: 'bf-m', maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: W, height: H }, defs);
       make('rect', { x: -W, y: -H, width: W * 3, height: H * 3, fill: '#fff' }, mask);
       const gm = make('g', {}, mask);
-      make('rect', { x: 0, y: 0, width: W, height: H, fill: '#fff', mask: 'url(#bf-m)' }, bfSvg);
+      const gmIn = make('g', { transform: place }, gm);
+      make('rect', { x: 0, y: 0, width: W, height: H, style: 'fill: var(--ground)', mask: 'url(#bf-m)' }, bfSvg);
       const go = make('g', { class: 'bf-o' }, bfSvg);
-      const base = H / 2 + cap / 2;
-      // centred on the ink, not on the advance: the letters' side bearings are not equal
-      const ink = c.measureText('KFT');
-      const a = { x: W / 2 - ((ink.actualBoundingBoxRight - ink.actualBoundingBoxLeft) / 2 - ink.width / 2) * k, y: base, 'text-anchor': 'middle', direction: 'ltr', 'font-size': fs.toFixed(1) };
-      const tm = make('text', { ...a, fill: '#000' }, gm);
-      tm.textContent = 'KFT';
-      const to = make('text', { ...a, class: 'bf-out', 'stroke-dasharray': (fs * 4).toFixed(0) }, go);
-      to.textContent = 'KFT';
-      const texts = [{ tm, to }];
-      // the stem of the T: its cell from the laid-out text, its ink from the measure
-      const ext = tm.getExtentOfChar(2);
-      const inkL = ext.x + T.left * k, inkW = T.width * k;
-      const A = { x: inkL + inkW / 2, y: base - cap * 0.35 };
-      // the same stem as a plain rect: huge scaled glyphs can drop out of a mask, a rect never does
-      const stem = make('rect', { x: inkL.toFixed(2), y: (base - cap * 0.8).toFixed(2), width: inkW.toFixed(2), height: (cap * 0.8).toFixed(2), fill: '#000' }, gm);
-      Z = { W, H, A, C: { x: W / 2, y: H / 2 }, sEnd: Math.max((W * 1.2) / inkW, (H * 0.6) / (cap * 0.35)), fs, gm, go, texts, stem };
+      const goIn = make('g', { transform: place }, go);
+      const cuts = LOGO_CUT.map((d) => make('path', { d, fill: '#000' }, gmIn));
+      LOGO_KEEP.forEach((d) => make('path', { d, fill: '#fff' }, gmIn));
+      // the outline's dashes are measured on the screen (non-scaling-stroke), so each one is its own length at this size
+      const outs = LOGO_CUT.slice(0, 4).map((d) => {
+        const to = make('path', { d, class: 'bf-out' }, goIn);
+        return { to, dash: to.getTotalLength() * k };
+      });
+      // the stem of the T as a plain rect: huge scaled shapes can drop out of a mask, a rect never does
+      const stem = make('rect', { x: LOGO.stem.x, y: LOGO.stem.y, width: LOGO.stem.w, height: LOGO.stem.h, fill: '#000' }, gmIn);
+      const A = { x: ox + (LOGO.stem.x + LOGO.stem.w / 2) * k, y: oy + (LOGO.stem.y + LOGO.stem.h / 2) * k };
+      Z = { W, H, A, C: { x: W / 2, y: H / 2 }, sEnd: Math.max((W * 1.2) / (LOGO.stem.w * k), (H * 0.6) / (LOGO.stem.h / 2 * k)), gm, go, cuts, outs, stem };
       paintB();
     };
     const inOut = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
@@ -165,18 +179,19 @@
       const tr = `translate(${px.toFixed(2)} ${py.toFixed(2)}) scale(${s.toFixed(4)}) translate(${(-Z.A.x).toFixed(2)} ${(-Z.A.y).toFixed(2)})`;
       Z.gm.setAttribute('transform', tr);
       Z.go.setAttribute('transform', tr);
-      const dash = Z.fs * 4;
-      Z.texts.forEach((t) => {
-        t.to.setAttribute('stroke-dashoffset', (dash * (1 - B.draw)).toFixed(1));
-        t.tm.setAttribute('fill-opacity', B.open.toFixed(3));
+      Z.outs.forEach((o) => {
+        if (B.draw >= 1) { o.to.removeAttribute('stroke-dasharray'); o.to.removeAttribute('stroke-dashoffset'); return; }
+        o.to.setAttribute('stroke-dasharray', o.dash.toFixed(1));
+        o.to.setAttribute('stroke-dashoffset', (o.dash * (1 - B.draw)).toFixed(1));
       });
+      Z.cuts.forEach((c) => c.setAttribute('fill-opacity', B.open.toFixed(3)));
       Z.stem.setAttribute('fill-opacity', B.open.toFixed(3));
       bfSvg.style.visibility = z > 0.995 ? 'hidden' : '';
       Z.go.setAttribute('opacity', Math.max(0, 1 - z / 0.3).toFixed(3));
       bfImg.style.transform = `scale(${(1.12 - 0.12 * z).toFixed(4)})`;
       bfPin.style.setProperty('--bf-fade', Math.max(0, (z - 0.55) / 0.45).toFixed(3));
     }
-    const run = () => document.fonts.load(BF_FONT).then(layout, layout);
+    const run = layout;
     // on the way in: the outline draws, then the letters open onto the photo
     const entry = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: paintB });
     entry.to(B, { draw: 1, duration: 0.6, ease: 'power1.inOut' }, 0).to(B, { open: 1, duration: 0.45, ease: 'power1.in' }, 0.55);
@@ -194,6 +209,15 @@
     };
   }
 
+  /* ---- the hero's way out: the picture closes into a window on the white of the next section ---- */
+  function buildHero() {
+    const hero = document.querySelector('.hv');
+    if (!hero) return () => {};
+    // gsap's matchMedia reverts the tween itself
+    gsap.fromTo(hero, { '--hi': 0 }, { '--hi': 1, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom 30%', scrub: 0.6 } });
+    return () => hero.style.removeProperty('--hi');
+  }
+
   /* ---- the logo behind "about" comes toward the reader with the scroll; its slow drift (css/site.css) runs only on screen ---- */
   function buildMark() {
     const mark = document.querySelector('.ab-mark');
@@ -207,23 +231,6 @@
     return () => {
       gsap.set(mark, { clearProps: 'all' });
       box.classList.remove('is-on');
-    };
-  }
-
-  /* ---- the architects' plan plots line by line, then its measures ---- */
-  function buildPlot() {
-    const plot = document.querySelector('.plot');
-    if (!plot) return () => {};
-    const P = { plot: 0, dims: 0 };
-    const pt = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: () => {
-      plot.style.setProperty('--plot', P.plot.toFixed(3));
-      plot.style.setProperty('--dims', P.dims.toFixed(3));
-    } });
-    pt.to(P, { plot: 1, duration: 0.7, ease: 'power1.inOut' }, 0).to(P, { dims: 1, duration: 0.45, ease: 'power1.inOut' }, 0.55);
-    const st = ScrollTrigger.create({ trigger: plot, start: 'top 85%', end: 'center 40%', scrub: 0.6, animation: pt });
-    return () => {
-      st.kill(); pt.kill();
-      plot.style.removeProperty('--plot'); plot.style.removeProperty('--dims');
     };
   }
 
@@ -255,7 +262,7 @@
 
   function goLive(isSheet) {
     root.classList.add('is-live');
-    const un = [buildGrill(isSheet), buildMark(), buildPlot(), buildGate()];
+    const un = [buildHero(), buildGrill(isSheet), buildMark(), buildGate()];
     ScrollTrigger.refresh();
     return () => {
       un.forEach((f) => f());

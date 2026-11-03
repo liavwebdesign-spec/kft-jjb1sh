@@ -1,10 +1,10 @@
-/* KFT · from your chair: one kitchen, from the designer's sketch to its first evening, played by the scroll.
-   One pinned stage (.y-stage) over a run of scroll (.y-run, css/site.css), one canvas and 192 frames (frames/<tier>/make_*):
-   0-30 the sketch fills into a white model, 31-110 the stone, the copper and the garden come onto it by day,
-   111-191 the sun goes down and the lights come on. Four short beats ride on the film, and at its end the last frame
+/* KFT · from your chair: one kitchen, from the designer's sketch to the finished picture, played by the scroll.
+   One pinned stage (.y-stage) over a run of scroll (.y-run, css/site.css), one canvas and 192 frames (frames/<tier>/make3_*),
+   all built from Meir's corrected picture: 0-30 the sketch fills into a white model, 31-110 the stone, the fronts, the grill,
+   the wall and the floor come onto it, 111-191 the camera settles on the picture. Four short beats ride on the film, and at its end the last frame
    gives way to the same picture as a photo (.y-stones), where the reader picks the stone himself.
    The stone pick works in both versions; without GSAP, with reduced motion or with "stop animations" on,
-   the section stays static: the four beats as text, the night picture and the stones under it. */
+   the section stays static: the four beats as text, the picture and the stones under it. */
 (() => {
   const sec = document.querySelector('.yours');
   if (!sec) return;
@@ -53,9 +53,12 @@
   const beats = [...sec.querySelectorAll('.y-beats li')];
   const pickEl = $('.y-pick');
   const N = 192;
-  const PAPER = '#FFFFFF';
-  // the model is still white until the stone starts to flow onto it
-  const COLOUR = 44;
+  // the paper in these frames is the page's own white, so the sketch has no edge
+  const PAPER = getComputedStyle(root).getPropertyValue('--ground').trim();
+  // the model is white and the wall comes in between the second and third beats: the words change colour once the stone is under them
+  const COLOUR = 62;
+  // the white wash leaves and the dark scrim rises with the film, so a bright model never sits under a dark band
+  const clamp01 = (v) => Math.max(0, Math.min(1, v));
   const SHEET_MQ = '(max-width: 767px), (max-width: 1023px) and (orientation: portrait)';
   const theme = (t) => { if (sec.dataset.theme !== t) { sec.dataset.theme = t; document.dispatchEvent(new Event('kft:theme')); } };
 
@@ -79,7 +82,7 @@
       const i = order[next++];
       const img = new Image();
       img.decoding = 'async';
-      img.src = `frames/${tier}/make_${pad(i)}.webp`;
+      img.src = `frames/${tier}/make3_${pad(i)}.webp`;
       img.decode().then(() => { frames[i] = img; if (live && Math.abs(i - Math.round(S.frame)) < 3) draw(true); }).catch(() => {}).finally(worker);
     };
     for (let w = 0; w < 4; w++) worker();
@@ -136,10 +139,11 @@
     [S.b0, S.b1, S.b2, S.b3].forEach((b, i) => put(`b${i}`, b.toFixed(3), (v) => show(beats[i], +v)));
     put('stones', S.stones.toFixed(3), (v) => { stonesEl.style.opacity = v; });
     put('pick', S.pick.toFixed(3), (v) => show(pickEl, +v));
+    put('paper', clamp01((54 - S.frame) / 10).toFixed(3), (v) => stage.style.setProperty('--y-paper', v));
+    put('night', clamp01((S.frame - 56) / 22).toFixed(3), (v) => stage.style.setProperty('--y-night', v));
+    put('floor', clamp01((S.frame - 88) / 16).toFixed(3), (v) => stage.style.setProperty('--y-floor', v));
     // the drawing and the white model are paper; from the stone on, the picture is dark enough for light words
     put('tone', S.frame < COLOUR ? 'light' : 'dark', (v) => { stage.dataset.tone = v; theme(v === 'dark' ? 'night' : 'paper'); });
-    // the paper in the frames is warm and the page is pure white (Liav, 2.11.2026: "צבע רקע לבן מלא"), so the sketch and the white model are neutral until the stone comes
-    put('paper', Math.max(0, Math.min(1, (COLOUR - S.frame) / 14)).toFixed(3), (v) => { canvas.style.filter = +v > 0 ? `grayscale(${v}) brightness(${(1 + 0.05 * v).toFixed(3)})` : ''; });
     draw(false);
   }
   function build() {
@@ -150,14 +154,14 @@
     // 01 · the sketch, line by line, and the model rises out of it
     beat('b0', 12, 28);
     tl.to(S, { frame: 30, duration: 16, ease: 'power1.inOut' }, 14);
-    // 02 · the shape: where the grill stands, where the sink, the seats around the table
+    // 02 · the shape: where the grill stands, where the sink, where the fridge
     beat('b1', 31, 42);
     tl.to(S, { frame: 45, duration: 10 }, 32);
-    // 03 · the materials flow onto the model, and the garden grows around it
-    beat('b2', 45, 61);
+    // 03 · the materials flow onto the model, and the wall and the floor around it
+    beat('b2', 51, 62);
     tl.to(S, { frame: 111, duration: 17, ease: 'power1.inOut' }, 45);
-    // 04 · the first evening: the sun goes down and the lights come on
-    beat('b3', 64, 81);
+    // 04 · the result: the camera settles on the finished picture
+    beat('b3', 66, 81);
     tl.to(S, { frame: N - 1, duration: 18, ease: 'power1.inOut' }, 64);
     // the last frame and the photo are the same picture, so the swap does not show; then the stone is his
     tl.to(S, { stones: 1, duration: 2 }, 83);
@@ -183,6 +187,9 @@
       sec.classList.remove('y-live');
       Object.assign(S, S0);
       stage.removeAttribute('data-tone');
+      stage.style.removeProperty('--y-paper');
+      stage.style.removeProperty('--y-night');
+      stage.style.removeProperty('--y-floor');
       [head, pickEl, stonesEl, canvas, ...beats].forEach((el) => el.removeAttribute('style'));
       theme('night');
       last.clear();
