@@ -7,7 +7,7 @@
    (frames/build-tags.json, the same camera projected in Blender) and a tick in the list of what already stands.
    The last frame sits on the real photo (img/day), which takes over and drifts; there the reader picks the
    hour and lights the oven. In the corner a small plan of the kitchen draws itself along the way, and the four chapters
-   under it jump to their place in the scroll. At the end the photo stays whole and leaves with the scroll; "your turn" (js/turn.js) comes next.
+   under it jump to their place in the scroll. At the end the photo stays whole and "your turn" (js/turn.js) rises over it, for which the run is one screen longer than the film.
    The hour and the fire work in both versions; without GSAP, with reduced motion or with "stop animations" on,
    the section stays static: four chapters with a picture each, and the photo with the hour under them. */
 (() => {
@@ -290,7 +290,7 @@
     tl.to(S, { drift: 1, duration: 11, ease: 'power1.out' }, 89);
     tl.to(S, { pick: 1, duration: 4, ease: 'power2.out' }, 92);
     tl.set({}, {}, TOTAL);
-    st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: 'bottom bottom', scrub: 0.8, animation: tl });
+    st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: 'bottom 200%', scrub: 0.8, animation: tl });
   }
   // the rail: each chapter jumps to its own place in the scroll
   const jump = (i) => {

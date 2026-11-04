@@ -234,28 +234,42 @@
     };
   }
 
-  /* ---- the way into the footer: a window on the night kitchen rises under the form and opens to the whole screen, then
-     the photo dims for the closing line. The white under the window answers for the header and the floating buttons ---- */
+  /* ---- the way into the footer: the night kitchen rises whole over the form, the same move as "your turn" over the process.
+     The form holds under it (position: sticky in css/site.css) and only creeps up. Then the photo dims for the closing line ---- */
   function buildGate() {
     const ft = document.querySelector('.ft');
     const ground = ft && ft.querySelector('.ft-ground');
     const top = ft && ft.querySelector('.ft-top');
-    if (!ground || !top) return () => {};
+    const contact = document.querySelector('.sec.contact');
+    if (!ground || !top || !contact) return () => {};
     ft.classList.add('is-gate');
+    root.classList.add('ft-rise');
     const theme = (t) => { if (ground.dataset.theme !== t) { ground.dataset.theme = t; document.dispatchEvent(new Event('kft:theme')); } };
-    const P = { o: 0, d: 0 };
-    const gt = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: () => {
-      ft.style.setProperty('--o', P.o.toFixed(3));
-      ft.style.setProperty('--d', P.d.toFixed(3));
-      theme(P.o >= 1 ? 'night' : 'paper');
-    } });
-    // whole by the time it reaches the top, a moment with the lights on, and it dims while the line comes up
-    gt.to(P, { o: 1, duration: 0.57, ease: 'power1.inOut' }, 0).to(P, { d: 1, duration: 0.34 }, 0.66);
+    theme('night');
+    // a form taller than the screen (the phone) holds only once its end has been read; an error line can make it taller
+    const stick = () => contact.style.setProperty('--c-stick', `${Math.min(0, innerHeight - contact.offsetHeight)}px`);
+    const ro = new ResizeObserver(stick);
+    ro.observe(contact);
+    stick();
+    const holds = () => Math.min(contact.offsetHeight, innerHeight);
+    const creep = gsap.fromTo(contact, { y: 0 }, {
+      y: () => -0.14 * holds(), ease: 'none',
+      scrollTrigger: { trigger: ft, start: () => `top ${holds()}px`, end: 'top top', scrub: true, invalidateOnRefresh: true },
+    });
+    const P = { d: 0 };
+    const gt = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: () => ft.style.setProperty('--d', P.d.toFixed(3)) });
+    // a moment with the lights on, and it dims while the line comes up
+    gt.to(P, { d: 1, duration: 0.34 }, 0.66);
     const st = ScrollTrigger.create({ trigger: ft, start: 'top bottom', endTrigger: top, end: 'top 65%', scrub: 0.6, animation: gt });
     return () => {
       st.kill(); gt.kill();
+      ro.disconnect();
+      // gsap's matchMedia has already reverted the creep by the time this runs
+      gsap.set(contact, { clearProps: 'transform' });
+      contact.style.removeProperty('--c-stick');
+      root.classList.remove('ft-rise');
       ft.classList.remove('is-gate');
-      ft.style.removeProperty('--o'); ft.style.removeProperty('--d');
+      ft.style.removeProperty('--d');
       theme('paper');
     };
   }
