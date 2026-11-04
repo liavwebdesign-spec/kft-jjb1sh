@@ -7,7 +7,7 @@
    (frames/build-tags.json, the same camera projected in Blender) and a tick in the list of what already stands.
    The last frame sits on the real photo (img/day), which takes over and drifts; there the reader picks the
    hour and lights the oven. In the corner a small plan of the kitchen draws itself along the way, and the four chapters
-   under it jump to their place in the scroll. At the end the photo closes into a window on the white; "your turn" (js/turn.js) comes next.
+   under it jump to their place in the scroll. At the end the photo stays whole and leaves with the scroll; "your turn" (js/turn.js) comes next.
    The hour and the fire work in both versions; without GSAP, with reduced motion or with "stop animations" on,
    the section stays static: four chapters with a picture each, and the photo with the hour under them. */
 (() => {
@@ -88,9 +88,9 @@
   const LAND = { shell: 41, wall: 80, fronts: 108, tops: 129, sink: 143, grill: 160, oven: 172, shelf: 189, fridge: 196 };
   const TAGS = [['shell', 'ארונות'], ['wall', 'קיר אבן'], ['fronts', 'חזיתות'], ['tops', 'שיש'], ['sink', 'כיור'],
     ['grill', 'גריל', 'dn'], ['oven', 'טאבון'], ['shelf', 'מדף'], ['fridge', 'מקרר']];
-  // where each chapter starts on the timeline (0-100), for its jump; 100-118 is the way out: the photo closes into a window
+  // where each chapter starts on the timeline (0-100), for its jump; 100-106 is the photo held at the hour he chose
   const CH = [0, 22, 37, 75];
-  const TOTAL = 118;
+  const TOTAL = 106;
   // the last line of the plan is done; then the oven turns red
   const LIT_AT = 79;
   const theme = (t) => { if (sec.dataset.theme !== t) { sec.dataset.theme = t; document.dispatchEvent(new Event('kft:theme')); } };
@@ -217,7 +217,7 @@
 
   /* ---- state, written by the timeline and painted in one place ---- */
   // the title is already there and the sketch already started while the stage rises into view, so the page never shows an empty white screen
-  const S0 = { g: 0, sketch: 0, pre: 0, x: 0, h: 1, b0: 0, b1: 0, b2: 0, b3: 0, build: 0, photo: 0, drift: 0, pick: 0, close: 0, rail: 1 };
+  const S0 = { g: 0, sketch: 0, pre: 0, x: 0, h: 1, b0: 0, b1: 0, b2: 0, b3: 0, build: 0, photo: 0, drift: 0, pick: 0, rail: 1 };
   const S = { ...S0 };
   const last = new Map();
   const put = (key, val, fn) => { if (last.get(key) !== val) { last.set(key, val); fn(val); } };
@@ -252,14 +252,10 @@
     put('plate', Math.min(1, Math.max(0, (66 - (S.g - FLIGHT)) / 40)).toFixed(3), (v) => { copy.style.setProperty('--plate', v); });
     put('drift', S.drift.toFixed(4), (v) => { ph.style.setProperty('--drift', (1 + 0.06 * v).toFixed(4)); });
     put('pick', S.pick.toFixed(3), (v) => show(tod, +v));
-    put('close', S.close.toFixed(4), (v) => {
-      stage.style.setProperty('--close', v);
-      canvas.style.visibility = +v > 0 ? 'hidden' : '';
-    });
     put('rail', S.rail.toFixed(3), (v) => { rail.style.opacity = v; rail.style.visibility = +v > 0.001 ? 'visible' : 'hidden'; });
     const f = S.g - FLIGHT;
-    // from the sunset on, the words and the header turn light on the photo, whose corners carry them, and back as soon as it starts closing; at noon they stay dark
-    put('tone', S.photo > 0.5 && S.close < 0.04 && hour !== 'day' ? 'dark' : 'light', (v) => { stage.dataset.tone = v; theme(v === 'dark' ? 'night' : 'paper'); });
+    // from the sunset on, the words and the header turn light on the photo, whose corners carry them; at noon they stay dark
+    put('tone', S.photo > 0.5 && hour !== 'day' ? 'dark' : 'light', (v) => { stage.dataset.tone = v; theme(v === 'dark' ? 'night' : 'paper'); });
     parts.forEach((li) => put(`p-${li.dataset.part}`, f >= LAND[li.dataset.part] - 4, (on) => li.classList.toggle('on', on)));
     const p = tl ? tl.time() : 0;
     let ch = 0;
@@ -293,9 +289,6 @@
     tl.to(S, { photo: 1, duration: 3 }, 88);
     tl.to(S, { drift: 1, duration: 11, ease: 'power1.out' }, 89);
     tl.to(S, { pick: 1, duration: 4, ease: 'power2.out' }, 92);
-    // the way out: the photo, at the hour he chose, closes into a window on the white
-    tl.to(S, { pick: 0, duration: 2, ease: 'power2.in' }, 105);
-    tl.to(S, { close: 1, duration: 10, ease: 'power2.inOut' }, 106);
     tl.set({}, {}, TOTAL);
     st = ScrollTrigger.create({ trigger: sec, start: 'top top', end: 'bottom bottom', scrub: 0.8, animation: tl });
   }
@@ -333,7 +326,6 @@
       lines.forEach((l) => { l.el.removeAttribute('style'); l.last = ''; });
       plan.classList.remove('lit');
       ph.style.removeProperty('--drift');
-      stage.style.removeProperty('--close');
       parts.forEach((li) => li.classList.remove('on'));
       tagEls.forEach((t) => { t.el.removeAttribute('style'); t.last = ''; });
       theme('paper');

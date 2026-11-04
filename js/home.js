@@ -223,8 +223,8 @@
     const mark = document.querySelector('.ab-mark');
     if (!mark) return () => {};
     const box = mark.parentNode;
-    const tw = gsap.fromTo(mark, { yPercent: 16, scale: 0.82, rotation: -5 }, {
-      yPercent: -16, scale: 1.18, rotation: 5, ease: 'none',
+    const tw = gsap.fromTo(mark, { yPercent: 8, scale: 0.96, rotation: -1.5 }, {
+      yPercent: -8, scale: 1.04, rotation: 1.5, ease: 'none',
       scrollTrigger: { trigger: box, start: 'top bottom', end: 'bottom top', scrub: 0.6, toggleClass: { targets: box, className: 'is-on' } },
     });
     // gsap's matchMedia has already reverted the tween by the time this runs
