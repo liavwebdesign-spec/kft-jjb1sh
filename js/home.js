@@ -47,12 +47,18 @@
     const btns = [...pPick.querySelectorAll('button')];
     pPick.hidden = false;
     btns.forEach((b) => b.addEventListener('click', () => {
+      // the wide film is one more option here: the photo stays under it as the backup, and picking a photo takes the film off
+      if (heroFilm) {
+        if (b.dataset.film) hvVid.dataset.wide = b.dataset.film; else delete hvVid.dataset.wide;
+        heroFilm.sync();
+      }
+      btns.forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+      if (b.dataset.film) { heroIm.closest('.hero').dataset.p = 'film'; return; }
       const h = HEROES[+b.dataset.p];
       if (!h) return;
       heroIm.srcset = h[0];
       heroIm.alt = h[1];
       heroIm.closest('.hero').dataset.p = b.dataset.p;
-      btns.forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
     }));
   }
 
@@ -101,7 +107,7 @@
     return f;
   };
   const hvVid = document.querySelector('.hv-vid');
-  const heroFilm = film(hvVid, null, hvVid && hvVid.closest('.hero'), () => (matchMedia(SHEET_MQ).matches ? hvVid.dataset.tall : ''), '0px');
+  const heroFilm = film(hvVid, null, hvVid && hvVid.closest('.hero'), () => (matchMedia(SHEET_MQ).matches ? hvVid.dataset.tall : (hvVid.dataset.wide || '')), '0px');
   // a tablet turned on its side leaves the film for the photo
   if (heroFilm) matchMedia(SHEET_MQ).addEventListener('change', heroFilm.sync);
   // only a change of "stop animations" reaches the films: the panel sends its state again on every other change,
