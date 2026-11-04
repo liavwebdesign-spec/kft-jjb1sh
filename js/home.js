@@ -1,5 +1,5 @@
 /* KFT · the home page: the hero, the big letters into the about section, the picture beside the form and the way into the footer.
-   On a wide screen the hero is a real photo that closes into a window on the way out (the meeting of 3.11.2026); on a phone it
+   On a wide screen the hero is a real photo that stays whole until it scrolls away (Liav, 4.11.2026: "תבטל את ההירו הקטן בגלילה"); on a phone it
    is one slow film in a loop, whose still frame is the poster and what "stop animations" leaves (Liav, 2.11.2026: "למחוק את כפתור הפליי").
    The process is js/process.js, "your turn" js/turn.js and "from your chair" js/yours.js.
    The logo is cut out of the white page, the camera flying through the stem of the T into the photo (MV:g156, 40vh).
@@ -209,15 +209,6 @@
     };
   }
 
-  /* ---- the hero's way out: the picture closes into a window on the white of the next section ---- */
-  function buildHero() {
-    const hero = document.querySelector('.hv');
-    if (!hero) return () => {};
-    // gsap's matchMedia reverts the tween itself
-    gsap.fromTo(hero, { '--hi': 0 }, { '--hi': 1, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom 30%', scrub: 0.6 } });
-    return () => hero.style.removeProperty('--hi');
-  }
-
   /* ---- the logo behind "about" comes toward the reader with the scroll; its slow drift (css/site.css) runs only on screen ---- */
   function buildMark() {
     const mark = document.querySelector('.ab-mark');
@@ -276,7 +267,7 @@
 
   function goLive(isSheet) {
     root.classList.add('is-live');
-    const un = [buildHero(), buildGrill(isSheet), buildMark(), buildGate()];
+    const un = [buildGrill(isSheet), buildMark(), buildGate()];
     ScrollTrigger.refresh();
     return () => {
       un.forEach((f) => f());

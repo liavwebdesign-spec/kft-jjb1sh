@@ -64,7 +64,7 @@
 *, *::before, *::after { box-sizing: border-box; }
 html, body { overflow-x: clip; }
 /* anchors glide in js/site.js: a CSS smooth scroll would corrupt every ScrollTrigger refresh */
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--hd-h) + 32px); scrollbar-gutter: stable; background: var(--ground); }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--hd-h) + 32px); scrollbar-gutter: stable; scrollbar-width: thin; background: var(--ground); }
 html.lock { overflow: hidden; }
 body {
   margin: 0; background: var(--ground); color: var(--ink);
@@ -258,8 +258,6 @@ html.a11y-still .btn .rc { transform: none !important; }
 }
 
 .hv { isolation: isolate; overflow: hidden; }
-/* --hi (js/home.js): the way out, the picture closes into a window and the white under it is the next section's */
-.is-live .hv { clip-path: inset(0 calc(var(--hi, 0) * var(--gut)) calc(var(--hi, 0) * 8svh)); }
 /* the film runs to the very edge of the hero, and its foot ends over the white of the next section */
 .hv-media { position: absolute; inset: 0; z-index: -1; }
 .hv-media img, .hv-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -300,15 +298,19 @@ html.a11y-still .btn .rc { transform: none !important; }
 .kit-head { display: grid; justify-items: center; gap: var(--gap-m); text-align: center; }
 .kit h2 { font-size: var(--f-h1); line-height: var(--lh-h1); letter-spacing: -.02em; }
 .kit .lead { font-size: var(--f-lead); line-height: var(--lh-lead); color: var(--ink-2); max-width: 34em; }
-.kit-grid { list-style: none; margin: var(--gap-l) 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap-s); }
+/* Liav, 4.11.2026, on House of Honey's "Spaces with story": two in a row, "יותר מהודק ברמת הריווחים בין התמונות ובשוליים". Measured there: 8px at the edge and between the pictures */
+.sec.kit { --kit-tight: 5px; padding-inline: var(--kit-tight); }
+.kit-head { padding-inline: calc(var(--gut) - var(--kit-tight)); }
+.kit-grid { list-style: none; margin: var(--gap-l) 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--kit-tight); }
 .kit-c figure { position: relative; }
-.kit-im { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--ph); }
+.kit-im { position: relative; aspect-ratio: 5 / 4; overflow: hidden; background: var(--ph); }
 .kit-im img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
 @media (hover: hover) and (pointer: fine) { .kit-c .mc-link:hover .kit-im img { transform: scale(1.04); } }
 /* the name on the picture itself (Liav, 3.11.2026: "זה צריך להיות עליה וקריא"): the foot of each photo goes dark under it, and the photo still wipes in under the name */
-.kit-im::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to top, rgba(0, 0, 0, .8) 0%, rgba(0, 0, 0, .56) 24%, rgba(0, 0, 0, 0) 56%); }
-.kit-c figcaption { position: absolute; inset-inline: 0; bottom: 0; padding: var(--gap-m); color: var(--ivory); font-family: var(--font-h); font-weight: var(--w-h); font-size: var(--f-h2); line-height: var(--lh-h); letter-spacing: -.01em; }
-@media (max-width: 767px) { .kit-grid { grid-template-columns: 1fr; } }
+.kit-im::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to top, rgba(0, 0, 0, .62) 0, rgba(0, 0, 0, .6) var(--kit-band), rgba(0, 0, 0, .26) calc(var(--kit-band) + 44px), rgba(0, 0, 0, 0) calc(var(--kit-band) + 110px)); }
+.kit-c { --kit-cap: calc(clamp(19px, 1.25vw, 28px) * var(--a11y-scale)); --kit-pad: clamp(14px, 1.25vw, 24px); --kit-band: calc(var(--kit-pad) + var(--kit-cap) * 1.5); }
+.kit-c figcaption { position: absolute; inset-inline: 0; bottom: 0; padding: var(--kit-pad); color: var(--ivory); font-family: var(--font-h); font-weight: var(--w-h); font-size: var(--kit-cap); line-height: var(--lh-h); letter-spacing: -.01em; }
+@media (max-width: 767px) { .kit-grid { grid-template-columns: 1fr; } .kit-im { aspect-ratio: 4 / 3; } }
 
 /* ===== the process: one kitchen, the villa one, from the sketch until it is ready. Live, it is built in the yard part
    after part on one pinned stage (js/process.js): a tag on each part as it lands, a list of what already stands, the sun

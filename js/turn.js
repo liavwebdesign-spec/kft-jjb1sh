@@ -29,10 +29,9 @@
     });
     // nothing is cut by the rising edge: the words and buttons of the last screen leave as it starts, only the photo stays under it
     const words = document.querySelectorAll('.proc .p-tod > *');
-    if (words.length) gsap.fromTo(words, { autoAlpha: 1 }, {
-      autoAlpha: 0, ease: 'none',
-      scrollTrigger: { trigger: sec, start: 'top bottom', end: 'top 88%', scrub: true },
-    });
+    // by time, not by scroll: nobody can stop the page on half-faded words that cannot be read
+    const leave = (a) => () => gsap.to(words, { autoAlpha: a, duration: 0.3, ease: 'none', overwrite: true });
+    if (words.length) ScrollTrigger.create({ trigger: sec, start: 'top bottom', onEnter: leave(0), onLeaveBack: leave(1) });
     paint();
     ScrollTrigger.refresh();
     return () => {
@@ -42,6 +41,7 @@
       frame.style.removeProperty('--t-in');
       // gsap's matchMedia has already reverted the creep by the time this runs
       if (under) gsap.set(under, { clearProps: 'transform' });
+      if (words.length) { gsap.killTweensOf(words); gsap.set(words, { clearProps: 'opacity,visibility' }); }
       theme('paper');
     };
   }
