@@ -664,6 +664,12 @@ html.a11y-still .btn .rc { transform: none !important; }
   .yours.y-live .y-copy { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
   .yours.y-live .y-run { height: 360vh; }
 }
+/* the previous version, under the current one so the two can be compared (Liav, 5.11.2026): its own crop, and its scrim follows the tone as it did, because js/yours-prev.js does not write the current section's scrim values */
+.yours-prev { --yfx: 50%; }
+@media (max-width: 767px) { .yours-prev { --yfx: 40%; } }
+.yours-prev .y-scrim::before, .yours-prev .y-scrim::after { transition: opacity .6s var(--ease); }
+.yours-prev .y-stage[data-tone="dark"] .y-scrim::before { opacity: 0; }
+.yours-prev .y-stage[data-tone="dark"] .y-scrim::after { opacity: 1; }
 
 /* ===== the letters: the logo itself cut out of the white page, a kitchen photo behind them; the camera flies through the stem of
    the T into the photo (after MV:g156; js/home.js), and the photo ends on a hard line on the black of the about section.
